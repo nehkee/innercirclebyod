@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(Start-Sleep -Seconds 5)",
+      "Bash(Get-Content \"C:\\\\Users\\\\USER\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Cocopops-innercirclebyod\\\\7508a95f-946b-40f8-b59a-a98fb760dd42\\\\tasks\\\\bb4todbhd.output\" -Tail 20)",
+      "PowerShell(Start-Process \"chrome\" \"http://localhost:3000\")"
+    ]
+  }
+}

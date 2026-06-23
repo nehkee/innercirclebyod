@@ -1,0 +1,75 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+interface CountdownTimerProps {
+  targetDate: string;
+  className?: string;
+  compact?: boolean;
+}
+
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+function calculate(target: string): TimeLeft {
+  const diff = Math.max(0, new Date(target).getTime() - Date.now());
+  return {
+    days:    Math.floor(diff / 86400000),
+    hours:   Math.floor((diff % 86400000) / 3600000),
+    minutes: Math.floor((diff % 3600000) / 60000),
+    seconds: Math.floor((diff % 60000) / 1000),
+  };
+}
+
+function pad(n: number) {
+  return String(n).padStart(2, '0');
+}
+
+export function CountdownTimer({ targetDate, className, compact = false }: CountdownTimerProps) {
+  const [time, setTime] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    setTime(calculate(targetDate));
+    const id = setInterval(() => setTime(calculate(targetDate)), 1000);
+    return () => clearInterval(id);
+  }, [targetDate]);
+
+  if (compact) {
+    return (
+      <span className={`font-mono text-od-gold text-sm ${className}`}>
+        {pad(time.days)}:{pad(time.hours)}:{pad(time.minutes)}:{pad(time.seconds)}
+      </span>
+    );
+  }
+
+  const units = [
+    { label: 'DAYS',    value: time.days },
+    { label: 'HRS',     value: time.hours },
+    { label: 'MINS',    value: time.minutes },
+    { label: 'SECS',    value: time.seconds },
+  ];
+
+  return (
+    <div className={`flex items-center gap-3 ${className}`}>
+      {units.map(({ label, value }, i) => (
+        <div key={label} className="flex items-center gap-3">
+          <div className="text-center">
+            <div className="font-mono text-3xl font-bold text-od-gold tabular-nums leading-none">
+              {pad(value)}
+            </div>
+            <div className="font-mono text-[10px] tracking-widest text-od-muted mt-1">
+              {label}
+            </div>
+          </div>
+          {i < units.length - 1 && (
+            <span className="font-mono text-2xl text-od-border mb-4">:</span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
