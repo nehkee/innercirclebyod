@@ -10,8 +10,8 @@ const clerkConfigured = Boolean(
   process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY
 );
 
-const withClerk = clerkMiddleware((auth, req) => {
-  if (isProtectedRoute(req)) auth().protect();
+const withClerk = clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) await auth.protect();
 });
 
 export default function middleware(req: NextRequest, ev: NextFetchEvent) {

@@ -12,9 +12,9 @@ export function isClerkConfigured(): boolean {
  * The signed-in user's Clerk ID, or null.
  * Safe to call when Clerk isn't configured (returns null instead of throwing).
  */
-export function getClerkUserId(): string | null {
+export async function getClerkUserId(): Promise<string | null> {
   if (!isClerkConfigured()) return null;
-  return auth().userId ?? null;
+  return (await auth()).userId ?? null;
 }
 
 export interface CurrentMember {
@@ -29,7 +29,7 @@ export interface CurrentMember {
 
 /** Load the signed-in user's member row, or null if signed out / not synced yet. */
 export async function getCurrentMember(): Promise<CurrentMember | null> {
-  const clerkId = getClerkUserId();
+  const clerkId = await getClerkUserId();
   if (!clerkId || !isSupabaseConfigured()) return null;
 
   const { data } = await createAdminClient()
@@ -48,7 +48,7 @@ export type AdminCheck =
 
 /** Require a signed-in member with `is_admin = true`. */
 export async function requireAdmin(): Promise<AdminCheck> {
-  if (!getClerkUserId()) return { ok: false, status: 401 };
+  if (!(await getClerkUserId())) return { ok: false, status: 401 };
   const member = await getCurrentMember();
   if (!member?.is_admin) return { ok: false, status: 403 };
   return { ok: true, member };

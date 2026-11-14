@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { Show, UserButton } from '@clerk/nextjs';
 import { useAuthEnabled } from '@/components/providers/Providers';
 
 /** Sign-in link or account menu. Renders nothing until Clerk is configured. */
@@ -11,7 +11,7 @@ export function NavAuth({ mobile = false }: { mobile?: boolean }) {
 
   return (
     <>
-      <SignedOut>
+      <Show when="signed-out">
         <Link
           href="/sign-in"
           className={
@@ -22,8 +22,8 @@ export function NavAuth({ mobile = false }: { mobile?: boolean }) {
         >
           SIGN IN
         </Link>
-      </SignedOut>
-      <SignedIn>
+      </Show>
+      <Show when="signed-in">
         <Link
           href="/account"
           className={
@@ -34,8 +34,8 @@ export function NavAuth({ mobile = false }: { mobile?: boolean }) {
         >
           MY CIRCLE
         </Link>
-        <UserButton afterSignOutUrl="/" />
-      </SignedIn>
+        <UserButton />
+      </Show>
     </>
   );
 }

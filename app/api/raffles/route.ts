@@ -12,7 +12,7 @@ const getResend = () => new Resend(process.env.RESEND_API_KEY ?? 're_placeholder
 
 // ── Enter a raffle ────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const userId = getClerkUserId();
+  const userId = await getClerkUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

@@ -12,17 +12,18 @@ export const dynamic = 'force-dynamic';
  * While a card/Paystack payment is pending, this also asks the provider directly,
  * so the purchase completes even if the webhook is slow or not set up yet.
  */
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const member = await getCurrentMember();
   if (!member) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  if (!/^[0-9a-f-]{36}$/i.test(params.id)) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const admin = createAdminClient();
   const load = async () => {
     const { data } = await admin
       .from('payments')
       .select('*, events (id, title)')
-      .eq('id', params.id)
+      .eq('id', id)
       .eq('member_id', member.id)
       .maybeSingle();
     return data as (PaymentRow & { events: { id: string; title: string } | null }) | null;

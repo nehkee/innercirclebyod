@@ -71,14 +71,15 @@ export default function RootLayout({
 
   return (
     <ClerkProvider
+      afterSignOutUrl="/"
       appearance={{
         variables: {
           colorPrimary:         '#C9A84C',
           colorBackground:      '#111111',
-          colorText:            '#FFFFFF',
-          colorTextSecondary:   '#9CA3AF',
-          colorInputBackground: '#080808',
-          colorInputText:       '#FFFFFF',
+          colorForeground:      '#FFFFFF',
+          colorMutedForeground: '#9CA3AF',
+          colorInput:           '#080808',
+          colorInputForeground: '#FFFFFF',
           borderRadius:         '0px',
           fontFamily:           'Space Grotesk, system-ui, sans-serif',
         },
