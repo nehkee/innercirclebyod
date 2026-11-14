@@ -16,7 +16,7 @@ export default function NotFound() {
       />
 
       <div className="relative z-10">
-        <p className="font-mono text-[10px] tracking-[0.4em] text-ic-gold mb-6">
+        <p className="font-mono text-[11px] tracking-[0.4em] text-ic-gold mb-6">
           ERROR 404
         </p>
 
@@ -28,7 +28,7 @@ export default function NotFound() {
           NOT FOUND
         </h1>
 
-        <p className="font-mono text-[10px] tracking-widest text-ic-muted mb-12">
+        <p className="font-mono text-[11px] tracking-widest text-ic-muted mb-12">
           THIS ROOM DOESN&apos;T EXIST — OR YOU&apos;RE NOT ON THE LIST
         </p>
 

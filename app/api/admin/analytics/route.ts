@@ -93,7 +93,21 @@ export async function GET(req: NextRequest) {
 
   const pendingApps = (recentApplications.data ?? []).filter(a => a.status === 'pending');
 
+  // Revenue actually collected (fulfilled, not refunded) and concierge outcomes in range
+  const [{ data: paid }, { data: convos }, { count: refundsOpen }] = await Promise.all([
+    admin.from('payments').select('amount, currency, kind').eq('status', 'fulfilled').gte('paid_at', sinceStr),
+    admin.from('support_threads').select('topic, outcome').in('topic', ['membership', 'ticket']).gte('created_at', sinceStr),
+    admin.from('refund_requests').select('id', { count: 'exact', head: true }).eq('status', 'requested'),
+  ]);
+  const revenue = { USD: 0, NGN: 0 } as Record<string, number>;
+  for (const p of paid ?? []) revenue[p.currency] = (revenue[p.currency] ?? 0) + Number(p.amount);
+  const outcomes = { saved: 0, cancelled: 0, refund_requested: 0, refunded: 0, open: 0 } as Record<string, number>;
+  for (const c of convos ?? []) outcomes[c.outcome ?? 'open'] = (outcomes[c.outcome ?? 'open'] ?? 0) + 1;
+  const decided = outcomes.saved + outcomes.cancelled + outcomes.refund_requested + outcomes.refunded;
+
   return NextResponse.json({
+    revenue: { ...revenue, orders: paid?.length ?? 0 },
+    retention: { ...outcomes, saveRate: decided ? Math.round((outcomes.saved / decided) * 100) : null, refundsOpen: refundsOpen ?? 0 },
     overview: {
       totalMembers:  members.length,
       newMembers:    newMembers.length,

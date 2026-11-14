@@ -37,7 +37,20 @@ appear at checkout only once their keys are set.
 | Paystack    | `https://<domain>/api/webhooks/paystack`        | Settings → API Keys & Webhooks |
 | NOWPayments | sent automatically with each invoice            | Set the IPN secret; choose coins under "Coins settings" |
 
-## 5. Deploy
+## 5. Email that reaches the inbox (Resend)
+
+Ticket, welcome, reminder and drop emails come from `RESEND_FROM_EMAIL`. To keep
+them out of spam:
+
+1. Resend → Domains → **Add domain** → use a subdomain such as `mail.your-domain.com`.
+2. Add the DNS records Resend shows you (SPF `TXT`, DKIM `CNAME`s, and the `MX`
+   for bounces) at your domain registrar or DNS host. Wait until Resend shows **Verified**.
+3. Add a DMARC record: `TXT _dmarc.your-domain.com  "v=DMARC1; p=none; rua=mailto:you@your-domain.com"`
+   (tighten to `p=quarantine` after a couple of weeks of clean reports).
+4. Set `RESEND_FROM_EMAIL=noreply@mail.your-domain.com` and `RESEND_API_KEY` in Vercel.
+5. Send yourself a test (sign up, buy a free ticket) and check it lands in the inbox.
+
+## 6. Deploy
 
 1. vercel.com/new → import the GitHub repository → Deploy.
 2. Add your domain in Vercel → Settings → Domains and set `NEXT_PUBLIC_APP_URL` to it.
@@ -45,9 +58,14 @@ appear at checkout only once their keys are set.
    `UPDATE members SET is_admin = TRUE WHERE email = 'you@example.com';`
 4. Open `/admin`: Overview, Inbox (support chat), Refunds, Applications, Events, Members.
 
-## 6. Day-to-day
+## 7. Day-to-day
 
-- **Events**: add rows to the `events` table in Supabase (`is_active = true` to publish).
+- **Events**: Admin → Events → Create event. Leave the photo empty to use the generated poster.
+- **Drops & raffles**: Admin → Drops & Raffles. Drops can be password-protected or secret;
+  raffles are free for eligible members and you draw winners with one click.
+- **Waitlist & invitations**: Admin → Waitlist → Send invite. Turn on `NEXT_PUBLIC_INVITE_ONLY=true`
+  to require an invite before anyone can buy a membership.
+- **Door**: open `/admin/scan` on a phone at the door and scan tickets (camera or pasted code).
 - **Retention inbox**: members who want to cancel or can't make an event talk to the
   concierge chat first (offers are applied automatically); anything it can't solve
   lands in Admin → Inbox, and the team is emailed if `SUPPORT_TEAM_EMAIL` is set.
@@ -55,12 +73,27 @@ appear at checkout only once their keys are set.
   Paystack refunds run with one click; crypto refunds are sent from the NOWPayments
   dashboard to the address the member gave, then marked as refunded.
 
-## 7. Pre-launch checklist
+## 8. Pre-launch checklist
 
 - [ ] `supabase/schema.sql` run on the production database
 - [ ] All keys set in Vercel (including `TICKET_SECRET` and `NEXT_PUBLIC_APP_URL`)
 - [ ] Webhooks registered for Clerk, Stripe and Paystack
 - [ ] Coins enabled in NOWPayments
 - [ ] Admin account flagged (`is_admin = true`)
+- [ ] Resend domain verified (section 5) and a test email received
+- [ ] Stripe → Billing → Customer portal enabled (members update cards from their account)
+- [ ] `CRON_SECRET` set (reminders run daily; on Vercel Pro change `vercel.json` to hourly)
+- [ ] Privacy Policy and Terms reviewed by a lawyer; `NEXT_PUBLIC_LEGAL_*` set
 - [ ] One small test purchase per payment method, then a test refund
 - [ ] Brand, socials and copy reviewed for the artist you're launching with
+
+## Development
+
+```bash
+npm install
+npm run dev        # http://localhost:3000 — sample data is shown when Supabase isn't connected
+npm test           # unit + scenario tests (payments, concierge bot, signatures, tiers)
+npm run typecheck
+```
+
+GitHub Actions runs type-check, tests and a production build on every push (`.github/workflows/ci.yml`).

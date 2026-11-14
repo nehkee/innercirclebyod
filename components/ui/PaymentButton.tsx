@@ -41,19 +41,19 @@ export function PaymentButton({
           </span>
         </div>
 
-        <p className="font-mono text-[9px] tracking-[0.3em] text-ic-gold/60 group-hover:text-ic-black/60 transition-colors duration-300 relative z-10">
+        <p className="font-mono text-[10px] tracking-[0.3em] text-ic-gold/60 group-hover:text-ic-black/60 transition-colors duration-300 relative z-10">
           SIGN UP TO CONTINUE →
         </p>
       </button>
 
       <div className="flex gap-2 mt-2">
         <div className="flex-1 border border-ic-border/40 py-1.5 flex items-center justify-center gap-1.5">
-          <span className="text-[10px]">💳</span>
-          <span className="font-mono text-[8px] tracking-widest text-ic-muted">STRIPE</span>
+          <span className="text-[11px]">💳</span>
+          <span className="font-mono text-[10px] tracking-widest text-ic-muted">STRIPE</span>
         </div>
         <div className="flex-1 border border-ic-border/40 py-1.5 flex items-center justify-center gap-1.5">
-          <span className="text-[10px]">🇳🇬</span>
-          <span className="font-mono text-[8px] tracking-widest text-ic-muted">PAYSTACK</span>
+          <span className="text-[11px]">🇳🇬</span>
+          <span className="font-mono text-[10px] tracking-widest text-ic-muted">PAYSTACK</span>
         </div>
       </div>
     </div>

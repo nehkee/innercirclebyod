@@ -4,6 +4,7 @@ import { requireAdmin } from '@/lib/auth';
 import { createAdminClient } from '@/lib/supabase';
 import { declineRefund, executeRefund } from '@/lib/support/refunds';
 import { postMessage, updateThread } from '@/lib/support/threads';
+import { reportError } from '@/lib/alerts';
 
 const Body = z.object({
   action: z.enum(['refund', 'mark_refunded', 'decline']),
@@ -35,6 +36,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
     return NextResponse.json({ ok: true, message });
   } catch (err) {
+    if (!(err instanceof Error && err.message.includes('sent manually'))) await reportError('Refund failed', err, { refundRequest: params.id });
     return NextResponse.json({ error: err instanceof Error ? err.message : 'Refund failed' }, { status: 400 });
   }
 }

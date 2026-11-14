@@ -110,7 +110,7 @@ export function CommunityView({ stats, leaderboard, showSamples }: CommunityView
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-6 py-4 font-mono text-[10px] tracking-widest transition-all border-b-2 ${
+              className={`flex items-center gap-2 px-6 py-4 font-mono text-[11px] tracking-widest transition-all border-b-2 ${
                 activeTab === tab.id
                   ? 'border-ic-gold text-ic-gold'
                   : 'border-transparent text-ic-muted hover:text-white'
@@ -151,13 +151,13 @@ export function CommunityView({ stats, leaderboard, showSamples }: CommunityView
                     )}
                     <p className="font-mono text-3xl font-bold text-ic-border mb-2">#{member.rank}</p>
                     <p className="font-mono text-sm tracking-wider text-white mb-1">{member.country} {member.name}</p>
-                    <p className="font-mono text-[9px] tracking-widest mb-3" style={{ color: TIER_COLORS[member.tier] }}>
+                    <p className="font-mono text-[10px] tracking-widest mb-3" style={{ color: TIER_COLORS[member.tier] }}>
                       {member.tier}
                     </p>
                     <p className="font-bebas text-2xl" style={{ color: i === 0 ? '#C9A84C' : '#fff' }}>
                       {member.points.toLocaleString()}
                     </p>
-                    <p className="font-mono text-[9px] text-ic-muted">POINTS</p>
+                    <p className="font-mono text-[10px] text-ic-muted">POINTS</p>
                   </div>
                 ))}
               </div>
@@ -166,11 +166,11 @@ export function CommunityView({ stats, leaderboard, showSamples }: CommunityView
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-ic-border">
-                      <th className="text-left py-4 px-6 font-mono text-[10px] tracking-widest text-ic-muted">RANK</th>
-                      <th className="text-left py-4 px-6 font-mono text-[10px] tracking-widest text-ic-muted">MEMBER</th>
-                      <th className="text-left py-4 px-6 font-mono text-[10px] tracking-widest text-ic-muted hidden md:table-cell">TIER</th>
-                      <th className="text-left py-4 px-6 font-mono text-[10px] tracking-widest text-ic-muted hidden md:table-cell">EVENTS</th>
-                      <th className="text-right py-4 px-6 font-mono text-[10px] tracking-widest text-ic-muted">POINTS</th>
+                      <th className="text-left py-4 px-6 font-mono text-[11px] tracking-widest text-ic-muted">RANK</th>
+                      <th className="text-left py-4 px-6 font-mono text-[11px] tracking-widest text-ic-muted">MEMBER</th>
+                      <th className="text-left py-4 px-6 font-mono text-[11px] tracking-widest text-ic-muted hidden md:table-cell">TIER</th>
+                      <th className="text-left py-4 px-6 font-mono text-[11px] tracking-widest text-ic-muted hidden md:table-cell">EVENTS</th>
+                      <th className="text-right py-4 px-6 font-mono text-[11px] tracking-widest text-ic-muted">POINTS</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -181,11 +181,11 @@ export function CommunityView({ stats, leaderboard, showSamples }: CommunityView
                         </td>
                         <td className="py-4 px-6">
                           <p className="font-mono text-sm text-white">{member.country} {member.name}</p>
-                          <p className="font-mono text-[9px] text-ic-muted">SINCE {member.joined}</p>
+                          <p className="font-mono text-[10px] text-ic-muted">SINCE {member.joined}</p>
                         </td>
                         <td className="py-4 px-6 hidden md:table-cell">
                           <span
-                            className="font-mono text-[9px] tracking-widest px-2 py-1 border"
+                            className="font-mono text-[10px] tracking-widest px-2 py-1 border"
                             style={{ color: TIER_COLORS[member.tier], borderColor: `${TIER_COLORS[member.tier]}30` }}
                           >
                             {member.tier}
@@ -219,7 +219,7 @@ export function CommunityView({ stats, leaderboard, showSamples }: CommunityView
                       {' '}
                       <span className="text-ic-muted">{item.action}</span>
                     </p>
-                    <p className="font-mono text-[9px] text-ic-muted mt-1">{item.time}</p>
+                    <p className="font-mono text-[10px] text-ic-muted mt-1">{item.time}</p>
                   </div>
                 </div>
               ))}
@@ -246,7 +246,7 @@ export function CommunityView({ stats, leaderboard, showSamples }: CommunityView
                         />
                       </div>
                     </div>
-                    <span className="font-mono text-[10px] text-ic-muted w-10 text-right">{country.pct}%</span>
+                    <span className="font-mono text-[11px] text-ic-muted w-10 text-right">{country.pct}%</span>
                   </div>
                 ))}
               </div>

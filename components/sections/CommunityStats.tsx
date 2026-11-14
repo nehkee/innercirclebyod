@@ -82,7 +82,7 @@ export function CommunityStats({ stats, leaderboard }: { stats: Stats | null; le
                   <div className="font-bebas text-5xl md:text-6xl text-white leading-none mb-1">
                     <span data-gsap-counter={stat.value}>{formatStat(stat.value)}</span>
                   </div>
-                  <p className="font-mono text-[10px] tracking-[0.3em] text-ic-muted">
+                  <p className="font-mono text-[11px] tracking-[0.3em] text-ic-muted">
                     {stat.label}
                   </p>
                 </div>
@@ -99,7 +99,7 @@ export function CommunityStats({ stats, leaderboard }: { stats: Stats | null; le
               <div className="h-px flex-1 bg-ic-border" />
               <Link
                 href="/community"
-                className="font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors"
+                className="font-mono text-[11px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors"
               >
                 FULL →
               </Link>
@@ -121,7 +121,7 @@ export function CommunityStats({ stats, leaderboard }: { stats: Stats | null; le
                       {countryFlag(member.country)} {member.username}
                     </p>
                     <p
-                      className="font-mono text-[9px] tracking-widest"
+                      className="font-mono text-[10px] tracking-widest"
                       style={{ color: TIER_COLORS[member.tier] }}
                     >
                       {member.tier.toUpperCase()}
@@ -132,7 +132,7 @@ export function CommunityStats({ stats, leaderboard }: { stats: Stats | null; le
                     <p className="font-bebas text-lg text-ic-gold">
                       {member.points.toLocaleString()}
                     </p>
-                    <p className="font-mono text-[9px] text-ic-muted tracking-widest">PTS</p>
+                    <p className="font-mono text-[10px] text-ic-muted tracking-widest">PTS</p>
                   </div>
                 </div>
               ))}

@@ -5,6 +5,7 @@ import { Nav } from '@/components/layout/Nav';
 import { Footer } from '@/components/layout/Footer';
 import { TIERS } from '@/lib/constants';
 import { CheckoutModal } from '@/components/checkout/CheckoutModal';
+import { CircleField } from '@/components/art/CircleField';
 import type { PaymentMethods } from '@/lib/payments/config';
 import type { TierConfig } from '@/types';
 import { Check, Zap } from 'lucide-react';
@@ -29,7 +30,8 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
       <Nav />
 
       {/* Hero */}
-      <section className="pt-32 pb-20 text-center px-6">
+      <section className="relative isolate overflow-hidden pt-32 pb-20 text-center px-6">
+        <CircleField className="absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2 w-[120vmin] h-[120vmin] -z-10 opacity-60" />
         <p className="section-label mb-4">JOIN THE INNER CIRCLE</p>
         <h1
           className="font-bebas gold-text leading-none mb-6"
@@ -79,7 +81,7 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
                     style={{ background: `linear-gradient(90deg, transparent, ${tier.color}, transparent)` }}
                   />
                   <div className="absolute -top-6 left-1/2 -translate-x-1/2">
-                    <span className="bg-ic-gold text-black font-mono text-[10px] tracking-widest px-3 py-1">
+                    <span className="bg-ic-gold text-black font-mono text-[11px] tracking-widest px-3 py-1">
                       MOST POPULAR
                     </span>
                   </div>
@@ -113,7 +115,7 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
                   </span>
                   <span className="font-mono text-xs text-ic-muted">/mo</span>
                 </div>
-                <p className="font-mono text-[10px] text-ic-muted mt-1">
+                <p className="font-mono text-[11px] text-ic-muted mt-1">
                   Card renews monthly · Paystack & crypto: 30 days
                 </p>
               </div>

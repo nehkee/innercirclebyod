@@ -8,6 +8,8 @@ import { formatPrice, formatDate } from '@/lib/utils';
 import type { Event } from '@/types';
 import { Lock, MapPin, Users, Ticket, Filter } from 'lucide-react';
 import Link from 'next/link';
+import { EventPoster } from '@/components/art/EventPoster';
+import { CircleField } from '@/components/art/CircleField';
 
 const TYPE_LABELS: Record<string, string> = {
   listening_party: 'LISTENING PARTY',
@@ -39,7 +41,8 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
       <Nav />
 
       {/* Hero */}
-      <section className="pt-32 pb-16 px-6">
+      <section className="relative isolate overflow-hidden pt-32 pb-16 px-6">
+        <CircleField color="#CC0000" intensity={0.8} className="absolute -z-10 -right-[20vmin] top-1/2 -translate-y-1/2 w-[90vmin] h-[90vmin]" />
         <div className="max-w-7xl mx-auto">
           <p className="section-label mb-4">CALENDAR</p>
           <h1
@@ -62,7 +65,7 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
             <button
               key={type}
               onClick={() => setFilter(type)}
-              className={`font-mono text-[10px] tracking-widest px-4 py-2 flex-shrink-0 border transition-all ${
+              className={`font-mono text-[11px] tracking-widest px-4 py-2 flex-shrink-0 border transition-all ${
                 filter === type
                   ? 'border-ic-gold text-ic-gold bg-ic-gold/10'
                   : 'border-ic-border text-ic-muted hover:border-ic-muted hover:text-white'
@@ -102,6 +105,11 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
               >
                 <div className="p-6 md:p-8">
                   <div className="flex flex-col md:flex-row md:items-start gap-6">
+                    {/* Poster */}
+                    <Link href={`/events/${event.id}`} className="hidden md:block w-28 flex-shrink-0" aria-hidden="true" tabIndex={-1}>
+                      <EventPoster title={event.title} type={event.type} date={event.date} location={event.location} imageUrl={event.imageUrl} compact />
+                    </Link>
+
                     {/* Left: Number + Labels */}
                     <div className="flex items-center gap-4 md:flex-col md:items-center md:w-20 flex-shrink-0">
                       <span className="font-mono text-3xl font-bold text-ic-border">
@@ -109,15 +117,15 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
                       </span>
                       <div className="flex flex-wrap gap-1">
                         {event.isVip && (
-                          <span className="badge-live text-[8px] px-1.5 py-0.5">VIP</span>
+                          <span className="badge-live text-[10px] px-1.5 py-0.5">VIP</span>
                         )}
                         {event.isSecret && (
-                          <span className="flex items-center gap-1 font-mono text-[8px] tracking-widest text-ic-muted border border-ic-border px-1.5 py-0.5">
+                          <span className="flex items-center gap-1 font-mono text-[10px] tracking-widest text-ic-muted border border-ic-border px-1.5 py-0.5">
                             <Lock size={7} /> SECRET
                           </span>
                         )}
                         {isPast && (
-                          <span className="font-mono text-[8px] tracking-widest text-ic-muted border border-ic-border px-1.5 py-0.5">
+                          <span className="font-mono text-[10px] tracking-widest text-ic-muted border border-ic-border px-1.5 py-0.5">
                             PAST
                           </span>
                         )}
@@ -128,7 +136,7 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div>
-                          <p className="font-mono text-[9px] tracking-widest text-ic-muted mb-1">
+                          <p className="font-mono text-[10px] tracking-widest text-ic-muted mb-1">
                             {TYPE_LABELS[event.type]}
                           </p>
                           <h2 className="font-bebas text-2xl md:text-3xl text-white">
@@ -137,7 +145,7 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
                         </div>
                         {tierColor && (
                           <div
-                            className="font-mono text-[9px] tracking-widest px-2 py-1 border flex-shrink-0"
+                            className="font-mono text-[10px] tracking-widest px-2 py-1 border flex-shrink-0"
                             style={{ borderColor: `${tierColor}40`, color: tierColor }}
                           >
                             {event.minTier?.toUpperCase()}+ ONLY
@@ -180,7 +188,7 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
 
                     {/* Right: Date + CTA */}
                     <div className="md:text-right flex-shrink-0 md:w-40">
-                      <p className="font-mono text-[9px] tracking-widest text-ic-muted mb-1">
+                      <p className="font-mono text-[10px] tracking-widest text-ic-muted mb-1">
                         {formatDate(event.date)}
                       </p>
                       {!isPast && (

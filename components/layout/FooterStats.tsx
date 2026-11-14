@@ -29,7 +29,7 @@ export function FooterStats() {
       {items.map(s => (
         <div key={s.l} className="text-center">
           <p className="font-bebas text-2xl text-ic-gold">{formatStat(s.n)}</p>
-          <p className="font-mono text-[9px] tracking-[0.3em] text-ic-muted">{s.l}</p>
+          <p className="font-mono text-[10px] tracking-[0.3em] text-ic-muted">{s.l}</p>
         </div>
       ))}
     </div>

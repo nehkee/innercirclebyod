@@ -12,10 +12,13 @@ import { completePayment } from '@/lib/payments/fulfill';
 import { appUrl, enabledPaymentMethods } from '@/lib/payments/config';
 import type { MembershipTier } from '@/types';
 import { findUsableDiscount } from '@/lib/support/offers';
+import { getDropRow, checkDropPassword } from '@/lib/drops';
+import { reportError } from '@/lib/alerts';
 
 const Body = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('membership'), tier: z.enum(['initiate', 'insider', 'vanguard', 'sovereign']), method: z.enum(['card', 'paystack', 'crypto']) }),
   z.object({ kind: z.literal('ticket'), eventId: z.string().uuid(), method: z.enum(['card', 'paystack', 'crypto', 'free']) }),
+  z.object({ kind: z.literal('drop'), dropId: z.string().uuid(), method: z.enum(['card', 'paystack', 'crypto']), password: z.string().max(100).optional() }),
 ]);
 
 const PROVIDER = { card: 'stripe', paystack: 'paystack', crypto: 'crypto' } as const;
@@ -55,8 +58,14 @@ export async function POST(req: NextRequest) {
   let cancelPath: string;
   let tier: MembershipTier | null = null;
   let eventId: string | null = null;
+  let dropId: string | null = null;
 
   if (body.kind === 'membership') {
+    // Invitation-only mode: new members need an invite or waitlist approval
+    if (process.env.NEXT_PUBLIC_INVITE_ONLY === 'true' && !member.access_granted && !member.is_admin) {
+      const { count } = await admin.from('memberships').select('id', { count: 'exact', head: true }).eq('user_id', member.id);
+      if (!count) return fail('Inner Circle is invitation-only. Enter your invite code to continue.', 403, { inviteRequired: true });
+    }
     const cfg = TIERS.find(t => t.id === body.tier)!;
     tier        = cfg.id;
     priceUSD    = cfg.priceUSD;
@@ -74,7 +83,7 @@ export async function POST(req: NextRequest) {
         (!current.current_period_end || new Date(current.current_period_end) > new Date())) {
       return fail('You already have an auto-renewing card membership. Contact support to change it.', 409);
     }
-  } else {
+  } else if (body.kind === 'ticket') {
     const { data: event } = await admin
       .from('events')
       .select('id, title, date, capacity, sold, is_active, min_tier, price_usd, price_ngn')
@@ -101,6 +110,33 @@ export async function POST(req: NextRequest) {
     priceNGN    = Number(event.price_ngn);
     description = `Ticket: ${event.title}`;
     cancelPath  = `/events/${event.id}`;
+  } else {
+    // ── Drop ──
+    const drop = await getDropRow(body.dropId);
+    const now = Date.now();
+    if (!drop || !drop.is_active)                         return fail('Drop not found', 404);
+    if (new Date(drop.drop_date).getTime() > now)         return fail("This drop isn't live yet", 400);
+    if (drop.ends_at && new Date(drop.ends_at).getTime() < now) return fail('This drop has ended', 400);
+    if (drop.sold >= drop.quantity)                       return fail('Sold out', 409);
+    if (drop.is_password_protected && !checkDropPassword(drop.id, body.password ?? '', drop.password_hash)) {
+      return fail('Wrong password', 403);
+    }
+    if (drop.min_tier && !(await hasTierAccess(member.id, drop.min_tier))) {
+      return fail(`This drop is for ${String(drop.min_tier).toUpperCase()}+ members`, 403);
+    }
+    const { count } = await admin
+      .from('drop_orders')
+      .select('id', { count: 'exact', head: true })
+      .eq('drop_id', drop.id)
+      .eq('member_id', member.id)
+      .eq('status', 'completed');
+    if ((count ?? 0) > 0) return fail('You already secured this drop — one per member', 409);
+
+    dropId      = drop.id;
+    priceUSD    = Number(drop.price_usd);
+    priceNGN    = Number(drop.price_ngn);
+    description = `Drop: ${drop.name}`;
+    cancelPath  = '/drops';
   }
 
   const isFree = body.kind === 'ticket' && priceUSD === 0 && priceNGN === 0;
@@ -114,6 +150,7 @@ export async function POST(req: NextRequest) {
 
   // Apply a saved retention discount automatically (consumed only once paid)
   const discount = isFree ? null
+    : body.kind === 'drop' ? null  // retention discounts cover events and membership, not limited drops
     : await findUsableDiscount(member.id, body.kind === 'ticket' ? 'event_discount' : 'membership_discount');
   const amount = discount ? Math.round(listPrice * (100 - discount.percent)) / 100 : listPrice;
 
@@ -125,6 +162,7 @@ export async function POST(req: NextRequest) {
       kind:      body.kind,
       tier,
       event_id:  eventId,
+      drop_id:   dropId,
       provider:  body.method === 'free' ? null : PROVIDER[body.method],
       currency,
       amount:           isFree ? 0 : amount,
@@ -198,7 +236,7 @@ export async function POST(req: NextRequest) {
     if (providerRef) await admin.from('payments').update({ provider_ref: providerRef }).eq('id', payment.id);
     return NextResponse.json({ url, paymentId: payment.id });
   } catch (err) {
-    console.error('Checkout provider error', err);
+    await reportError('Checkout provider error', err, { method: body.method, kind: body.kind });
     await admin
       .from('payments')
       .update({ status: 'failed', failure_reason: 'Could not reach payment provider' })

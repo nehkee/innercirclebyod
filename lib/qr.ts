@@ -1,4 +1,6 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
+import QRCode from 'qrcode';
+import { siteUrl } from '@/lib/brand';
 
 /** Signing key for ticket QR codes. Required in production: a guessable key lets anyone forge tickets. */
 function getSecret(): string {
@@ -50,10 +52,41 @@ export function generateInviteCode(): string {
   return randomBytes(4).toString('hex').toUpperCase();
 }
 
-/** QR code image URL for embedding in emails (uses free QR API) */
-export function qrImageUrl(token: string, size = 200): string {
-  const data = encodeURIComponent(
-    `${process.env.NEXT_PUBLIC_APP_URL}/tickets/scan?t=${token}`
-  );
-  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${data}&bgcolor=080808&color=C9A84C`;
+/** What the QR code contains: a link that also works if scanned with a phone camera. */
+export function ticketQrPayload(token: string): string {
+  return `${siteUrl()}/tickets/scan?t=${encodeURIComponent(token)}`;
+}
+
+/** Pull the ticket token back out of a scanned QR (URL form or a bare token). */
+export function tokenFromScan(scanned: string): string {
+  const text = scanned.trim();
+  try {
+    const t = new URL(text).searchParams.get('t');
+    if (t) return t;
+  } catch { /* not a URL: treat as a bare token */ }
+  return text;
+}
+
+/**
+ * QR image for emails, served by our own /api/qr route. The ticket token is
+ * never sent to a third-party QR service.
+ */
+export function qrImageUrl(token: string): string {
+  return `${siteUrl()}/api/qr?t=${encodeURIComponent(token)}`;
+}
+
+/** Inline SVG QR (gold on black) for showing a ticket on screen. */
+export async function ticketQrSvg(token: string): Promise<string> {
+  return QRCode.toString(ticketQrPayload(token), {
+    type: 'svg', margin: 1, errorCorrectionLevel: 'M',
+    color: { dark: '#C9A84C', light: '#080808' },
+  });
+}
+
+/** PNG QR for email clients (which don't render inline SVG reliably). */
+export async function ticketQrPng(token: string): Promise<Buffer> {
+  return QRCode.toBuffer(ticketQrPayload(token), {
+    type: 'png', margin: 2, width: 400, errorCorrectionLevel: 'M',
+    color: { dark: '#C9A84C', light: '#080808' },
+  });
 }

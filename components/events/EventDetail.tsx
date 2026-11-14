@@ -4,6 +4,7 @@ import { Nav } from '@/components/layout/Nav';
 import { Footer } from '@/components/layout/Footer';
 import { CountdownTimer } from '@/components/ui/CountdownTimer';
 import { CheckoutOptions } from '@/components/checkout/CheckoutOptions';
+import { EventPoster } from '@/components/art/EventPoster';
 import type { PaymentMethods } from '@/lib/payments/config';
 import { formatDate } from '@/lib/utils';
 import type { Event } from '@/types';
@@ -35,7 +36,7 @@ export function EventDetail({ event, methods }: { event: Event; methods: Payment
             <div className="flex flex-wrap gap-2 mb-6">
               {event.isVip && <span className="badge-live">VIP</span>}
               {event.isSecret && (
-                <span className="flex items-center gap-1 font-mono text-[9px] tracking-widest text-ic-muted border border-ic-border px-3 py-1">
+                <span className="flex items-center gap-1 font-mono text-[10px] tracking-widest text-ic-muted border border-ic-border px-3 py-1">
                   <Lock size={8} /> SECRET LOCATION
                 </span>
               )}
@@ -59,7 +60,7 @@ export function EventDetail({ event, methods }: { event: Event; methods: Payment
                 <p className="section-label mb-2">LOCATION</p>
                 <p className="font-space text-white text-sm">{event.location}</p>
                 {event.venue && (
-                  <p className="font-mono text-[10px] text-ic-muted mt-0.5">{event.venue}</p>
+                  <p className="font-mono text-[11px] text-ic-muted mt-0.5">{event.venue}</p>
                 )}
               </div>
               <div>
@@ -91,8 +92,9 @@ export function EventDetail({ event, methods }: { event: Event; methods: Payment
           </div>
 
           {/* Checkout Card */}
-          <div className="lg:col-span-1">
-            <div className="border border-ic-border bg-ic-dark p-8 sticky top-24">
+          <div className="lg:col-span-1 space-y-6">
+            <EventPoster title={event.title} type={event.type} date={event.date} location={event.location} imageUrl={event.imageUrl} />
+            <div className="border border-ic-border bg-ic-dark p-8">
               <p className="section-label mb-6">GET YOUR TICKET</p>
 
               {/* Price */}
@@ -108,7 +110,7 @@ export function EventDetail({ event, methods }: { event: Event; methods: Payment
 
               {/* Capacity bar */}
               <div className="mb-6">
-                <div className="flex justify-between text-[10px] font-mono text-ic-muted mb-2">
+                <div className="flex justify-between text-[11px] font-mono text-ic-muted mb-2">
                   <span>{spotsLeft} SPOTS LEFT</span>
                   <span>{Math.round((event.sold / event.capacity) * 100)}% FILLED</span>
                 </div>
@@ -135,7 +137,7 @@ export function EventDetail({ event, methods }: { event: Event; methods: Payment
                 />
               )}
               {event.minTier && (
-                <p className="font-mono text-[9px] tracking-widest text-ic-muted mt-3 text-center">
+                <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-3 text-center">
                   REQUIRES AN ACTIVE {event.minTier.toUpperCase()}+ MEMBERSHIP
                 </p>
               )}

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import { MapPin, Users, Lock, ArrowRight } from 'lucide-react';
 import type { Event } from '@/types';
+import { EventPoster } from '@/components/art/EventPoster';
 import { CountdownTimer } from '@/components/ui/CountdownTimer';
 import { formatPrice, formatDate } from '@/lib/utils';
 
@@ -50,7 +51,7 @@ export function EventsShowcase({ events }: { events: Event[] }) {
           <div className="h-px flex-1 bg-ic-border" />
           <Link
             href="/events"
-            className="font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors"
+            className="font-mono text-[11px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors"
           >
             ALL EVENTS →
           </Link>
@@ -100,6 +101,13 @@ export function EventsShowcase({ events }: { events: Event[] }) {
                 }}
               />
 
+              {/* Generated artwork (or the event photo), fading into the card */}
+              <div className="absolute inset-y-0 right-0 w-full md:w-3/5 opacity-70 group-hover:opacity-90 transition-opacity duration-700"
+                   style={{ maskImage: 'linear-gradient(to left, black 30%, transparent)', WebkitMaskImage: 'linear-gradient(to left, black 30%, transparent)' }}>
+                <EventPoster bare title={featured.title} type={featured.type} date={featured.date} location={featured.location}
+                  imageUrl={featured.imageUrl} className="w-full h-full" />
+              </div>
+
               {/* Scanline strip at top */}
               <div
                 className="absolute top-0 left-0 right-0 h-[2px]"
@@ -112,16 +120,16 @@ export function EventsShowcase({ events }: { events: Event[] }) {
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2 mb-8">
                   <span
-                    className="font-mono text-[9px] tracking-[0.3em] border px-3 py-1"
+                    className="font-mono text-[10px] tracking-[0.3em] border px-3 py-1"
                     style={{ color: TYPE_COLORS[featured.type], borderColor: TYPE_COLORS[featured.type] }}
                   >
                     {TYPE_LABELS[featured.type]}
                   </span>
                   {featured.isVip && (
-                    <span className="badge-live text-[9px] px-3 py-1">VIP</span>
+                    <span className="badge-live text-[10px] px-3 py-1">VIP</span>
                   )}
                   {featured.isSecret && (
-                    <span className="flex items-center gap-1 font-mono text-[9px] tracking-widest text-ic-muted border border-ic-border px-2 py-1">
+                    <span className="flex items-center gap-1 font-mono text-[10px] tracking-widest text-ic-muted border border-ic-border px-2 py-1">
                       <Lock size={8} /> SECRET
                     </span>
                   )}
@@ -165,7 +173,7 @@ export function EventsShowcase({ events }: { events: Event[] }) {
                 <div className="mt-auto flex items-end justify-between">
                   <div>
                     <CountdownTimer targetDate={featured.date} compact />
-                    <p className="font-mono text-[9px] tracking-widest text-ic-muted mt-1">
+                    <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-1">
                       {formatDate(featured.date)}
                     </p>
                   </div>
@@ -173,7 +181,7 @@ export function EventsShowcase({ events }: { events: Event[] }) {
                     <p className="font-bebas text-2xl text-ic-gold">
                       {featured.priceNGN === 0 ? 'MEMBERS FREE' : formatPrice(featured.priceNGN, 'NGN')}
                     </p>
-                    <p className="flex items-center gap-1 font-mono text-[10px] tracking-widest text-ic-muted group-hover:text-ic-gold transition-colors">
+                    <p className="flex items-center gap-1 font-mono text-[11px] tracking-widest text-ic-muted group-hover:text-ic-gold transition-colors">
                       GET TICKETS <ArrowRight size={10} />
                     </p>
                   </div>
@@ -206,7 +214,7 @@ export function EventsShowcase({ events }: { events: Event[] }) {
                       </span>
                       <div className="flex-1 min-w-0">
                         <p
-                          className="font-mono text-[9px] tracking-widest mb-1"
+                          className="font-mono text-[10px] tracking-widest mb-1"
                           style={{ color: TYPE_COLORS[event.type] }}
                         >
                           {TYPE_LABELS[event.type]}
@@ -214,7 +222,7 @@ export function EventsShowcase({ events }: { events: Event[] }) {
                         <h4 className="font-bebas text-xl text-white group-hover:text-ic-gold transition-colors leading-tight mb-2">
                           {event.title}
                         </h4>
-                        <div className="flex items-center gap-3 text-[10px] font-mono text-ic-muted mb-3">
+                        <div className="flex items-center gap-3 text-[11px] font-mono text-ic-muted mb-3">
                           <span className="flex items-center gap-1">
                             <MapPin size={8} /> {event.location}
                           </span>
@@ -233,7 +241,7 @@ export function EventsShowcase({ events }: { events: Event[] }) {
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <p className="font-mono text-[10px] tracking-widest text-ic-muted">
+                          <p className="font-mono text-[11px] tracking-widest text-ic-muted">
                             {formatDate(event.date)}
                           </p>
                           <p className="font-bebas text-lg text-ic-gold">

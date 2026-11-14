@@ -13,7 +13,7 @@ interface ParticleBackgroundProps {
 }
 
 export function ParticleBackground({
-  count   = 900,
+  count: baseCount = 900,
   color   = 0xC9A84C,   // ic-gold
   size    = 0.018,
   opacity = 0.45,
@@ -26,9 +26,19 @@ export function ParticleBackground({
     const canvas = canvasRef.current;
     if (!canvas || typeof window === 'undefined') return;
 
+    // Lighter on phones and low-power devices; still frame for reduced motion
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lowPower = window.innerWidth < 768 || (navigator.hardwareConcurrency ?? 8) <= 4;
+    const count = Math.round(baseCount * (lowPower ? 0.35 : 1));
+
     // ── Renderer ─────────────────────────────────────────────────────────────
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: 'low-power' });
+    } catch {
+      return; // no WebGL: the hero still looks complete without particles
+    }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPower ? 1 : 1.5));
     renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
     renderer.setClearColor(0x000000, 0);
 
@@ -89,11 +99,32 @@ export function ParticleBackground({
     const ro = new ResizeObserver(onResize);
     ro.observe(canvas);
 
-    // ── Animate ───────────────────────────────────────────────────────────────
-    let rafId: number;
+    // ── Animate (only while visible) ──────────────────────────────────────────
+    let rafId = 0;
+    let running = false;
+    let onScreen = true;
     const posAttr = geometry.attributes.position as THREE.BufferAttribute;
 
+    const start = () => {
+      if (running || reducedMotion || !onScreen || document.hidden) return;
+      running = true;
+      rafId = requestAnimationFrame(animate);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(rafId);
+    };
+
+    const io = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      if (onScreen) start(); else stop();
+    });
+    io.observe(canvas);
+    const onVisibility = () => (document.hidden ? stop() : start());
+    document.addEventListener('visibilitychange', onVisibility);
+
     const animate = () => {
+      if (!running) return;
       rafId = requestAnimationFrame(animate);
 
       // Smooth camera parallax
@@ -123,17 +154,20 @@ export function ParticleBackground({
       renderer.render(scene, camera);
     };
 
-    animate();
+    renderer.render(scene, camera); // first frame (and the only one for reduced motion)
+    start();
 
     return () => {
-      cancelAnimationFrame(rafId);
+      stop();
+      io.disconnect();
+      document.removeEventListener('visibilitychange', onVisibility);
       window.removeEventListener('mousemove', onMouseMove);
       ro.disconnect();
       geometry.dispose();
       material.dispose();
       renderer.dispose();
     };
-  }, [count, color, size, opacity, speed]);
+  }, [baseCount, color, size, opacity, speed]);
 
   return (
     <canvas

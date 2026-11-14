@@ -39,7 +39,8 @@ export async function getMembership(memberId: string): Promise<MembershipRow | n
  * access off, and a retention upgrade raises the tier until it lapses.
  */
 export function effectiveTier(m: MembershipRow | null, now = new Date()): MembershipTier | null {
-  if (!m || m.status !== 'active') return null;
+  // 'past_due' = renewal failed and Stripe is retrying: keep access during the grace period
+  if (!m || (m.status !== 'active' && m.status !== 'past_due')) return null;
   if (m.current_period_end && new Date(m.current_period_end) < now) return null;
   if (m.paused_until && new Date(m.paused_until) > now) return null;
   if (m.bonus_tier && m.bonus_until && new Date(m.bonus_until) > now && tierRank(m.bonus_tier) > tierRank(m.tier)) {

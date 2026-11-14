@@ -52,7 +52,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
         <div className="flex items-start justify-between mb-6">
           <div>
             <span
-              className="font-mono text-[9px] tracking-[0.4em] mb-2 block"
+              className="font-mono text-[10px] tracking-[0.4em] mb-2 block"
               style={{ color: tier.color }}
             >
               TIER {String(index + 1).padStart(2, '0')}
@@ -67,7 +67,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
           </div>
           {tier.featured && (
             <span
-              className="font-mono text-[9px] tracking-widest border px-2 py-1"
+              className="font-mono text-[10px] tracking-widest border px-2 py-1"
               style={{ color: tier.color, borderColor: tier.color }}
             >
               POPULAR
@@ -81,7 +81,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
             {formatPrice(tier.priceNGN, 'NGN')}
             <span className="font-mono text-xs text-ic-muted ml-2">/MONTH</span>
           </p>
-          <p className="font-mono text-[10px] text-ic-muted mt-1">
+          <p className="font-mono text-[11px] text-ic-muted mt-1">
             ${tier.priceUSD} USD / MONTH
           </p>
         </div>
@@ -101,7 +101,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
           <button
             type="button"
             onClick={() => setExpanded(v => !v)}
-            className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors mb-4"
+            className="flex items-center gap-1.5 font-mono text-[11px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors mb-4"
           >
             <ChevronDown
               size={12}
@@ -140,7 +140,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
             }}
           >
             {tier.exclusive.map((ex, i) => (
-              <p key={i} className="font-mono text-[10px] tracking-wider text-ic-muted">
+              <p key={i} className="font-mono text-[11px] tracking-wider text-ic-muted">
                 ✦ {ex}
               </p>
             ))}
@@ -194,7 +194,7 @@ export function MembershipShowcase() {
             <div className="h-px flex-1 bg-ic-border" />
             <Link
               href="/membership"
-              className="font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors"
+              className="font-mono text-[11px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors"
             >
               COMPARE TIERS →
             </Link>
@@ -222,7 +222,7 @@ export function MembershipShowcase() {
 
         {/* Footnote */}
         <div className="mt-10 text-center">
-          <p className="font-mono text-[10px] tracking-widest text-ic-muted">
+          <p className="font-mono text-[11px] tracking-widest text-ic-muted">
             BILLED MONTHLY  ·  CANCEL ANYTIME  ·  NGN & USD ACCEPTED
           </p>
         </div>

@@ -16,6 +16,8 @@ const LINKS = {
     { href: '/community#circles',  label: 'Inner Circles'   },
   ],
   Legal: [
+    { href: '/privacy',         label: 'Privacy Policy' },
+    { href: '/terms',           label: 'Terms of Use'   },
     { href: '/refunds',         label: 'Refund Policy' },
     { href: '/membership#faq',  label: 'FAQ'           },
     { href: '/account',         label: 'My Membership' },
@@ -58,7 +60,7 @@ export function Footer() {
                 <p className="font-bebas text-sm tracking-[0.3em] text-ic-gold leading-tight">
                   INNER CIRCLE
                 </p>
-                <p className="font-mono text-[9px] tracking-[0.2em] text-ic-muted">
+                <p className="font-mono text-[10px] tracking-[0.2em] text-ic-muted">
                   EST. BY INVITATION
                 </p>
               </div>
@@ -70,7 +72,7 @@ export function Footer() {
               rooms most people never hear about.
             </p>
 
-            <p className="font-mono text-[9px] tracking-widest text-ic-muted mb-6">
+            <p className="font-mono text-[10px] tracking-widest text-ic-muted mb-6">
               ◯ EARNED · NOT GIVEN · NEVER SHARED
             </p>
 
@@ -118,12 +120,12 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="font-mono text-[10px] tracking-widest text-ic-muted">
+          <p className="font-mono text-[11px] tracking-widest text-ic-muted">
             © {new Date().getFullYear()} INNER CIRCLE — ALL RIGHTS RESERVED
           </p>
           <div className="flex items-center gap-4">
             <div className="h-px w-8 bg-ic-border" />
-            <p className="font-mono text-[10px] tracking-widest text-ic-muted">
+            <p className="font-mono text-[11px] tracking-widest text-ic-muted">
               THE CIRCLE NEVER BREAKS ◯
             </p>
             <div className="h-px w-8 bg-ic-border" />

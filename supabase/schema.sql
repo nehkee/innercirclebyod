@@ -37,6 +37,10 @@ CREATE TABLE members (
   tier              membership_tier NOT NULL DEFAULT 'initiate',
   points            INTEGER NOT NULL DEFAULT 0,
   is_admin          BOOLEAN NOT NULL DEFAULT FALSE,
+  access_granted    BOOLEAN NOT NULL DEFAULT FALSE,  -- redeemed an invite or approved from the waitlist
+  invited_by        UUID REFERENCES members(id),
+  phone             TEXT,                            -- E.164, for WhatsApp updates
+  whatsapp_opt_in   BOOLEAN NOT NULL DEFAULT FALSE,
   deleted_at        TIMESTAMPTZ,     -- soft delete (Clerk user.deleted)
   created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -128,12 +132,63 @@ CREATE TABLE tickets (
                     CHECK (status IN ('valid', 'used', 'cancelled', 'refunded')),
   qr_token          TEXT,
   used_at           TIMESTAMPTZ,
+  reminder_sent_at  TIMESTAMPTZ,      -- 24h reminder (email / WhatsApp) sent
   created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (event_id, user_id)          -- one ticket per member per event
 );
 
 CREATE INDEX idx_tickets_user_id  ON tickets(user_id);
 CREATE INDEX idx_tickets_event_id ON tickets(event_id);
+
+-- ─── DROPS ──────────────────────────────────────────────────────────────────────
+
+CREATE TABLE drops (
+  id                    UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name                  TEXT NOT NULL,
+  type                  drop_type NOT NULL,
+  description           TEXT,
+  price_ngn             NUMERIC(12,2) NOT NULL DEFAULT 0,
+  price_usd             NUMERIC(10,2) NOT NULL DEFAULT 0,
+  quantity              INTEGER NOT NULL DEFAULT 100,
+  sold                  INTEGER NOT NULL DEFAULT 0,
+  drop_date             TIMESTAMPTZ NOT NULL,
+  ends_at               TIMESTAMPTZ,
+  image_url             TEXT,
+  is_password_protected BOOLEAN NOT NULL DEFAULT FALSE,
+  password_hash         TEXT,          -- sha256(drop id + ':' + password), checked server-side
+  is_secret             BOOLEAN NOT NULL DEFAULT FALSE,
+  min_tier              membership_tier,
+  is_active             BOOLEAN NOT NULL DEFAULT TRUE,
+  alerted_at            TIMESTAMPTZ,   -- "drop is live" alert sent
+  created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  CONSTRAINT drops_not_oversold CHECK (sold >= 0 AND sold <= quantity)
+);
+
+-- One purchase per member per drop (created when the payment completes)
+CREATE TABLE drop_orders (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  member_id   UUID NOT NULL REFERENCES members(id),
+  drop_id     UUID NOT NULL REFERENCES drops(id),
+  payment_id  UUID,
+  status      TEXT NOT NULL DEFAULT 'completed' CHECK (status IN ('completed', 'refunded', 'cancelled')),
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (member_id, drop_id)
+);
+
+-- Atomic stock decrement for drops; fails instead of overselling.
+CREATE OR REPLACE FUNCTION increment_drop_sold(drop_id UUID, amount INTEGER DEFAULT 1)
+RETURNS VOID AS $$
+BEGIN
+  UPDATE drops d
+  SET    sold = d.sold + amount
+  WHERE  d.id = increment_drop_sold.drop_id
+    AND  (d.quantity - d.sold) >= amount;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Sold out';
+  END IF;
+END;
+$$ LANGUAGE plpgsql;
 
 -- ─── PAYMENTS (checkout orders) ─────────────────────────────────────────────────
 -- One row per checkout attempt. Created before redirecting to Stripe /
@@ -143,9 +198,10 @@ CREATE INDEX idx_tickets_event_id ON tickets(event_id);
 CREATE TABLE payments (
   id                   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   member_id            UUID NOT NULL REFERENCES members(id),
-  kind                 TEXT NOT NULL CHECK (kind IN ('membership', 'ticket')),
+  kind                 TEXT NOT NULL CHECK (kind IN ('membership', 'ticket', 'drop')),
   tier                 membership_tier,                 -- membership purchases
   event_id             UUID REFERENCES events(id),      -- ticket purchases
+  drop_id              UUID REFERENCES drops(id),       -- drop purchases
   provider             payment_provider,                -- null for free tickets
   currency             TEXT NOT NULL CHECK (currency IN ('USD', 'NGN')),
   amount               NUMERIC(12,2) NOT NULL CHECK (amount >= 0),
@@ -160,7 +216,7 @@ CREATE TABLE payments (
   paid_at              TIMESTAMPTZ,
   fulfilled_at         TIMESTAMPTZ,
   CONSTRAINT payments_target CHECK (
-    (kind = 'membership' AND tier IS NOT NULL) OR (kind = 'ticket' AND event_id IS NOT NULL)
+    (kind = 'membership' AND tier IS NOT NULL) OR (kind = 'ticket' AND event_id IS NOT NULL) OR (kind = 'drop' AND drop_id IS NOT NULL)
   )
 );
 
@@ -304,29 +360,6 @@ CREATE TABLE raffle_entries (
 
 CREATE INDEX idx_raffle_entries_raffle ON raffle_entries(raffle_id, user_id);
 
--- ─── DROPS ──────────────────────────────────────────────────────────────────────
-
-CREATE TABLE drops (
-  id                    UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name                  TEXT NOT NULL,
-  type                  drop_type NOT NULL,
-  description           TEXT,
-  price_ngn             NUMERIC(12,2) NOT NULL DEFAULT 0,
-  price_usd             NUMERIC(10,2) NOT NULL DEFAULT 0,
-  quantity              INTEGER NOT NULL DEFAULT 100,
-  sold                  INTEGER NOT NULL DEFAULT 0,
-  drop_date             TIMESTAMPTZ NOT NULL,
-  ends_at               TIMESTAMPTZ,
-  image_url             TEXT,
-  is_password_protected BOOLEAN NOT NULL DEFAULT FALSE,
-  password_hash         TEXT,
-  is_secret             BOOLEAN NOT NULL DEFAULT FALSE,
-  min_tier              membership_tier,
-  is_active             BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT drops_not_oversold CHECK (sold >= 0 AND sold <= quantity)
-);
-
 -- ─── MEMBER POINTS (gamification) ───────────────────────────────────────────────
 
 CREATE TABLE point_transactions (
@@ -391,6 +424,8 @@ CREATE TABLE waitlist (
   email       TEXT UNIQUE NOT NULL,
   source      TEXT NOT NULL DEFAULT 'join_page',
   converted   BOOLEAN NOT NULL DEFAULT FALSE,
+  invited_at  TIMESTAMPTZ,                     -- admin sent an invite code
+  invite_code TEXT,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -464,6 +499,7 @@ ALTER TABLE applications       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE raffles            ENABLE ROW LEVEL SECURITY;
 ALTER TABLE raffle_entries     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE drops              ENABLE ROW LEVEL SECURITY;
+ALTER TABLE drop_orders        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE point_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invite_codes       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE announcements      ENABLE ROW LEVEL SECURITY;
@@ -481,6 +517,7 @@ CREATE POLICY "events_public_read" ON events FOR SELECT USING (is_active = TRUE)
 -- RPCs are server-only too
 REVOKE EXECUTE ON FUNCTION update_member_points(UUID, INTEGER, TEXT)  FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION increment_event_sold(UUID, INTEGER)        FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION increment_drop_sold(UUID, INTEGER)         FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION rate_limit_hit(TEXT, INTEGER, BIGINT)      FROM PUBLIC, anon, authenticated;
 REVOKE EXECUTE ON FUNCTION purge_rate_limits()                        FROM PUBLIC, anon, authenticated;
 

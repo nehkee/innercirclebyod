@@ -12,6 +12,14 @@ export const BRAND = {
   description: 'A private members society. Secret shows, unreleased music, closed-room access. Entry is earned, not given.',
   /** Who members gather around, in copy ("time with the artist"). */
   artistRef:   'the artist',
+  legal: {
+    /** Registered company that operates the site (shown in Privacy Policy and Terms). */
+    entity:       process.env.NEXT_PUBLIC_LEGAL_ENTITY || 'Inner Circle',
+    contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'hello@example.com',
+    /** Governing law for the Terms. */
+    jurisdiction: process.env.NEXT_PUBLIC_LEGAL_JURISDICTION || 'the Federal Republic of Nigeria',
+    lastUpdated:  '14 November 2026',
+  },
   social: {
     x:         process.env.NEXT_PUBLIC_SOCIAL_X || '',
     instagram: process.env.NEXT_PUBLIC_SOCIAL_INSTAGRAM || '',

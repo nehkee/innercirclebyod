@@ -24,6 +24,7 @@ export interface CurrentMember {
   username: string | null;
   tier:     'initiate' | 'insider' | 'vanguard' | 'sovereign';
   is_admin: boolean;
+  access_granted: boolean;
 }
 
 /** Load the signed-in user's member row, or null if signed out / not synced yet. */
@@ -33,7 +34,7 @@ export async function getCurrentMember(): Promise<CurrentMember | null> {
 
   const { data } = await createAdminClient()
     .from('members')
-    .select('id, clerk_id, email, username, tier, is_admin')
+    .select('id, clerk_id, email, username, tier, is_admin, access_granted')
     .eq('clerk_id', clerkId)
     .is('deleted_at', null)
     .maybeSingle();

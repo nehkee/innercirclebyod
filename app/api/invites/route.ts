@@ -81,6 +81,19 @@ export async function POST(req: NextRequest) {
 
 // ── Validate invite code ──────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
+  if (req.nextUrl.searchParams.get('mine')) {
+    const userId = getClerkUserId();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const admin = createAdminClient();
+    const { data: me } = await admin.from('members').select('id').eq('clerk_id', userId).single();
+    if (!me) return NextResponse.json({ invites: [], canInvite: false });
+    const [{ data: invites }, canInvite] = await Promise.all([
+      admin.from('invite_codes').select('code, used, expires_at, created_at').eq('created_by', me.id).order('created_at', { ascending: false }).limit(20),
+      hasTierAccess(me.id, 'vanguard'),
+    ]);
+    return NextResponse.json({ invites: invites ?? [], canInvite });
+  }
+
   const code = req.nextUrl.searchParams.get('code');
   if (!code) {
     return NextResponse.json({ valid: false, reason: 'Missing code' }, { status: 400 });
@@ -167,10 +180,14 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid or used code' }, { status: 400 });
   }
 
+  await admin.from('members').update({ access_granted: true, invited_by: invite.created_by }).eq('id', member.id);
+  await admin.from('waitlist').update({ converted: true }).eq('invite_code', parsed.data.code.toUpperCase());
+
   // Award points to the inviter
   await admin.rpc('update_member_points', {
     member_id:    invite.created_by,
     points_delta: 500,
+    reason:       'invite',
   });
 
   return NextResponse.json({ success: true });

@@ -48,7 +48,7 @@ export function Nav() {
             </div>
             <div className="hidden sm:block">
               <p className="font-bebas text-xs tracking-[0.3em] text-ic-gold leading-none">INNER CIRCLE</p>
-              <p className="font-mono text-[9px] tracking-[0.2em] text-ic-muted leading-none mt-0.5">EST. BY INVITATION</p>
+              <p className="font-mono text-[10px] tracking-[0.2em] text-ic-muted leading-none mt-0.5">EST. BY INVITATION</p>
             </div>
           </Link>
 
@@ -120,7 +120,7 @@ export function Nav() {
         </div>
 
         <div className="p-8 text-center">
-          <p className="font-mono text-[10px] tracking-widest text-ic-muted">
+          <p className="font-mono text-[11px] tracking-widest text-ic-muted">
             THE CIRCLE NEVER BREAKS
           </p>
         </div>

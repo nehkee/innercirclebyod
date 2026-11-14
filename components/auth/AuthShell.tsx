@@ -20,11 +20,18 @@ export function AuthShell({ title, subtitle, children }: AuthShellProps) {
             <span className="font-bebas text-ic-gold text-2xl leading-none">IC</span>
           </Link>
           <h1 className="font-bebas text-4xl gold-text">{title}</h1>
-          <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-1">{subtitle}</p>
+          <p className="font-mono text-[11px] tracking-widest text-ic-muted mt-1">{subtitle}</p>
         </div>
 
         {children ? (
-          <div className="flex justify-center">{children}</div>
+          <>
+            <div className="flex justify-center">{children}</div>
+            <p className="font-mono text-[11px] tracking-widest text-ic-muted text-center mt-6">
+              BY CONTINUING YOU AGREE TO OUR{' '}
+              <Link href="/terms" className="underline hover:text-ic-gold">TERMS</Link> AND{' '}
+              <Link href="/privacy" className="underline hover:text-ic-gold">PRIVACY POLICY</Link>
+            </p>
+          </>
         ) : (
           <div className="border border-ic-border p-8 text-center">
             <p className="font-mono text-xs text-ic-muted tracking-widest mb-4">

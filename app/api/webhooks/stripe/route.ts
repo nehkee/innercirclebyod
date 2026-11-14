@@ -5,6 +5,9 @@ import { createAdminClient } from '@/lib/supabase';
 import { checkStripeSession } from '@/lib/payments/verify';
 import { closePayment, completePayment } from '@/lib/payments/fulfill';
 import type { PaymentRow } from '@/lib/payments/types';
+import { Resend } from 'resend';
+import { paymentFailedEmail } from '@/lib/email-templates';
+import { fromEmail } from '@/lib/brand';
 
 /**
  * Stripe webhook. Subscribe in the Stripe dashboard to:
@@ -76,10 +79,23 @@ export async function POST(req: NextRequest) {
     case 'invoice.payment_failed': {
       const invoice = event.data.object as Stripe.Invoice;
       if (invoice.subscription) {
-        await admin
+        const { data: m } = await admin
           .from('memberships')
           .update({ status: 'past_due' })
-          .eq('stripe_sub_id', invoice.subscription as string);
+          .eq('stripe_sub_id', invoice.subscription as string)
+          .select('user_id')
+          .maybeSingle();
+
+        // Tell the member straight away so a stale card doesn't cost us a member
+        if (m && process.env.RESEND_API_KEY) {
+          const { data: member } = await admin.from('members').select('email, username').eq('id', m.user_id).single();
+          if (member?.email) {
+            const { subject, html } = paymentFailedEmail(member.username ?? 'Hey');
+            await new Resend(process.env.RESEND_API_KEY).emails
+              .send({ from: fromEmail(), to: [member.email], subject, html })
+              .catch(err => console.error('Payment-failed email error', err));
+          }
+        }
       }
       break;
     }

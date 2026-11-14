@@ -4,13 +4,15 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { track } from '@vercel/analytics';
 import { CreditCard, Landmark, Bitcoin, Loader2, Ticket } from 'lucide-react';
 import type { PaymentMethods } from '@/lib/payments/config';
 import type { MembershipTier } from '@/types';
 
 export type CheckoutProduct =
   | { kind: 'membership'; tier: MembershipTier }
-  | { kind: 'ticket'; eventId: string };
+  | { kind: 'ticket'; eventId: string }
+  | { kind: 'drop'; dropId: string; password?: string };
 
 type Method = 'card' | 'paystack' | 'crypto' | 'free';
 
@@ -34,6 +36,7 @@ export function CheckoutOptions({ product, methods, priceUSD, priceNGN }: Checko
 
   async function start(method: Method) {
     setBusy(method);
+    track('checkout_started', { kind: product.kind, method });
     try {
       const res = await fetch('/api/checkout', {
         method:  'POST',
@@ -44,6 +47,11 @@ export function CheckoutOptions({ product, methods, priceUSD, priceNGN }: Checko
 
       if (res.status === 401) {
         window.location.href = `/sign-in?redirect_url=${encodeURIComponent(pathname)}`;
+        return;
+      }
+      if (res.status === 403 && data.inviteRequired) {
+        toast(data.error);
+        window.location.href = '/invite';
         return;
       }
       if (!res.ok || !data.url) {
@@ -101,7 +109,7 @@ export function CheckoutOptions({ product, methods, priceUSD, priceNGN }: Checko
     return (
       <div className="border border-ic-border p-5 text-center">
         <p className="font-bebas tracking-widest text-ic-muted text-lg mb-1">PAYMENTS OPEN SOON</p>
-        <p className="font-mono text-[10px] tracking-widest text-ic-muted mb-4">GET NOTIFIED WHEN CHECKOUT GOES LIVE</p>
+        <p className="font-mono text-[11px] tracking-widest text-ic-muted mb-4">GET NOTIFIED WHEN CHECKOUT GOES LIVE</p>
         <Link href="/join" className="btn-primary py-2 px-6 text-xs">JOIN THE WAITLIST</Link>
       </div>
     );
@@ -122,11 +130,14 @@ export function CheckoutOptions({ product, methods, priceUSD, priceNGN }: Checko
           primary={i === 0}
         />
       ))}
-      <p className="font-mono text-[9px] tracking-widest text-ic-muted text-center pt-1">
+      <p className="font-mono text-[10px] tracking-widest text-ic-muted text-center pt-1">
         SECURE CHECKOUT · WE NEVER SEE YOUR CARD OR WALLET KEYS
       </p>
-      <p className="font-mono text-[9px] tracking-widest text-ic-muted text-center">
+      <p className="font-mono text-[10px] tracking-widest text-ic-muted text-center">
         CAN&apos;T MAKE IT? WE&apos;LL MOVE YOUR DATE OR <Link href="/refunds" className="underline hover:text-ic-gold">REFUND YOU</Link>
+      </p>
+      <p className="font-mono text-[10px] tracking-widest text-ic-muted text-center">
+        BY PAYING YOU AGREE TO THE <Link href="/terms" className="underline hover:text-ic-gold">TERMS</Link>
       </p>
     </div>
   );
@@ -156,7 +167,7 @@ function MethodButton(props: {
         </span>
         <span className="font-bebas text-xl text-ic-gold whitespace-nowrap">{props.price}</span>
       </div>
-      <p className="font-mono text-[9px] tracking-widest text-ic-muted mt-1">{props.note}</p>
+      <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-1">{props.note}</p>
     </button>
   );
 }

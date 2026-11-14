@@ -4,13 +4,16 @@ import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { SignOutButton } from '@clerk/nextjs';
 import {
-  Users, Ticket, Package, BarChart2, Bell, LogOut, Check, X, MessageCircle, RotateCcw,
+  Users, Ticket, Package, BarChart2, Bell, LogOut, Check, X, MessageCircle, RotateCcw, ScanLine, UserPlus,
   AlertCircle, Calendar, RefreshCw, Home,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthEnabled } from '@/components/providers/Providers';
 import { AdminInbox } from '@/components/admin/AdminInbox';
 import { AdminRefunds } from '@/components/admin/AdminRefunds';
+import { AdminEvents } from '@/components/admin/AdminEvents';
+import { AdminDrops } from '@/components/admin/AdminDrops';
+import { AdminWaitlist } from '@/components/admin/AdminWaitlist';
 
 // ─── API shapes (see app/api/admin/analytics and app/api/applications) ─────────
 
@@ -22,6 +25,8 @@ interface Analytics {
   topMembers:    { id: string; username: string | null; tier: string; points: number }[];
   paymentSplit:  Record<string, number>;
   range:         string;
+  revenue?:      { USD: number; NGN: number; orders: number };
+  retention?:    { saved: number; cancelled: number; refund_requested: number; refunded: number; open: number; saveRate: number | null; refundsOpen: number };
 }
 
 interface Application {
@@ -35,7 +40,7 @@ interface Application {
   members:    { username: string | null; tier: string } | null;
 }
 
-type AdminTab = 'overview' | 'inbox' | 'refunds' | 'applications' | 'events' | 'members' | 'drops';
+type AdminTab = 'overview' | 'inbox' | 'refunds' | 'waitlist' | 'applications' | 'events' | 'members' | 'drops';
 type Range    = '7d' | '30d' | '90d';
 
 const TIERS = [
@@ -143,7 +148,7 @@ export default function AdminPage() {
             </div>
             <div className="hidden md:block">
               <p className="font-bebas text-[11px] tracking-[0.25em] text-ic-gold">ADMIN</p>
-              <p className="font-mono text-[8px] text-ic-muted tracking-widest">INNER CIRCLE</p>
+              <p className="font-mono text-[10px] text-ic-muted tracking-widest">INNER CIRCLE</p>
             </div>
           </div>
         </div>
@@ -153,10 +158,11 @@ export default function AdminPage() {
             { id: 'overview',     label: 'Overview',     icon: <BarChart2 size={16} /> },
             { id: 'inbox',        label: 'Inbox',        icon: <MessageCircle size={16} /> },
             { id: 'refunds',      label: 'Refunds',      icon: <RotateCcw size={16} /> },
+            { id: 'waitlist',     label: 'Waitlist',     icon: <UserPlus size={16} /> },
             { id: 'applications', label: 'Applications', icon: <Bell size={16} />, badge: pendingCount },
             { id: 'events',       label: 'Events',       icon: <Calendar size={16} /> },
             { id: 'members',      label: 'Members',      icon: <Users size={16} /> },
-            { id: 'drops',        label: 'Drops',        icon: <Package size={16} /> },
+            { id: 'drops',        label: 'Drops & Raffles',        icon: <Package size={16} /> },
           ].map(item => (
             <button
               key={item.id}
@@ -170,7 +176,7 @@ export default function AdminPage() {
               <span className="flex-shrink-0">{item.icon}</span>
               <span className="hidden md:block font-mono text-xs tracking-widest">{item.label}</span>
               {item.badge ? (
-                <span className="hidden md:flex ml-auto bg-ic-red text-white font-mono text-[9px] w-5 h-5 rounded-full items-center justify-center">
+                <span className="hidden md:flex ml-auto bg-ic-red text-white font-mono text-[10px] w-5 h-5 rounded-full items-center justify-center">
                   {item.badge}
                 </span>
               ) : null}
@@ -179,6 +185,10 @@ export default function AdminPage() {
         </nav>
 
         <div className="p-2 border-t border-ic-border space-y-1">
+          <Link href="/admin/scan" className="w-full flex items-center gap-3 px-3 py-2.5 text-ic-gold hover:text-white transition-colors">
+            <ScanLine size={16} />
+            <span className="hidden md:block font-mono text-xs tracking-widest">Door scanner</span>
+          </Link>
           <Link href="/" className="w-full flex items-center gap-3 px-3 py-2.5 text-ic-muted hover:text-white transition-colors">
             <Home size={16} />
             <span className="hidden md:block font-mono text-xs tracking-widest">View site</span>
@@ -203,7 +213,7 @@ export default function AdminPage() {
               <button
                 key={r}
                 onClick={() => setRange(r)}
-                className={`font-mono text-[10px] tracking-widest px-3 py-1.5 border transition-colors ${
+                className={`font-mono text-[11px] tracking-widest px-3 py-1.5 border transition-colors ${
                   range === r ? 'border-ic-gold text-ic-gold' : 'border-ic-border text-ic-muted hover:text-white'
                 }`}
               >
@@ -236,13 +246,34 @@ export default function AdminPage() {
                   <div key={m.label} className="border border-ic-border p-5">
                     <div className="flex items-center justify-between mb-3">
                       <span style={{ color: m.color }}>{m.icon}</span>
-                      <span className="font-mono text-[9px] tracking-widest text-ic-muted">{m.delta}</span>
+                      <span className="font-mono text-[10px] tracking-widest text-ic-muted">{m.delta}</span>
                     </div>
                     <p className="font-bebas text-3xl text-white">{m.value}</p>
-                    <p className="font-mono text-[9px] tracking-widest text-ic-muted mt-1">{m.label}</p>
+                    <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-1">{m.label}</p>
                   </div>
                 ))}
               </div>
+
+              {data.revenue && data.retention && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <div className="border border-ic-border p-5">
+                    <p className="section-label mb-3">REVENUE · LAST {range.toUpperCase()}</p>
+                    <p className="font-bebas text-4xl text-white">
+                      {[data.revenue.USD ? `$${data.revenue.USD.toLocaleString()}` : '', data.revenue.NGN ? `₦${data.revenue.NGN.toLocaleString()}` : ''].filter(Boolean).join('  +  ') || '—'}
+                    </p>
+                    <p className="font-mono text-[11px] tracking-widest text-ic-muted mt-1">{data.revenue.orders} PAID ORDERS · CRYPTO COUNTED IN USD</p>
+                  </div>
+                  <div className="border border-ic-border p-5">
+                    <p className="section-label mb-3">CONCIERGE · LAST {range.toUpperCase()}</p>
+                    <p className="font-bebas text-4xl text-white">
+                      {data.retention.saveRate === null ? '—' : `${data.retention.saveRate}% SAVED`}
+                    </p>
+                    <p className="font-mono text-[11px] tracking-widest text-ic-muted mt-1">
+                      {data.retention.saved} SAVED · {data.retention.cancelled} CANCELLED · {data.retention.refund_requested + data.retention.refunded} REFUNDS · {data.retention.refundsOpen} OPEN REFUND REQUESTS
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="border border-ic-border p-6">
@@ -276,9 +307,9 @@ export default function AdminPage() {
                         <div key={t.id} className="flex items-center justify-between py-3 border-b border-ic-border/30">
                           <div>
                             <p className="font-mono text-xs text-white">{t.members?.username ?? 'MEMBER'}</p>
-                            <p className="font-mono text-[9px] text-ic-muted">{t.events?.title ?? 'EVENT'}</p>
+                            <p className="font-mono text-[10px] text-ic-muted">{t.events?.title ?? 'EVENT'}</p>
                           </div>
-                          <p className="font-mono text-[9px] text-ic-muted">{timeAgo(t.created_at)}</p>
+                          <p className="font-mono text-[10px] text-ic-muted">{timeAgo(t.created_at)}</p>
                         </div>
                       ))}
                     </div>
@@ -299,13 +330,13 @@ export default function AdminPage() {
                       <div className="flex flex-wrap items-center gap-3 mb-2">
                         <p className="font-mono text-sm text-white">{app.members?.username ?? app.user_name}</p>
                         {app.members?.tier && (
-                          <span className="font-mono text-[9px] tracking-widest text-ic-gold">{app.members.tier.toUpperCase()}</span>
+                          <span className="font-mono text-[10px] tracking-widest text-ic-gold">{app.members.tier.toUpperCase()}</span>
                         )}
-                        <span className={`font-mono text-[9px] tracking-widest px-2 py-0.5 border ${STATUS_STYLES[app.status]}`}>
+                        <span className={`font-mono text-[10px] tracking-widest px-2 py-0.5 border ${STATUS_STYLES[app.status]}`}>
                           {app.status.toUpperCase()}
                         </span>
                       </div>
-                      <p className="font-mono text-[10px] text-ic-muted mb-3 break-all">
+                      <p className="font-mono text-[11px] text-ic-muted mb-3 break-all">
                         {app.type.toUpperCase()} · {app.user_email} · {timeAgo(app.created_at)}
                       </p>
                       <p className="text-ic-silver text-sm">{app.message}</p>
@@ -314,13 +345,13 @@ export default function AdminPage() {
                       <div className="flex gap-2 flex-shrink-0">
                         <button
                           onClick={() => updateApp(app.id, 'approved')}
-                          className="flex items-center gap-1 border border-green-500/30 text-green-400 hover:bg-green-500/10 font-mono text-[10px] tracking-widest px-3 py-2"
+                          className="flex items-center gap-1 border border-green-500/30 text-green-400 hover:bg-green-500/10 font-mono text-[11px] tracking-widest px-3 py-2"
                         >
                           <Check size={12} /> APPROVE
                         </button>
                         <button
                           onClick={() => updateApp(app.id, 'rejected')}
-                          className="flex items-center gap-1 border border-ic-red/30 text-ic-red hover:bg-ic-red/10 font-mono text-[10px] tracking-widest px-3 py-2"
+                          className="flex items-center gap-1 border border-ic-red/30 text-ic-red hover:bg-ic-red/10 font-mono text-[11px] tracking-widest px-3 py-2"
                         >
                           <X size={12} /> REJECT
                         </button>
@@ -333,29 +364,7 @@ export default function AdminPage() {
           )}
 
           {/* ── EVENTS ───────────────────────────────────────────────────── */}
-          {tab === 'events' && data && (
-            <div className="space-y-4">
-              <p className="text-ic-muted font-mono text-xs tracking-widest mb-2">
-                {data.events.length} ACTIVE EVENTS · ADD OR EDIT EVENTS IN SUPABASE (TABLE: events)
-              </p>
-              {data.events.length === 0 && <Empty>NO ACTIVE EVENTS</Empty>}
-              {data.events.map(ev => (
-                <div key={ev.id} className="border border-ic-border p-6 flex items-center gap-6">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bebas text-xl text-white">{ev.title}</p>
-                    <p className="font-mono text-[10px] text-ic-muted">{new Date(ev.date).toLocaleString('en-GB')}</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-bebas text-2xl text-ic-gold">{ev.sold}/{ev.capacity}</p>
-                    <p className="font-mono text-[9px] text-ic-muted">SOLD</p>
-                  </div>
-                  <Link href={`/events/${ev.id}`} className="font-mono text-[9px] text-ic-muted hover:text-white tracking-widest">
-                    VIEW →
-                  </Link>
-                </div>
-              ))}
-            </div>
-          )}
+          {tab === 'events' && <AdminEvents />}
 
           {/* ── MEMBERS ──────────────────────────────────────────────────── */}
           {tab === 'members' && data && (
@@ -369,7 +378,7 @@ export default function AdminPage() {
                     <thead>
                       <tr className="border-b border-ic-border">
                         {['#', 'MEMBER', 'TIER', 'POINTS'].map(h => (
-                          <th key={h} className="text-left py-4 px-6 font-mono text-[9px] tracking-widest text-ic-muted">{h}</th>
+                          <th key={h} className="text-left py-4 px-6 font-mono text-[10px] tracking-widest text-ic-muted">{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -379,7 +388,7 @@ export default function AdminPage() {
                           <td className="py-4 px-6 font-mono text-xs text-ic-muted">{i + 1}</td>
                           <td className="py-4 px-6 font-mono text-sm text-white">{m.username ?? '—'}</td>
                           <td className="py-4 px-6">
-                            <span className="font-mono text-[9px] tracking-widest px-2 py-0.5 border border-ic-gold/20 text-ic-gold">
+                            <span className="font-mono text-[10px] tracking-widest px-2 py-0.5 border border-ic-gold/20 text-ic-gold">
                               {m.tier.toUpperCase()}
                             </span>
                           </td>
@@ -393,16 +402,8 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* ── DROPS ────────────────────────────────────────────────────── */}
-          {tab === 'inbox' && <AdminInbox key={inboxThread ?? 'inbox'} initialThread={inboxThread} />}
-
-          {tab === 'refunds' && (
-            <AdminRefunds onOpenThread={id => { setInboxThread(id); setTab('inbox'); }} />
-          )}
-
-          {tab === 'drops' && (
-            <Empty>DROP MANAGEMENT ISN&apos;T BUILT YET · ADD DROPS IN SUPABASE (TABLE: drops)</Empty>
-          )}
+          {/* ── DROPS & RAFFLES ───────────────────────────────────────────── */}
+          {tab === 'drops' && <AdminDrops />}
         </div>
       </main>
     </div>

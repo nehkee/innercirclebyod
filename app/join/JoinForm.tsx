@@ -68,7 +68,7 @@ export function JoinForm() {
           {/* Label */}
           <div className="flex items-center gap-3 mb-8">
             <div className="h-px w-12 bg-ic-gold/40" />
-            <p className="font-mono text-[10px] tracking-[0.5em] text-ic-gold">
+            <p className="font-mono text-[11px] tracking-[0.5em] text-ic-gold">
               {tier ? `${tier.name} TIER — STEP 1 OF 2` : 'THE INVITATION'}
             </p>
             <div className="h-px w-12 bg-ic-gold/40" />
@@ -84,7 +84,7 @@ export function JoinForm() {
               transition={{ duration: 0.5 }}
             >
               <span className="w-1.5 h-1.5 rounded-full" style={{ background: tier.color }} />
-              <span className="font-mono text-[10px] tracking-widest" style={{ color: tier.color }}>
+              <span className="font-mono text-[11px] tracking-widest" style={{ color: tier.color }}>
                 {tier.name} · ₦{tier.priceNGN.toLocaleString()}/mo
               </span>
             </motion.div>
@@ -137,7 +137,7 @@ export function JoinForm() {
             transition={{ delay: 0.5, duration: 0.6 }}
           >
             {RULES.map((r, i) => (
-              <p key={i} className="font-mono text-[10px] tracking-widest text-ic-muted">
+              <p key={i} className="font-mono text-[11px] tracking-widest text-ic-muted">
                 <span className="text-ic-gold mr-2">—</span>{r}
               </p>
             ))}
@@ -153,7 +153,7 @@ export function JoinForm() {
           >
             {/* Name */}
             <div>
-              <label className="block font-mono text-[9px] tracking-[0.35em] text-ic-muted mb-2">
+              <label className="block font-mono text-[10px] tracking-[0.35em] text-ic-muted mb-2">
                 YOUR NAME
               </label>
               <input
@@ -179,7 +179,7 @@ export function JoinForm() {
 
             {/* Email */}
             <div>
-              <label className="block font-mono text-[9px] tracking-[0.35em] text-ic-muted mb-2">
+              <label className="block font-mono text-[10px] tracking-[0.35em] text-ic-muted mb-2">
                 EMAIL ADDRESS
               </label>
               <input
@@ -207,7 +207,7 @@ export function JoinForm() {
               <motion.p
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="font-mono text-[10px] tracking-widest text-ic-red"
+                className="font-mono text-[11px] tracking-widest text-ic-red"
               >
                 ✕ {errMsg}
               </motion.p>
@@ -243,10 +243,14 @@ export function JoinForm() {
               </button>
             </div>
 
-            <p className="font-mono text-[9px] tracking-widest text-ic-muted text-center pt-1">
+            <p className="font-mono text-[10px] tracking-widest text-ic-muted text-center pt-1">
               ALREADY A MEMBER?{' '}
               <Link href="/sign-in" className="text-ic-gold hover:underline">
                 SIGN IN
+              </Link>
+              {' · '}HAVE AN INVITE?{' '}
+              <Link href="/invite" className="text-ic-gold hover:underline">
+                ENTER CODE
               </Link>
             </p>
           </motion.form>
@@ -274,7 +278,7 @@ export function JoinForm() {
 
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className="h-px w-12 bg-ic-gold/40" />
-            <p className="font-mono text-[10px] tracking-[0.5em] text-ic-gold">YOU&apos;RE IN</p>
+            <p className="font-mono text-[11px] tracking-[0.5em] text-ic-gold">YOU&apos;RE IN</p>
             <div className="h-px w-12 bg-ic-gold/40" />
           </div>
 
@@ -319,7 +323,7 @@ export function JoinForm() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <p className="font-mono text-[10px] tracking-widest text-ic-muted mb-1">
+            <p className="font-mono text-[11px] tracking-widest text-ic-muted mb-1">
               CONFIRMATION SENT TO
             </p>
             <p className="font-mono text-sm text-ic-gold tracking-wider">{email}</p>

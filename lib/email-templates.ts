@@ -256,3 +256,51 @@ export function raffleResultEmail(params: {
     html: baseLayout('Raffle Result', body),
   };
 }
+
+const escapeHtml = (s: string) =>
+  s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+
+/** General-purpose branded notice: label, headline, paragraphs and one button. */
+export function noticeEmail(params: {
+  subject:    string;
+  label:      string;
+  title:      string;
+  paragraphs: string[];
+  ctaLabel?:  string;
+  ctaPath?:   string;   // site-relative, e.g. "/account"
+  accent?:    string;
+}): { subject: string; html: string } {
+  const accent = params.accent ?? GOLD;
+  const body = `
+    <tr>
+      <td style="padding:48px 40px 32px;">
+        <p style="font-size:10px;letter-spacing:0.3em;color:${accent};margin:0 0 16px;">${escapeHtml(params.label)}</p>
+        <h1 style="font-family:Impact,sans-serif;font-size:36px;letter-spacing:0.05em;color:#FFFFFF;margin:0 0 24px;">
+          ${escapeHtml(params.title)}
+        </h1>
+        ${params.paragraphs.map(p => `<p style="color:#9CA3AF;font-size:14px;line-height:1.8;margin:0 0 16px;">${escapeHtml(p)}</p>`).join('')}
+        ${params.ctaLabel && params.ctaPath ? `
+        <a href="${APP_URL}${params.ctaPath}"
+           style="display:inline-block;margin-top:16px;padding:14px 28px;border:1px solid ${accent};color:${accent};
+                  font-size:11px;letter-spacing:0.3em;text-decoration:none;text-transform:uppercase;">
+          ${escapeHtml(params.ctaLabel)} →
+        </a>` : ''}
+      </td>
+    </tr>`;
+  return { subject: params.subject, html: baseLayout(params.title, body) };
+}
+
+export function paymentFailedEmail(memberName: string) {
+  return noticeEmail({
+    subject:    'Action needed: your Inner Circle payment didn’t go through',
+    label:      'PAYMENT FAILED',
+    title:      'KEEP YOUR SEAT',
+    paragraphs: [
+      `${memberName}, we couldn't take your latest membership payment — usually an expired or replaced card.`,
+      'Update your card in a few seconds and nothing changes. We’ll retry automatically over the next few days.',
+    ],
+    ctaLabel:   'Update my card',
+    ctaPath:    '/account',
+    accent:     '#CC0000',
+  });
+}

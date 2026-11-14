@@ -42,7 +42,7 @@ function QuoteCard({ q }: { q: Quote }) {
             {q.country} {q.handle}
           </p>
           <p
-            className="font-mono text-[9px] tracking-widest"
+            className="font-mono text-[10px] tracking-widest"
             style={{ color: TIER_COLORS[q.tier] }}
           >
             {q.tier}
@@ -96,7 +96,7 @@ export function CommunityTestimonials() {
               WHAT THEY SAY
             </h2>
           </div>
-          <p className="font-mono text-[10px] tracking-widest text-ic-muted hidden md:block max-w-[200px] text-right">
+          <p className="font-mono text-[11px] tracking-widest text-ic-muted hidden md:block max-w-[200px] text-right">
             REAL MEMBERS. REAL CIRCLE. NO PERFORMANCE.
           </p>
         </div>

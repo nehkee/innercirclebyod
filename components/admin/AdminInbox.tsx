@@ -97,28 +97,28 @@ export function AdminInbox({ initialThread = null }: { initialThread?: string | 
         <div className="flex border-b border-ic-border">
           {(['active', 'resolved', 'all'] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
-              className={`flex-1 py-3 font-mono text-[10px] tracking-widest ${filter === f ? 'text-ic-gold border-b-2 border-ic-gold' : 'text-ic-muted'}`}>
+              className={`flex-1 py-3 font-mono text-[11px] tracking-widest ${filter === f ? 'text-ic-gold border-b-2 border-ic-gold' : 'text-ic-muted'}`}>
               {f === 'active' ? 'NEEDS US' : f.toUpperCase()}
             </button>
           ))}
         </div>
         <div className="flex-1 overflow-y-auto max-h-[70vh]">
-          {threads.length === 0 && <p className="p-6 font-mono text-[10px] tracking-widest text-ic-muted">NOTHING HERE. QUIET IN THE CIRCLE.</p>}
+          {threads.length === 0 && <p className="p-6 font-mono text-[11px] tracking-widest text-ic-muted">NOTHING HERE. QUIET IN THE CIRCLE.</p>}
           {threads.map(t => (
             <button key={t.id} onClick={() => setSelected(t.id)}
               className={`w-full text-left p-4 border-b border-ic-border/50 hover:bg-ic-gray/40 ${selected === t.id ? 'bg-ic-gray/60' : ''}`}>
               <div className="flex items-center justify-between gap-2 mb-1">
                 <span className="font-mono text-sm text-white truncate">{t.members?.username ?? t.members?.email ?? 'Member'}</span>
-                <span className="font-mono text-[9px] text-ic-muted">{ago(t.updated_at)}</span>
+                <span className="font-mono text-[10px] text-ic-muted">{ago(t.updated_at)}</span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className={`font-mono text-[9px] tracking-widest border px-1.5 py-0.5 ${STATUS_TONE[t.status] ?? ''}`}>
+                <span className={`font-mono text-[10px] tracking-widest border px-1.5 py-0.5 ${STATUS_TONE[t.status] ?? ''}`}>
                   {t.status === 'waiting_team' ? 'WAITING' : t.status.toUpperCase()}
                 </span>
-                <span className="font-mono text-[9px] tracking-widest text-ic-muted">
+                <span className="font-mono text-[10px] tracking-widest text-ic-muted">
                   {t.topic.toUpperCase()}{t.tickets?.events ? ` · ${t.tickets.events.title}` : ''}{t.reason ? ` · ${t.reason.replace('_', ' ').toUpperCase()}` : ''}
                 </span>
-                {t.outcome && <span className="font-mono text-[9px] tracking-widest text-ic-gold">{t.outcome.replace('_', ' ').toUpperCase()}</span>}
+                {t.outcome && <span className="font-mono text-[10px] tracking-widest text-ic-gold">{t.outcome.replace('_', ' ').toUpperCase()}</span>}
               </div>
             </button>
           ))}
@@ -128,7 +128,7 @@ export function AdminInbox({ initialThread = null }: { initialThread?: string | 
       {/* Conversation */}
       <div className="xl:col-span-5 border border-ic-border flex flex-col min-h-[50vh]">
         {!detail || !selected ? (
-          <p className="m-auto font-mono text-[10px] tracking-widest text-ic-muted">SELECT A CONVERSATION</p>
+          <p className="m-auto font-mono text-[11px] tracking-widest text-ic-muted">SELECT A CONVERSATION</p>
         ) : (
           <>
             <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[60vh]">
@@ -138,7 +138,7 @@ export function AdminInbox({ initialThread = null }: { initialThread?: string | 
                     m.sender === 'member' ? 'bg-ic-gray border-ic-border text-white'
                     : m.sender === 'team' ? 'bg-ic-gold/15 border-ic-gold/30 text-white'
                     : 'bg-transparent border-ic-border/60 text-ic-muted'}`}>
-                    <p className="font-mono text-[9px] tracking-widest mb-1 text-ic-gold">
+                    <p className="font-mono text-[10px] tracking-widest mb-1 text-ic-gold">
                       {m.sender === 'member' ? 'MEMBER' : m.sender === 'team' ? 'TEAM' : 'CONCIERGE (AUTO)'} · {ago(m.created_at)}
                     </p>
                     {m.body}
@@ -165,8 +165,8 @@ export function AdminInbox({ initialThread = null }: { initialThread?: string | 
             <div className="border border-ic-border p-4">
               <p className="section-label mb-3 flex items-center gap-2"><Crown size={12} /> MEMBER</p>
               <p className="font-mono text-sm text-white">{detail.member?.username ?? '—'}</p>
-              <p className="font-mono text-[10px] text-ic-muted break-all mb-3">{detail.member?.email}</p>
-              <dl className="grid grid-cols-2 gap-2 font-mono text-[10px] tracking-widest">
+              <p className="font-mono text-[11px] text-ic-muted break-all mb-3">{detail.member?.email}</p>
+              <dl className="grid grid-cols-2 gap-2 font-mono text-[11px] tracking-widest">
                 <dt className="text-ic-muted">TIER</dt><dd className="text-ic-gold">{(detail.membership?.effectiveTier ?? 'NONE').toUpperCase()}</dd>
                 <dt className="text-ic-muted">PAYS BY</dt><dd className="text-white">{(detail.membership?.payment_provider ?? '—').toUpperCase()}</dd>
                 <dt className="text-ic-muted">LIFETIME</dt>
@@ -190,28 +190,28 @@ export function AdminInbox({ initialThread = null }: { initialThread?: string | 
                 <PerkButton icon={<Pause size={14} />} label={`Pause ${RETENTION.pauseMonths} month (card only)`} disabled={busy}
                   onClick={() => act({ type: 'grant', offer: 'pause', months: RETENTION.pauseMonths }, 'Membership paused')} />
               </div>
-              <p className="font-mono text-[9px] tracking-widest text-ic-muted mt-3">PERKS APPLY INSTANTLY AND THE MEMBER IS TOLD IN THE CHAT.</p>
+              <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-3">PERKS APPLY INSTANTLY AND THE MEMBER IS TOLD IN THE CHAT.</p>
             </div>
 
             {detail.refunds.some(r => r.status === 'requested') && (
               <div className="border border-ic-red/40 p-4">
                 <p className="section-label mb-2 text-ic-red">REFUND REQUESTED</p>
                 {detail.refunds.filter(r => r.status === 'requested').map(r => (
-                  <p key={r.id} className="font-mono text-[10px] tracking-widest text-ic-silver">
+                  <p key={r.id} className="font-mono text-[11px] tracking-widest text-ic-silver">
                     {r.kind.toUpperCase()} · {r.currency === 'NGN' ? '₦' : '$'}{Number(r.amount).toLocaleString()} · DUE {new Date(r.due_at).toLocaleDateString('en-GB').toUpperCase()}
                   </p>
                 ))}
-                <p className="font-mono text-[9px] tracking-widest text-ic-muted mt-2">OFFER A NEW DATE OR DISCOUNT FIRST. PROCESS IN THE REFUNDS TAB.</p>
+                <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-2">OFFER A NEW DATE OR DISCOUNT FIRST. PROCESS IN THE REFUNDS TAB.</p>
               </div>
             )}
 
             <div className="flex gap-2">
               <button disabled={busy} onClick={() => act({ type: 'resolve', outcome: 'saved' }, 'Marked as saved')}
-                className="flex-1 flex items-center justify-center gap-1 border border-green-500/40 text-green-400 hover:bg-green-500/10 font-mono text-[10px] tracking-widest py-2">
+                className="flex-1 flex items-center justify-center gap-1 border border-green-500/40 text-green-400 hover:bg-green-500/10 font-mono text-[11px] tracking-widest py-2">
                 <Check size={12} /> SAVED
               </button>
               <button disabled={busy} onClick={() => act({ type: 'resolve', outcome: 'resolved' }, 'Closed')}
-                className="flex-1 border border-ic-border text-ic-muted hover:text-white font-mono text-[10px] tracking-widest py-2">
+                className="flex-1 border border-ic-border text-ic-muted hover:text-white font-mono text-[11px] tracking-widest py-2">
                 CLOSE
               </button>
             </div>

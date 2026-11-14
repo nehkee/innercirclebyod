@@ -10,10 +10,12 @@ import { Resend } from 'resend';
 import { createAdminClient } from '@/lib/supabase';
 import { getStripe } from '@/lib/stripe';
 import { generateTicketToken } from '@/lib/qr';
-import { ticketConfirmationEmail } from '@/lib/email-templates';
+import { ticketConfirmationEmail, noticeEmail } from '@/lib/email-templates';
 import { ONE_TIME_MEMBERSHIP_DAYS } from '@/lib/payments/config';
-import { fromEmail } from '@/lib/brand';
+import { fromEmail, siteUrl } from '@/lib/brand';
+import { sendWhatsApp } from '@/lib/notify/whatsapp';
 import { consumeOffer } from '@/lib/support/offers';
+import { reportError } from '@/lib/alerts';
 import type { PaymentRow, Verified } from '@/lib/payments/types';
 
 type VerifiedOk = Extract<Verified, { ok: true }>;
@@ -39,8 +41,9 @@ export async function completePayment(paymentId: string, info: VerifiedOk = { ok
   if (!payment) return 'already_handled';
 
   try {
-    if (payment.kind === 'ticket') await fulfillTicket(payment);
-    else                           await fulfillMembership(payment, info);
+    if (payment.kind === 'ticket')    await fulfillTicket(payment);
+    else if (payment.kind === 'drop') await fulfillDrop(payment);
+    else                              await fulfillMembership(payment, info);
 
     await admin
       .from('payments')
@@ -52,7 +55,7 @@ export async function completePayment(paymentId: string, info: VerifiedOk = { ok
   } catch (err) {
     // Money was taken but delivery failed (e.g. last seat went): flag for a human / refund.
     const reason = err instanceof Error ? err.message : String(err);
-    console.error('Payment fulfilment failed', { paymentId, reason });
+    await reportError('Payment received but not fulfilled', reason, { paymentId, kind: payment.kind, provider: payment.provider });
     await admin
       .from('payments')
       .update({ status: 'needs_attention', failure_reason: reason.slice(0, 500) })
@@ -86,7 +89,7 @@ async function fulfillTicket(payment: PaymentRow) {
   const eventId = payment.event_id!;
 
   const [{ data: member }, { data: event }] = await Promise.all([
-    admin.from('members').select('id, username, email, tier').eq('id', payment.member_id).single(),
+    admin.from('members').select('id, username, email, tier, phone, whatsapp_opt_in').eq('id', payment.member_id).single(),
     admin.from('events').select('id, title, date, venue').eq('id', eventId).single(),
   ]);
   if (!member || !event) throw new Error('Member or event missing');
@@ -136,6 +139,54 @@ async function fulfillTicket(payment: PaymentRow) {
     await new Resend(process.env.RESEND_API_KEY).emails
       .send({ from: fromEmail('Inner Circle Tickets'), to: [member.email], subject, html })
       .catch(err => console.error('Ticket email failed', err));
+  }
+
+  if (member.whatsapp_opt_in) {
+    await sendWhatsApp(member.phone, 'ticket', [
+      event.title,
+      new Date(event.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }),
+      `${siteUrl()}/account`,
+    ]);
+  }
+}
+
+// ─── Drops ──────────────────────────────────────────────────────────────────────
+
+async function fulfillDrop(payment: PaymentRow) {
+  const admin = createAdminClient();
+  const dropId = payment.drop_id!;
+
+  const { error: stockErr } = await admin.rpc('increment_drop_sold', { drop_id: dropId, amount: 1 });
+  if (stockErr) throw new Error('Drop sold out after payment — refund required');
+
+  const { error } = await admin.from('drop_orders').insert({ member_id: payment.member_id, drop_id: dropId, payment_id: payment.id });
+  if (error) {
+    await admin.rpc('increment_drop_sold', { drop_id: dropId, amount: -1 });
+    throw new Error(error.code === '23505' ? 'Member already owns this drop — refund required' : `Could not record drop order: ${error.message}`);
+  }
+  await admin.rpc('update_member_points', { member_id: payment.member_id, points_delta: 50, reason: 'drop' });
+
+  const [{ data: member }, { data: drop }] = await Promise.all([
+    admin.from('members').select('email, username').eq('id', payment.member_id).single(),
+    admin.from('drops').select('name, type').eq('id', dropId).single(),
+  ]);
+  if (member?.email && drop && process.env.RESEND_API_KEY) {
+    const { subject, html } = noticeEmail({
+      subject:    `Secured: ${drop.name}`,
+      label:      'DROP SECURED',
+      title:      drop.name,
+      paragraphs: [
+        `${member.username ?? 'You'}, it's yours. One of a limited run, held for members only.`,
+        drop.type === 'merch'
+          ? 'The team will be in touch for delivery details shortly.'
+          : 'The team will send your access details shortly.',
+      ],
+      ctaLabel: 'My account',
+      ctaPath:  '/account',
+    });
+    await new Resend(process.env.RESEND_API_KEY).emails
+      .send({ from: fromEmail(), to: [member.email], subject, html })
+      .catch(err => console.error('Drop email failed', err));
   }
 }
 

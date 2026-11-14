@@ -5,9 +5,10 @@ export type PaymentProvider = 'stripe' | 'paystack' | 'crypto';
 export interface PaymentRow {
   id:                  string;
   member_id:           string;
-  kind:                'membership' | 'ticket';
+  kind:                'membership' | 'ticket' | 'drop';
   tier:                MembershipTier | null;
   event_id:            string | null;
+  drop_id?:            string | null;
   provider:            PaymentProvider | null;
   currency:            'USD' | 'NGN';
   amount:              number | string;

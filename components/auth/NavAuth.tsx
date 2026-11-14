@@ -17,7 +17,7 @@ export function NavAuth({ mobile = false }: { mobile?: boolean }) {
           className={
             mobile
               ? 'font-mono text-xs tracking-widest text-ic-muted hover:text-ic-gold'
-              : 'font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors'
+              : 'font-mono text-[11px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors'
           }
         >
           SIGN IN
@@ -29,7 +29,7 @@ export function NavAuth({ mobile = false }: { mobile?: boolean }) {
           className={
             mobile
               ? 'font-mono text-xs tracking-widest text-ic-muted hover:text-ic-gold'
-              : 'font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors'
+              : 'font-mono text-[11px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors'
           }
         >
           MY CIRCLE

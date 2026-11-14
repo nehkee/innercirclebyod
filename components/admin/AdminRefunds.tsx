@@ -62,7 +62,7 @@ export function AdminRefunds({ onOpenThread }: { onOpenThread: (threadId: string
         <p className="text-ic-muted font-mono text-xs tracking-widest mb-4">
           {open.length} OPEN · TRY A NEW DATE OR A DISCOUNT IN THE CHAT FIRST · PROCESS WITHIN 7 DAYS
         </p>
-        {open.length === 0 && <p className="font-mono text-[10px] tracking-widest text-ic-muted">NO OPEN REFUND REQUESTS.</p>}
+        {open.length === 0 && <p className="font-mono text-[11px] tracking-widest text-ic-muted">NO OPEN REFUND REQUESTS.</p>}
         <div className="space-y-3">
           {open.map(r => {
             const left = daysLeft(r.due_at);
@@ -71,33 +71,33 @@ export function AdminRefunds({ onOpenThread }: { onOpenThread: (threadId: string
                 <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                   <div className="flex-1 min-w-0">
                     <p className="font-mono text-sm text-white">{r.members?.username ?? r.members?.email} · <span className="text-ic-gold">{money(r)}</span></p>
-                    <p className="font-mono text-[10px] tracking-widest text-ic-muted">
+                    <p className="font-mono text-[11px] tracking-widest text-ic-muted">
                       {r.kind.toUpperCase()}{r.tickets?.events ? ` · ${r.tickets.events.title}` : ''} · {(r.provider ?? 'free').toUpperCase()}
                       {r.reason ? ` · REASON: ${r.reason.replace('_', ' ').toUpperCase()}` : ''}
                     </p>
-                    {r.crypto_address && <p className="font-mono text-[10px] text-ic-silver break-all mt-1">SEND TO: {r.crypto_address}</p>}
-                    {r.note && <p className="font-mono text-[10px] text-ic-red mt-1">{r.note}</p>}
+                    {r.crypto_address && <p className="font-mono text-[11px] text-ic-silver break-all mt-1">SEND TO: {r.crypto_address}</p>}
+                    {r.note && <p className="font-mono text-[11px] text-ic-red mt-1">{r.note}</p>}
                   </div>
-                  <p className={`flex items-center gap-1 font-mono text-[10px] tracking-widest ${left <= 1 ? 'text-ic-red' : 'text-ic-muted'}`}>
+                  <p className={`flex items-center gap-1 font-mono text-[11px] tracking-widest ${left <= 1 ? 'text-ic-red' : 'text-ic-muted'}`}>
                     {left <= 1 ? <AlertTriangle size={12} /> : <Clock size={12} />}
                     {left <= 0 ? 'OVERDUE' : `${left} DAY${left === 1 ? '' : 'S'} LEFT`}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {r.thread_id && (
-                      <button onClick={() => onOpenThread(r.thread_id!)} className="border border-ic-border text-ic-silver hover:text-white font-mono text-[10px] tracking-widest px-3 py-2">
+                      <button onClick={() => onOpenThread(r.thread_id!)} className="border border-ic-border text-ic-silver hover:text-white font-mono text-[11px] tracking-widest px-3 py-2">
                         OPEN CHAT
                       </button>
                     )}
                     {r.provider === 'crypto' ? (
-                      <button disabled={busy === r.id} onClick={() => act(r, 'mark_refunded')} className="border border-ic-gold text-ic-gold hover:bg-ic-gold/10 font-mono text-[10px] tracking-widest px-3 py-2">
+                      <button disabled={busy === r.id} onClick={() => act(r, 'mark_refunded')} className="border border-ic-gold text-ic-gold hover:bg-ic-gold/10 font-mono text-[11px] tracking-widest px-3 py-2">
                         MARK AS REFUNDED
                       </button>
                     ) : (
-                      <button disabled={busy === r.id} onClick={() => act(r, 'refund')} className="border border-ic-gold text-ic-gold hover:bg-ic-gold/10 font-mono text-[10px] tracking-widest px-3 py-2">
+                      <button disabled={busy === r.id} onClick={() => act(r, 'refund')} className="border border-ic-gold text-ic-gold hover:bg-ic-gold/10 font-mono text-[11px] tracking-widest px-3 py-2">
                         REFUND {money(r)}
                       </button>
                     )}
-                    <button disabled={busy === r.id} onClick={() => act(r, 'decline')} className="border border-ic-border text-ic-muted hover:text-ic-red font-mono text-[10px] tracking-widest px-3 py-2">
+                    <button disabled={busy === r.id} onClick={() => act(r, 'decline')} className="border border-ic-border text-ic-muted hover:text-ic-red font-mono text-[11px] tracking-widest px-3 py-2">
                       DECLINE
                     </button>
                   </div>
@@ -113,7 +113,7 @@ export function AdminRefunds({ onOpenThread }: { onOpenThread: (threadId: string
           <p className="section-label mb-3">HISTORY</p>
           <div className="border border-ic-border divide-y divide-ic-border/50">
             {done.map(r => (
-              <div key={r.id} className="px-4 py-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[10px] tracking-widest">
+              <div key={r.id} className="px-4 py-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[11px] tracking-widest">
                 <span className="text-white">{r.members?.username ?? r.members?.email}</span>
                 <span className="text-ic-gold">{money(r)}</span>
                 <span className="text-ic-muted">{r.kind.toUpperCase()}</span>

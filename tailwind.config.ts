@@ -13,7 +13,7 @@ const config: Config = {
         'ic-dark':     '#111111',
         'ic-gray':     '#1A1A1A',
         'ic-border':   '#2A2A2A',
-        'ic-muted':    '#666666',
+        'ic-muted':    '#8C8C8C',
         'ic-silver':   '#9CA3AF',
         'ic-gold':     '#C9A84C',
         'ic-gold-lt':  '#E5C169',

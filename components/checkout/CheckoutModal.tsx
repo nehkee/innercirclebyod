@@ -48,7 +48,7 @@ export function CheckoutModal({ open, onClose, title, subtitle, color = '#C9A84C
           <div>
             <p className="section-label mb-2">CHECKOUT</p>
             <h2 className="font-bebas text-4xl leading-none" style={{ color }}>{title}</h2>
-            <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-2">{subtitle}</p>
+            <p className="font-mono text-[11px] tracking-widest text-ic-muted mt-2">{subtitle}</p>
           </div>
           <button onClick={onClose} className="text-ic-muted hover:text-white p-1" aria-label="Close">
             <X size={20} />

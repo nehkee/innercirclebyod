@@ -4,6 +4,8 @@ import Providers from '@/components/providers/Providers';
 import { NoiseOverlay } from '@/components/ui/NoiseOverlay';
 import { CustomCursor } from '@/components/ui/CustomCursor';
 import { ChatWidget } from '@/components/support/ChatWidget';
+import { Analytics } from '@vercel/analytics/react';
+import { bebas, spaceGrotesk, jetbrainsMono } from './fonts';
 import { ClerkProvider } from '@clerk/nextjs';
 import { isClerkConfigured } from '@/lib/auth';
 import { BRAND, siteUrl } from '@/lib/brand';
@@ -38,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const page = (
-    <html lang="en">
+    <html lang="en" className={`${bebas.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
       <body className="bg-ic-black text-white font-space antialiased overflow-x-hidden">
         {/* Without JavaScript, scroll-reveal content would stay invisible: force it visible. */}
         <noscript>
@@ -58,6 +60,8 @@ export default function RootLayout({
           {children}
           <ChatWidget />
         </Providers>
+        {/* Cookieless, aggregated page analytics (only active on Vercel) */}
+        <Analytics />
       </body>
     </html>
   );

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import type { CommunityStats } from '@/lib/data';
 import { formatStat } from '@/lib/data-format';
+import { CircleField } from '@/components/art/CircleField';
 
 const RULES = [
   'No leaks. No screenshots. No excuses.',
@@ -23,6 +24,8 @@ export function ExclusiveCTA({ stats }: { stats: CommunityStats | null }) {
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
       style={{ background: '#080808' }}
     >
+      <CircleField className="absolute z-0 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160vmin] h-[160vmin] opacity-70" />
+
       {/* Gold radial glow */}
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full pointer-events-none"
@@ -68,7 +71,7 @@ export function ExclusiveCTA({ stats }: { stats: CommunityStats | null }) {
           transition={{ duration: 0.6 }}
         >
           <div className="h-px w-16 bg-ic-gold/40" />
-          <p className="font-mono text-[10px] tracking-[0.5em] text-ic-gold">THE INVITATION</p>
+          <p className="font-mono text-[11px] tracking-[0.5em] text-ic-gold">THE INVITATION</p>
           <div className="h-px w-16 bg-ic-gold/40" />
         </motion.div>
 
@@ -152,7 +155,7 @@ export function ExclusiveCTA({ stats }: { stats: CommunityStats | null }) {
 
         {/* Member count */}
         <motion.p
-          className="font-mono text-[10px] tracking-widest text-ic-muted mt-14"
+          className="font-mono text-[11px] tracking-widest text-ic-muted mt-14"
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: 1.1, duration: 0.6 }}

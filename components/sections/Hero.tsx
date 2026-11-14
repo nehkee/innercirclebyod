@@ -104,7 +104,7 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
           variants={fadeUp} initial="hidden" animate="visible" custom={0}
         >
           <div className="h-px w-12 bg-ic-gold/40" />
-          <p className="font-mono text-[10px] tracking-[0.4em] text-ic-gold uppercase">
+          <p className="font-mono text-[11px] tracking-[0.4em] text-ic-gold uppercase">
             An Elite Digital Society
           </p>
           <div className="h-px w-12 bg-ic-gold/40" />
@@ -161,7 +161,7 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
               </div>
               <Link
                 href={`/events/${nextEvent.id}`}
-                className="inline-block font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors mt-3"
+                className="inline-block font-mono text-[11px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors mt-3"
               >
                 {nextEvent.title} — {nextEvent.location.split(',')[0].toUpperCase()}
               </Link>
@@ -187,7 +187,7 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
         {/* Social proof — real numbers only */}
         {stats && (
           <motion.p
-            className="font-mono text-[10px] tracking-widest text-ic-muted mt-12"
+            className="font-mono text-[11px] tracking-widest text-ic-muted mt-12"
             variants={fadeUp} initial="hidden" animate="visible" custom={6}
           >
             {[
@@ -207,7 +207,7 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
         transition={{ delay: 2.2, duration: 1 }}
         style={{ opacity: fadeOut }}
       >
-        <p className="font-mono text-[9px] tracking-[0.3em] text-ic-muted">SCROLL</p>
+        <p className="font-mono text-[10px] tracking-[0.3em] text-ic-muted">SCROLL</p>
         <motion.div
           className="w-px h-8 bg-gradient-to-b from-ic-muted to-transparent"
           animate={{ scaleY: [1, 0.4, 1] }}

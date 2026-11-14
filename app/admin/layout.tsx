@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
     return (
       <>
-        <div className="bg-ic-red text-white font-mono text-[10px] tracking-widest text-center py-2">
+        <div className="bg-ic-red text-white font-mono text-[11px] tracking-widest text-center py-2">
           LOCAL PREVIEW — CLERK IS NOT CONFIGURED, SO THIS PAGE IS UNPROTECTED AND HAS NO LIVE DATA
         </div>
         {children}

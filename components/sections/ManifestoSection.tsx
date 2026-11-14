@@ -77,7 +77,7 @@ export function ManifestoSection() {
               &ldquo;WHAT HAPPENS IN THE CIRCLE<br />
               STAYS IN THE CIRCLE.&rdquo;
             </p>
-            <p className="font-mono text-[10px] tracking-[0.3em] text-ic-muted">
+            <p className="font-mono text-[11px] tracking-[0.3em] text-ic-muted">
               — THE FIRST RULE
             </p>
           </div>

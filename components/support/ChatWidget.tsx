@@ -163,7 +163,7 @@ export function ChatInner() {
         >
           <MessageCircle size={22} />
           {unread > 0 && (
-            <span className="absolute -top-1 -right-1 bg-ic-red text-white font-mono text-[10px] min-w-5 h-5 px-1 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-ic-red text-white font-mono text-[11px] min-w-5 h-5 px-1 rounded-full flex items-center justify-center">
               {unread}
             </span>
           )}
@@ -188,7 +188,7 @@ export function ChatInner() {
             </div>
             <div className="flex-1">
               <p className="font-bebas tracking-widest text-white leading-none">THE CONCIERGE</p>
-              <p className="font-mono text-[9px] tracking-widest text-ic-muted mt-1">
+              <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-1">
                 {thread?.status === 'waiting_team' || thread?.status === 'open' ? 'THE TEAM IS ON THIS CHAT' : 'MEMBERS ONLY · PRIVATE'}
               </p>
             </div>
@@ -207,7 +207,7 @@ export function ChatInner() {
                 onClick={() => { setOpen(false); router.push('/account'); }} />
               <MenuButton icon={<HelpCircle size={16} />} title="Something else" note="Talk to the team" onClick={() => start({ topic: 'general' })} />
               {busy && <Loader2 className="animate-spin text-ic-gold mx-auto" size={18} />}
-              {error && <p className="font-mono text-[10px] text-ic-red tracking-widest">{error}</p>}
+              {error && <p className="font-mono text-[11px] text-ic-red tracking-widest">{error}</p>}
             </div>
           ) : (
             <div ref={listRef} className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -235,7 +235,7 @@ export function ChatInner() {
                 </div>
               ))}
               {busy && <Loader2 className="animate-spin text-ic-gold" size={16} />}
-              {error && <p className="font-mono text-[10px] text-ic-red tracking-widest">{error}</p>}
+              {error && <p className="font-mono text-[11px] text-ic-red tracking-widest">{error}</p>}
             </div>
           )}
 
@@ -270,7 +270,7 @@ function Bubble({ message }: { message: Message }) {
         : 'bg-ic-gray border border-ic-border text-ic-silver'
       }`}>
         {!mine && (
-          <p className="font-mono text-[9px] tracking-widest mb-1 text-ic-gold">
+          <p className="font-mono text-[10px] tracking-widest mb-1 text-ic-gold">
             {message.sender === 'team' ? 'THE TEAM' : 'CONCIERGE'}
           </p>
         )}
@@ -287,7 +287,7 @@ function MenuButton(props: { icon: React.ReactNode; title: string; note: string;
         {props.icon}
         <span className="font-bebas tracking-widest text-lg text-white group-hover:text-ic-gold">{props.title}</span>
       </span>
-      <span className="block font-mono text-[9px] tracking-widest text-ic-muted mt-1">{props.note}</span>
+      <span className="block font-mono text-[10px] tracking-widest text-ic-muted mt-1">{props.note}</span>
     </button>
   );
 }

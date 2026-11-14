@@ -62,7 +62,7 @@ export function CountdownTimer({ targetDate, className, compact = false }: Count
             <div className="font-mono text-3xl font-bold text-ic-gold tabular-nums leading-none">
               {pad(value)}
             </div>
-            <div className="font-mono text-[10px] tracking-widest text-ic-muted mt-1">
+            <div className="font-mono text-[11px] tracking-widest text-ic-muted mt-1">
               {label}
             </div>
           </div>

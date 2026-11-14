@@ -1,23 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
+import { eventSchema, toEventRow } from '@/lib/events-admin';
 import { requireAdmin } from '@/lib/auth';
 import { createAdminClient, isSupabaseConfigured } from '@/lib/supabase';
 import { getEvents } from '@/lib/data';
-
-const eventSchema = z.object({
-  title:       z.string().min(1).max(200),
-  type:        z.enum(['listening_party', 'show', 'hangout', 'studio', 'industry', 'secret']),
-  date:        z.string().datetime(),
-  location:    z.string().min(1),
-  venue:       z.string().optional(),
-  description: z.string().min(1).max(2000),
-  priceUSD:    z.number().min(0),
-  priceNGN:    z.number().min(0),
-  capacity:    z.number().int().min(1),
-  isVip:       z.boolean().optional(),
-  isSecret:    z.boolean().optional(),
-  minTier:     z.enum(['initiate', 'insider', 'vanguard', 'sovereign']).optional(),
-});
+import { revalidatePath } from 'next/cache';
 
 export async function GET(req: NextRequest) {
   try {
@@ -45,29 +31,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const e = parsed.data;
   const { data, error } = await createAdminClient()
     .from('events')
-    .insert({
-      title:       e.title,
-      type:        e.type,
-      date:        e.date,
-      location:    e.location,
-      venue:       e.venue ?? null,
-      description: e.description,
-      price_usd:   e.priceUSD,
-      price_ngn:   e.priceNGN,
-      capacity:    e.capacity,
-      is_vip:      e.isVip ?? false,
-      is_secret:   e.isSecret ?? false,
-      min_tier:    e.minTier ?? null,
-      is_active:   true,
-    })
+    .insert({ is_active: true, ...toEventRow(parsed.data) })
     .select()
     .single();
 
   if (error) {
     return NextResponse.json({ error: 'Failed to create event' }, { status: 500 });
   }
+  ['/', '/events'].forEach(p => revalidatePath(p));
   return NextResponse.json({ success: true, event: data }, { status: 201 });
 }
