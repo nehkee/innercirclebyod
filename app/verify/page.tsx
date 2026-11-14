@@ -9,8 +9,9 @@ export const dynamic  = 'force-dynamic';
 export const metadata = { title: 'Verify member | Inner Circle', robots: { index: false, follow: false } };
 
 /** Scanned from a membership card: confirms the holder is a current member (shows handle and tier only). */
-export default async function VerifyPage({ searchParams }: { searchParams: { m?: string } }) {
-  const memberId = searchParams.m ? verifyMemberCardToken(searchParams.m) : null;
+export default async function VerifyPage({ searchParams }: { searchParams: Promise<{ m?: string }> }) {
+  const { m } = await searchParams;
+  const memberId = m ? verifyMemberCardToken(m) : null;
   const card = memberId && isSupabaseConfigured() ? await getMemberCard(memberId) : null;
   const tier = TIERS.find(t => t.id === card?.tier);
   const valid = Boolean(card && card.tier);

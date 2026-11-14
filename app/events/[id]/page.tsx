@@ -6,8 +6,9 @@ import { enabledPaymentMethods } from '@/lib/payments/config';
 
 export const revalidate = 60;
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const event = await getEvent(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const event = await getEvent(id);
   if (!event) return { title: 'Event not found | Inner Circle' };
   return {
     title:       `${event.title} | Inner Circle`,
@@ -15,8 +16,9 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function EventPage({ params }: { params: { id: string } }) {
-  const event = await getEvent(params.id);
+export default async function EventPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const event = await getEvent(id);
   if (!event) notFound();
   return <EventDetail event={event} methods={enabledPaymentMethods()} />;
 }

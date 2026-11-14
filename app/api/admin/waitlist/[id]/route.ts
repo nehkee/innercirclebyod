@@ -7,12 +7,13 @@ import { noticeEmail } from '@/lib/email-templates';
 import { fromEmail } from '@/lib/brand';
 
 /** Approve someone on the waitlist: create an invite code (valid 14 days) and email it. */
-export async function POST(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const check = await requireAdmin();
   if (!check.ok) return NextResponse.json({ error: 'Forbidden' }, { status: check.status });
 
   const admin = createAdminClient();
-  const { data: entry } = await admin.from('waitlist').select('id, name, email, invited_at').eq('id', params.id).maybeSingle();
+  const { data: entry } = await admin.from('waitlist').select('id, name, email, invited_at').eq('id', id).maybeSingle();
   if (!entry) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const code = generateInviteCode();

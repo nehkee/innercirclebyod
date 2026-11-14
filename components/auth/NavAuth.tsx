@@ -34,7 +34,7 @@ export function NavAuth({ mobile = false }: { mobile?: boolean }) {
         >
           MY CIRCLE
         </Link>
-        <UserButton afterSignOutUrl="/" />
+        <UserButton />
       </SignedIn>
     </>
   );

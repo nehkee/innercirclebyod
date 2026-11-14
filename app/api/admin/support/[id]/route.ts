@@ -9,12 +9,13 @@ import { grantEventDiscount, grantMembershipDiscount, grantTierUpgrade, pauseMem
 export const dynamic = 'force-dynamic';
 
 /** One conversation with the member's value at a glance. */
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const check = await requireAdmin();
   if (!check.ok) return NextResponse.json({ error: 'Forbidden' }, { status: check.status });
 
   const admin = createAdminClient();
-  const { data: thread } = await admin.from('support_threads').select('*').eq('id', params.id).maybeSingle();
+  const { data: thread } = await admin.from('support_threads').select('*').eq('id', id).maybeSingle();
   if (!thread) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   const [messages, { data: member }, membership, { data: payments }, { data: refunds }, { data: offers }] = await Promise.all([
@@ -46,14 +47,15 @@ const Action = z.discriminatedUnion('type', [
 ]);
 
 /** Team actions: reply, grant a perk (applied instantly), or close the conversation. */
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const check = await requireAdmin();
   if (!check.ok) return NextResponse.json({ error: 'Forbidden' }, { status: check.status });
 
   const parsed = Action.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
 
-  const { data } = await createAdminClient().from('support_threads').select('*').eq('id', params.id).maybeSingle();
+  const { data } = await createAdminClient().from('support_threads').select('*').eq('id', id).maybeSingle();
   const thread = data as ThreadRow | null;
   if (!thread) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 

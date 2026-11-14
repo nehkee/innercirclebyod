@@ -8,7 +8,7 @@ import { z }                         from 'zod';
 
 // ── Generate invite code (VANGUARD+ only) ─────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const userId = getClerkUserId();
+  const userId = await getClerkUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
 // ── Validate invite code ──────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
   if (req.nextUrl.searchParams.get('mine')) {
-    const userId = getClerkUserId();
+    const userId = await getClerkUserId();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const admin = createAdminClient();
     const { data: me } = await admin.from('members').select('id').eq('clerk_id', userId).single();
@@ -121,7 +121,7 @@ export async function GET(req: NextRequest) {
 
 // ── Redeem invite code (called by the signed-in new member after sign-up) ─────
 export async function PATCH(req: NextRequest) {
-  const userId = getClerkUserId();
+  const userId = await getClerkUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

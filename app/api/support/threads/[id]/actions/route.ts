@@ -7,8 +7,9 @@ import { jsonError, memberThread } from '@/lib/support/api';
 const Body = z.object({ actionId: z.string().min(1).max(100) });
 
 /** Member taps a quick-reply button (offer, cancel, refund…). */
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const r = await memberThread(params.id);
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const r = await memberThread(id);
   if (r.error) return r.error;
 
   const rl = await rateLimit(`support-act:${r.member.id}`, 20, 60 * 1000);

@@ -32,7 +32,7 @@ function fail(error: string, status: number, extra: Record<string, unknown> = {}
  * hosted payment page, or straight to the success page for free tickets.
  */
 export async function POST(req: NextRequest) {
-  if (!getClerkUserId()) return fail('Sign in to continue', 401, { signIn: true });
+  if (!(await getClerkUserId())) return fail('Sign in to continue', 401, { signIn: true });
   if (!isSupabaseConfigured()) return fail('Checkout is not available yet', 503);
 
   const member = await getCurrentMember();

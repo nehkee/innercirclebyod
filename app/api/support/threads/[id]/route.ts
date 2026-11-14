@@ -6,8 +6,9 @@ import { forMember, memberThread } from '@/lib/support/api';
 export const dynamic = 'force-dynamic';
 
 /** Messages in a conversation (optionally only those after ?after=ISO). Marks them read. */
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const r = await memberThread(params.id);
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const r = await memberThread(id);
   if (r.error) return r.error;
 
   const after = req.nextUrl.searchParams.get('after');

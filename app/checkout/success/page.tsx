@@ -4,8 +4,8 @@ import { CheckoutStatus } from '@/components/checkout/CheckoutStatus';
 export const dynamic  = 'force-dynamic';
 export const metadata = { title: 'Checkout | Inner Circle', robots: { index: false, follow: false } };
 
-export default function CheckoutSuccessPage({ searchParams }: { searchParams: { payment?: string } }) {
-  const paymentId = searchParams.payment ?? '';
+export default async function CheckoutSuccessPage({ searchParams }: { searchParams: Promise<{ payment?: string }> }) {
+  const paymentId = (await searchParams).payment ?? '';
 
   return (
     <main className="bg-ic-black min-h-screen">

@@ -8,8 +8,9 @@ import { jsonError, memberThread } from '@/lib/support/api';
 const Body = z.object({ body: z.string().trim().min(1).max(2000) });
 
 /** Member sends a free-text message. */
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
-  const r = await memberThread(params.id);
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const r = await memberThread(id);
   if (r.error) return r.error;
 
   const rl = await rateLimit(`support-msg:${r.member.id}`, 30, 60 * 1000);

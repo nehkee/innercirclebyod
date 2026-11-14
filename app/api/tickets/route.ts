@@ -7,7 +7,7 @@ import { createAdminClient } from '@/lib/supabase';
  * once the payment is verified. This route lists the signed-in member's tickets.
  */
 export async function GET() {
-  const userId = getClerkUserId();
+  const userId = await getClerkUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }

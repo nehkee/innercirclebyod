@@ -8,8 +8,9 @@ export const size        = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 /** Share image for each event: its own generated ring composition + title, date and city. */
-export default async function EventOgImage({ params }: { params: { id: string } }) {
-  const [bebas, event] = await Promise.all([loadBebasNeue(), getEvent(params.id)]);
+export default async function EventOgImage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const [bebas, event] = await Promise.all([loadBebasNeue(), getEvent(id)]);
   const title  = event?.title ?? 'INNER CIRCLE';
   const type   = event?.type ?? 'listening_party';
   const accent = TYPE_ACCENT[type] ?? '#C9A84C';
