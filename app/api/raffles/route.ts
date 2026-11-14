@@ -6,6 +6,7 @@ import { rateLimit, clientId, hasMembershipAccess } from '@/lib/fraud';
 import { raffleResultEmail }         from '@/lib/email-templates';
 import { Resend }                    from 'resend';
 import { z }                         from 'zod';
+import { fromEmail } from '@/lib/brand';
 
 const getResend = () => new Resend(process.env.RESEND_API_KEY ?? 're_placeholder');
 
@@ -79,9 +80,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Already entered this raffle' }, { status: 409 });
   }
 
-  // WARLORD+ gets multiple entries
-  const isWarlord  = await hasTierAccess(member.id, 'warlord');
-  const numEntries = isWarlord ? (raffle.entries_per_warlord ?? 2) : 1;
+  // VANGUARD+ gets multiple entries
+  const isVanguard = await hasTierAccess(member.id, 'vanguard');
+  const numEntries = isVanguard ? (raffle.entries_per_warlord ?? 2) : 1;
 
   const rows = Array.from({ length: numEntries }, () => ({
     raffle_id: raffle.id,
@@ -156,7 +157,7 @@ export async function PATCH(req: NextRequest) {
           prizeDetails: won ? raffle.prize_description : undefined,
         });
         return getResend().emails.send({
-          from: 'Inner Circle <noreply@innercirclebyod.com>',
+          from: fromEmail(),
           to:   [m.email],
           subject,
           html,

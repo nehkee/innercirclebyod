@@ -3,7 +3,7 @@ import { getCommunityStats, getLeaderboard } from '@/lib/data';
 import { showPlaceholderContent } from '@/lib/placeholder';
 
 export const revalidate = 60;
-export const metadata   = { title: 'Community | Inner Circle by OD' };
+export const metadata   = { title: 'Community | Inner Circle' };
 
 export default async function CommunityPage() {
   const [stats, leaderboard] = await Promise.all([getCommunityStats(), getLeaderboard(10)]);

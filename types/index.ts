@@ -1,4 +1,4 @@
-export type MembershipTier = 'machine' | 'insider' | 'warlord' | 'industry';
+export type MembershipTier = 'initiate' | 'insider' | 'vanguard' | 'sovereign';
 
 export interface TierConfig {
   id:          MembershipTier;

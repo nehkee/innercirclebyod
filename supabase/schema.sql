@@ -15,7 +15,7 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- ─── ENUMS ──────────────────────────────────────────────────────────────────────
 
-CREATE TYPE membership_tier  AS ENUM ('machine', 'insider', 'warlord', 'industry');
+CREATE TYPE membership_tier  AS ENUM ('initiate', 'insider', 'vanguard', 'sovereign');
 CREATE TYPE event_type       AS ENUM ('listening_party', 'show', 'hangout', 'studio', 'industry', 'secret');
 CREATE TYPE app_status       AS ENUM ('pending', 'approved', 'rejected');
 CREATE TYPE app_type         AS ENUM ('hangout', 'studio', 'dinner', 'backstage', 'football');
@@ -34,7 +34,7 @@ CREATE TABLE members (
   avatar_url        TEXT,
   country           TEXT,            -- ISO 3166 alpha-2, e.g. 'NG'
   city              TEXT,
-  tier              membership_tier NOT NULL DEFAULT 'machine',
+  tier              membership_tier NOT NULL DEFAULT 'initiate',
   points            INTEGER NOT NULL DEFAULT 0,
   is_admin          BOOLEAN NOT NULL DEFAULT FALSE,
   deleted_at        TIMESTAMPTZ,     -- soft delete (Clerk user.deleted)
@@ -61,6 +61,10 @@ CREATE TABLE memberships (
   paystack_sub_code       TEXT UNIQUE,
   last_payment_ref        TEXT,
   current_period_end      TIMESTAMPTZ,
+  cancel_at_period_end    BOOLEAN NOT NULL DEFAULT FALSE,  -- member chose to leave; access runs to period end
+  paused_until            TIMESTAMPTZ,                     -- retention pause: no billing, no access until then
+  bonus_tier              membership_tier,                 -- retention upgrade: higher tier at the same price…
+  bonus_until             TIMESTAMPTZ,                     -- …until this date
   created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -146,10 +150,12 @@ CREATE TABLE payments (
   currency             TEXT NOT NULL CHECK (currency IN ('USD', 'NGN')),
   amount               NUMERIC(12,2) NOT NULL CHECK (amount >= 0),
   status               TEXT NOT NULL DEFAULT 'pending'
-                       CHECK (status IN ('pending', 'processing', 'fulfilled', 'failed', 'expired', 'needs_attention')),
+                       CHECK (status IN ('pending', 'processing', 'fulfilled', 'failed', 'expired', 'needs_attention', 'refunded')),
   provider_ref         TEXT,          -- Stripe Checkout Session id / Paystack reference / NOWPayments invoice id
   provider_payment_id  TEXT,          -- Stripe payment intent or subscription / NOWPayments payment id
   failure_reason       TEXT,
+  offer_id             UUID,          -- member_offers row applied at checkout (FK added below)
+  discount_percent     INTEGER NOT NULL DEFAULT 0 CHECK (discount_percent BETWEEN 0 AND 100),
   created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   paid_at              TIMESTAMPTZ,
   fulfilled_at         TIMESTAMPTZ,
@@ -161,6 +167,96 @@ CREATE TABLE payments (
 CREATE INDEX idx_payments_member   ON payments(member_id, created_at DESC);
 CREATE INDEX idx_payments_status   ON payments(status);
 CREATE UNIQUE INDEX idx_payments_provider_ref ON payments(provider, provider_ref) WHERE provider_ref IS NOT NULL;
+
+-- ─── MEMBER OFFERS (retention perks) ────────────────────────────────────────────
+-- Granted by the support bot or the team. Discounts are applied automatically
+-- at the member's next checkout; upgrades and pauses take effect immediately.
+
+CREATE TABLE member_offers (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  member_id   UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  kind        TEXT NOT NULL CHECK (kind IN ('event_discount', 'membership_discount', 'tier_upgrade', 'pause')),
+  percent     INTEGER CHECK (percent BETWEEN 1 AND 100),   -- discounts
+  tier        membership_tier,                              -- upgrades
+  months      INTEGER CHECK (months BETWEEN 1 AND 12),      -- upgrades / pauses
+  source      TEXT NOT NULL DEFAULT 'bot' CHECK (source IN ('bot', 'team')),
+  granted_by  UUID REFERENCES members(id),                  -- team member, when source = 'team'
+  thread_id   UUID,                                         -- support conversation it came from
+  expires_at  TIMESTAMPTZ,                                  -- unused discounts lapse
+  used_at     TIMESTAMPTZ,
+  payment_id  UUID REFERENCES payments(id),                 -- checkout that consumed a discount
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_member_offers_member ON member_offers(member_id, kind, created_at DESC);
+
+ALTER TABLE payments
+  ADD CONSTRAINT payments_offer_fk FOREIGN KEY (offer_id) REFERENCES member_offers(id);
+
+-- ─── SUPPORT CHAT ───────────────────────────────────────────────────────────────
+-- One thread per conversation. The bot handles the first steps (reason,
+-- offers); "waiting_team" puts it in the admin inbox for a human.
+
+CREATE TABLE support_threads (
+  id                   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  member_id            UUID NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  topic                TEXT NOT NULL CHECK (topic IN ('membership', 'ticket', 'general')),
+  ticket_id            UUID REFERENCES tickets(id),
+  status               TEXT NOT NULL DEFAULT 'bot'
+                       CHECK (status IN ('bot', 'waiting_team', 'open', 'resolved')),
+  stage                TEXT NOT NULL DEFAULT 'start',   -- bot state machine position
+  reason               TEXT,                             -- why they wanted to leave
+  outcome              TEXT CHECK (outcome IN ('saved', 'cancelled', 'refund_requested', 'refunded', 'resolved')),
+  assigned_to          UUID REFERENCES members(id),
+  member_last_read_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  team_last_read_at    TIMESTAMPTZ,
+  created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_support_threads_member ON support_threads(member_id, updated_at DESC);
+CREATE INDEX idx_support_threads_status ON support_threads(status, updated_at DESC);
+
+CREATE TABLE support_messages (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  thread_id   UUID NOT NULL REFERENCES support_threads(id) ON DELETE CASCADE,
+  sender      TEXT NOT NULL CHECK (sender IN ('member', 'team', 'bot', 'system')),
+  author_id   UUID REFERENCES members(id),
+  body        TEXT NOT NULL CHECK (char_length(body) BETWEEN 1 AND 4000),
+  actions     JSONB,          -- quick-reply buttons offered with this message
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_support_messages_thread ON support_messages(thread_id, created_at);
+
+-- ─── REFUND REQUESTS ────────────────────────────────────────────────────────────
+-- Policy: we first offer a new date or a discount; if the member still wants
+-- their money back, the team processes the refund within 7 days (due_at).
+
+CREATE TABLE refund_requests (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  member_id       UUID NOT NULL REFERENCES members(id),
+  thread_id       UUID REFERENCES support_threads(id),
+  payment_id      UUID NOT NULL REFERENCES payments(id),
+  ticket_id       UUID REFERENCES tickets(id),
+  kind            TEXT NOT NULL CHECK (kind IN ('ticket', 'membership')),
+  amount          NUMERIC(12,2) NOT NULL,
+  currency        TEXT NOT NULL,
+  provider        payment_provider,
+  status          TEXT NOT NULL DEFAULT 'requested'
+                  CHECK (status IN ('requested', 'refunded', 'declined', 'withdrawn', 'failed')),
+  due_at          TIMESTAMPTZ NOT NULL DEFAULT NOW() + INTERVAL '7 days',
+  crypto_address  TEXT,          -- where to send crypto refunds (asked in chat)
+  reason          TEXT,
+  note            TEXT,          -- team note / failure details
+  processed_by    UUID REFERENCES members(id),
+  processed_at    TIMESTAMPTZ,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_refund_requests_status ON refund_requests(status, due_at);
+-- At most one open refund request per payment
+CREATE UNIQUE INDEX idx_refund_requests_open ON refund_requests(payment_id) WHERE status = 'requested';
 
 -- ─── APPLICATIONS (experiences: hangouts, studio sessions, …) ───────────────────
 
@@ -191,7 +287,7 @@ CREATE TABLE raffles (
   prize_description   TEXT NOT NULL,
   status              TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'closed', 'drawn')),
   min_tier            membership_tier,
-  entries_per_warlord INTEGER NOT NULL DEFAULT 2,
+  entries_per_warlord INTEGER NOT NULL DEFAULT 2,  -- extra entries for VANGUARD+
   closes_at           TIMESTAMPTZ,
   winner_id           UUID REFERENCES members(id),
   drawn_at            TIMESTAMPTZ,
@@ -282,7 +378,7 @@ CREATE TABLE announcements (
   id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   title       TEXT NOT NULL,
   body        TEXT NOT NULL,
-  min_tier    membership_tier NOT NULL DEFAULT 'machine',
+  min_tier    membership_tier NOT NULL DEFAULT 'initiate',
   sent_at     TIMESTAMPTZ,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -373,6 +469,10 @@ ALTER TABLE invite_codes       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE announcements      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE waitlist           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE payments           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE member_offers      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE support_threads    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE support_messages   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE refund_requests    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE rate_limits        ENABLE ROW LEVEL SECURITY;
 
 -- Published events are public. Everything else is server-only (service role).

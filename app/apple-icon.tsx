@@ -16,7 +16,7 @@ export default async function AppleIcon() {
             fontFamily: 'Bebas Neue', fontSize: 92, paddingTop: 8,
           }}
         >
-          OD
+          IC
         </div>
       </div>
     ),

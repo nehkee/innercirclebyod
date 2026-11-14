@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { loadBebasNeue } from '@/lib/og-font';
 
-export const alt         = 'Inner Circle by OD — an elite digital society built around Odumodublvck';
+export const alt         = 'Inner Circle — an elite digital society. By invitation only.';
 export const size        = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -31,7 +31,7 @@ export default async function OpengraphImage() {
           }}
         />
 
-        {/* OD mark */}
+        {/* IC mark */}
         <div
           style={{
             position: 'absolute', top: 48, left: 56, width: 64, height: 64,
@@ -39,10 +39,10 @@ export default async function OpengraphImage() {
             color: GOLD, fontSize: 40, paddingTop: 4,
           }}
         >
-          OD
+          IC
         </div>
         <div style={{ position: 'absolute', top: 66, right: 56, color: '#666666', fontSize: 26, letterSpacing: 8 }}>
-          INNERCIRCLEBYOD.COM
+          EST. BY INVITATION
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, color: GOLD, fontSize: 28, letterSpacing: 12 }}>
@@ -58,7 +58,7 @@ export default async function OpengraphImage() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginTop: 26, color: '#9CA3AF', fontSize: 40, letterSpacing: 14 }}>
           <div style={{ width: 80, height: 1, background: '#2A2A2A' }} />
-          BY ODUMODUBLVCK
+          THE CIRCLE NEVER BREAKS
           <div style={{ width: 80, height: 1, background: '#2A2A2A' }} />
         </div>
 

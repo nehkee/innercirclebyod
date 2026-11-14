@@ -1,16 +1,16 @@
-# INNER CIRCLE BY OD — BRAND SYSTEM
+# INNER CIRCLE — BRAND SYSTEM
 ## Complete Visual Identity & Design Direction
 
 ---
 
 ## 01 — THE CONCEPT
 
-Inner Circle by OD is not a fan club. It is a **digital cult with cultural authority**.
+Inner Circle is not a fan club. It is a **digital cult with cultural authority**.
 
 The brand exists at the intersection of:
 - **Nigerian street culture** — rough, raw, earned, not performed
 - **Underground luxury** — no logos, no noise, just access
-- **Dystopian internet** — dark web aesthetic, secret channels, machine language
+- **Dystopian internet** — dark web aesthetic, secret channels, coded language
 - **Elite music culture** — Boiler Room, Opium, Corteiz, NTS, Travis Scott Utopia
 
 The brand should feel like you found something you weren't supposed to find. Like a restricted file. Like a backroom that doesn't advertise itself.
@@ -23,22 +23,22 @@ The brand should feel like you found something you weren't supposed to find. Lik
 
 | Name          | Hex       | Usage                                                                 |
 |---------------|-----------|-----------------------------------------------------------------------|
-| `od-black`    | `#080808` | Background base — near-black, not pure black. Always the floor.      |
-| `od-gold`     | `#C9A84C` | Primary accent — headlines, CTAs, tier badges, active states          |
-| `od-red`      | `#CC0000` | Urgency, WARLORD tier, sold-out states, danger signals                |
-| `od-dark`     | `#111111` | Card backgrounds, secondary surfaces                                  |
-| `od-gray`     | `#1A1A1A` | Subtle panel fills, hover states                                      |
-| `od-border`   | `#2A2A2A` | Dividers, card borders, structural lines                              |
-| `od-muted`    | `#666666` | Secondary text, meta labels, timestamps                               |
-| `od-silver`   | `#9CA3AF` | Body copy, MACHINE tier, supporting text                              |
-| `od-white`    | `#FFFFFF` | Headlines, INDUSTRY tier, maximum emphasis                            |
+| `ic-black`    | `#080808` | Background base — near-black, not pure black. Always the floor.      |
+| `ic-gold`     | `#C9A84C` | Primary accent — headlines, CTAs, tier badges, active states          |
+| `ic-red`      | `#CC0000` | Urgency, VANGUARD tier, sold-out states, danger signals                |
+| `ic-dark`     | `#111111` | Card backgrounds, secondary surfaces                                  |
+| `ic-gray`     | `#1A1A1A` | Subtle panel fills, hover states                                      |
+| `ic-border`   | `#2A2A2A` | Dividers, card borders, structural lines                              |
+| `ic-muted`    | `#666666` | Secondary text, meta labels, timestamps                               |
+| `ic-silver`   | `#9CA3AF` | Body copy, INITIATE tier, supporting text                              |
+| `ic-white`    | `#FFFFFF` | Headlines, SOVEREIGN tier, maximum emphasis                            |
 
 ### Tier Accent Colors
 ```
-MACHINE    #9CA3AF  — silver, entry level, understated
+INITIATE   #9CA3AF  — silver, entry level, understated
 INSIDER    #C9A84C  — gold, aspirational, most popular
-WARLORD    #CC0000  — red, aggressive, committed
-INDUSTRY   #FFFFFF  — white, pure, untouchable
+VANGUARD   #CC0000  — red, aggressive, committed
+SOVEREIGN  #FFFFFF  — white, pure, untouchable
 ```
 
 ### Color Philosophy
@@ -68,7 +68,7 @@ MONO:      JetBrains Mono  — labels, meta info, tracking data, codes, badges
 - Letter spacing: tight to normal (`-0.02em` to `0.05em`)
 - Used for: page titles, section headers, tier names, event titles, CTAs
 
-**JetBrains Mono** — the machine speaks
+**JetBrains Mono** — the system speaks
 - Size range: `9px` to `13px` for UI, `14px` max for callouts
 - Letter spacing: always wide (`0.2em` to `0.5em`)
 - Uppercase only for labels and section identifiers
@@ -118,9 +118,9 @@ caption:    10px–12px mono             — timestamps, meta
 | Custom cursor       | mousemove    | realtime | RAF loop     | lerp factor 0.12 for ring lag           |
 
 ### Hover States
-- Cards: `border-color → od-gold/40`, `background opacity +0.2`
-- Headlines: `color → od-gold`, `duration: 400ms`
-- Links: `color → od-gold`, underline optional
+- Cards: `border-color → ic-gold/40`, `background opacity +0.2`
+- Headlines: `color → ic-gold`, `duration: 400ms`
+- Links: `color → ic-gold`, underline optional
 - Buttons: fill slide `scaleX: 0 → 1` with `transformOrigin: left`
 - Tier cards: border glow with tier color on hover
 
@@ -166,7 +166,7 @@ caption:    10px–12px mono             — timestamps, meta
 - Color: always matches surrounding text — never standalone color pop
 
 ### Brand Symbols
-- `⚙️` — Machine, the brand's signature signifier
+- `◯` — The circle, the brand's signature signifier
 - `✦` — Diamond point, used as separator in tickers and labels
 - `—` — Em dash, used as bullet alternative in manifesto/rules
 - `·` — Middle dot, separator in meta strings
@@ -176,7 +176,7 @@ caption:    10px–12px mono             — timestamps, meta
 
 ## 07 — MEMBERSHIP CARD CONCEPTS
 
-### MACHINE — Entry Level
+### INITIATE — Entry Level
 - Material: Matte black digital card (PDF/PNG)
 - Color: Silver (#9CA3AF) border on black
 - Text: Bebas Neue, all caps
@@ -189,16 +189,16 @@ caption:    10px–12px mono             — timestamps, meta
 - Contains: Member handle, tier, ID, QR code for events
 - Finish: Premium — gold shimmer CSS animation in digital format
 
-### WARLORD — High Level
+### VANGUARD — High Level
 - Material: Metallic dark red, textured digital
 - Color: Red accents, white text
-- Contains: All above + WARLORD season badge
+- Contains: All above + season badge
 - Finish: Aggressive, high contrast
 
-### INDUSTRY — Top Level
+### SOVEREIGN — Top Level
 - Material: All-white physical membership card (actual plastic, mailed)
 - Color: White embossed text, black details
-- Contains: Full name, INDUSTRY badge, personal serial number
+- Contains: Full name, SOVEREIGN badge, personal serial number
 - Finish: Maximal — one card, no color, just quality
 
 ---
@@ -218,7 +218,7 @@ caption:    10px–12px mono             — timestamps, meta
 - Bleed to edge on all sides — no white margins
 - If photography is used: black and white, grain added, heavy contrast
 - Capacity or exclusivity indicator bottom-right: `— 150 ONLY —`
-- WARLORD SEASON has its own visual universe: red fog, sharp typography
+- Each album season can have its own visual universe (e.g. red fog, sharp typography)
 
 ### Event Type Visual Keys
 ```
@@ -235,13 +235,13 @@ SECRET EVENT     — all black, minimal text, lock icon
 ## 09 — SOCIAL MEDIA DIRECTION
 
 ### Platform Priority
-1. **Twitter/X** — Primary voice. Short, sharp, machine language. No hashtags.
+1. **Twitter/X** — Primary voice. Short, sharp, coded language. No hashtags.
 2. **Instagram** — Visual documentation. Concert/studio photography only.
 3. **TikTok** — Behind-the-scenes moments. Raw, unpolished.
 
 ### Content Pillars
 - **Access** — Previews, member-only content, early announcements
-- **Machine** — OD's creative process, studio sessions, production content
+- **Studio** — The artist's creative process, studio sessions, production content
 - **Circle** — Community leaderboard highlights, member spotlights
 - **Drop** — Merch/music releases, event announcements
 
@@ -251,7 +251,7 @@ Do:
 ```
 "THE CIRCLE IS CLOSED. WAS IT OPEN FOR YOU?"
 "48H WINDOW OPENS AT MIDNIGHT. INSIDER+ ONLY."
-"WARLORD SEASON. NO FEATURES. NO EXCUSES."
+"FIRST LISTEN. NO PHONES. NO EXCUSES."
 "YOU ALREADY KNOW."
 ```
 
@@ -271,7 +271,7 @@ ALL-CAPS HOOK LINE
 Details in mono-style lowercase
 Date / time / access level
 ———
-innercirclebyod.com
+the site link
 ```
 
 ---
@@ -285,29 +285,29 @@ innercirclebyod.com
 
 ### Capsule Concepts
 
-**MACHINE Series** (Baseline tier)
+**INITIATE Series** (Baseline tier)
 - Black heavyweight tee, chest embroidery: `INNER CIRCLE` in Bebas, 2cm tall
-- Black joggers: `MACHINE` text down leg, 1cm tall
+- Black joggers: `INITIATE` text down leg, 1cm tall
 - Palette: all black, silver thread
 
 **INSIDER Series** (Mid tier)
-- Vintage-wash black tee: `OD INNER CIRCLE ⚙️` — oversized front graphic, gold print
-- Hoodie: `INSIDER` on back neck, `INDUSTRY MACHINE` sleeve print
+- Vintage-wash black tee: `INNER CIRCLE ◯` — oversized front graphic, gold print
+- Hoodie: `INSIDER` on back neck, `THE CIRCLE NEVER BREAKS` sleeve print
 - Palette: black, gold print
 
-**WARLORD Series** (High tier)
-- Military-style overshirt: WARLORD SEASON patch on back
-- Washed black cap: embossed `INNER CIRCLE` on front, `MACHINE ⚙️` on strap
+**VANGUARD Series** (High tier)
+- Military-style overshirt: `VANGUARD` patch on back
+- Washed black cap: embossed `INNER CIRCLE` on front, `◯` on strap
 - Palette: black, red accent
 
-**INDUSTRY Series** (Top tier — hand-delivered)
+**SOVEREIGN Series** (Top tier — hand-delivered)
 - Luxury garment bag with branded tissue paper
 - All-black knit polo: no external logo, internal neck label only
 - Woven membership tag: serial number, member name, year
 - Palette: black only, white label
 
 ### Packaging
-- Matte black box, debossed `OD` logo
+- Matte black box, debossed `IC` mark
 - Gold tissue paper
 - QR code card inside: links to member portal, scans to verify authenticity
 - Sticker seal: `PROPERTY OF THE INNER CIRCLE`
@@ -319,7 +319,7 @@ innercirclebyod.com
 1. **EARN THE ATTENTION** — every element must deserve to be on screen
 2. **BLACK IS THE CANVAS** — `#080808` as the foundation, always
 3. **GOLD IS A SIGNAL** — use it to direct the eye to what matters most
-4. **MONO IS THE MACHINE** — JetBrains Mono for anything that feels technical or official
+4. **MONO IS THE SYSTEM** — JetBrains Mono for anything that feels technical or official
 5. **BEBAS IS THE VOICE** — every major statement in Bebas Neue, all caps
 6. **SLOW IS PREMIUM** — animate with intention, not speed
 7. **SCARCITY IS THE MESSAGE** — limited, exclusive, not for everyone
@@ -329,44 +329,11 @@ innercirclebyod.com
 
 ---
 
-## 12 — ENVIRONMENT VARIABLES REFERENCE
+## 12 — ENVIRONMENT VARIABLES
 
-```bash
-# Auth
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-CLERK_WEBHOOK_SECRET=
-
-# Database
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-
-# Payments
-STRIPE_SECRET_KEY=
-STRIPE_PUBLISHABLE_KEY=
-STRIPE_WEBHOOK_SECRET=
-STRIPE_MACHINE_PRICE_ID=
-STRIPE_INSIDER_PRICE_ID=
-STRIPE_WARLORD_PRICE_ID=
-STRIPE_INDUSTRY_PRICE_ID=
-
-PAYSTACK_SECRET_KEY=
-PAYSTACK_PUBLIC_KEY=
-PAYSTACK_MACHINE_PLAN_CODE=
-PAYSTACK_INSIDER_PLAN_CODE=
-PAYSTACK_WARLORD_PLAN_CODE=
-PAYSTACK_INDUSTRY_PLAN_CODE=
-
-# Email
-RESEND_API_KEY=
-
-# App
-NEXT_PUBLIC_APP_URL=https://innercirclebyod.com
-TICKET_SECRET=                        # 32+ char random string for QR signing
-```
+See `.env.local.example` for the current, annotated list.
 
 ---
 
-*Inner Circle by OD — Brand System v1.0*  
+*Inner Circle — Brand System v2.0 (artist-neutral)*  
 *For internal use only. Do not share outside the circle.*

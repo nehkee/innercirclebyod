@@ -3,32 +3,33 @@ import './globals.css';
 import Providers from '@/components/providers/Providers';
 import { NoiseOverlay } from '@/components/ui/NoiseOverlay';
 import { CustomCursor } from '@/components/ui/CustomCursor';
+import { ChatWidget } from '@/components/support/ChatWidget';
 import { ClerkProvider } from '@clerk/nextjs';
 import { isClerkConfigured } from '@/lib/auth';
+import { BRAND, siteUrl } from '@/lib/brand';
 
 export const metadata: Metadata = {
-  title: 'INNER CIRCLE BY OD | The Machine',
-  description: 'An elite digital society built around Odumodublvck. Join the Inner Circle — exclusive access to private events, unreleased music, and the machine.',
-  keywords: ['Odumodublvck', 'Inner Circle', 'Native Records', 'Nigerian music', 'exclusive', 'membership', 'fan club'],
+  title: { default: 'INNER CIRCLE | An Elite Digital Society', template: '%s' },
+  description: BRAND.description,
+  keywords: ['Inner Circle', 'private members club', 'exclusive events', 'listening party', 'membership', 'underground music'],
   openGraph: {
-    title: 'INNER CIRCLE BY OD | The Machine',
-    description: 'An elite digital society built around Odumodublvck.',
-    url: 'https://innercirclebyod.com',
-    siteName: 'Inner Circle by OD',
+    title: 'INNER CIRCLE | An Elite Digital Society',
+    description: BRAND.description,
+    url: siteUrl(),
+    siteName: BRAND.name,
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'INNER CIRCLE BY OD | The Machine',
-    description: 'An elite digital society built around Odumodublvck.',
-    creator: '@Odumodublvck_',
+    title: 'INNER CIRCLE | An Elite Digital Society',
+    description: BRAND.description,
   },
   robots: {
     index: true,
     follow: true,
   },
-  metadataBase: new URL('https://innercirclebyod.com'),
+  metadataBase: new URL(siteUrl()),
 };
 
 export default function RootLayout({
@@ -38,7 +39,7 @@ export default function RootLayout({
 }) {
   const page = (
     <html lang="en">
-      <body className="bg-od-black text-white font-space antialiased overflow-x-hidden">
+      <body className="bg-ic-black text-white font-space antialiased overflow-x-hidden">
         {/* Without JavaScript, scroll-reveal content would stay invisible: force it visible. */}
         <noscript>
           <style
@@ -55,6 +56,7 @@ export default function RootLayout({
           <NoiseOverlay />
           <CustomCursor />
           {children}
+          <ChatWidget />
         </Providers>
       </body>
     </html>

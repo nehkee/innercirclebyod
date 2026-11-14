@@ -25,11 +25,11 @@ export function FooterStats() {
   if (items.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-8 border-y border-od-border mb-8">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-8 border-y border-ic-border mb-8">
       {items.map(s => (
         <div key={s.l} className="text-center">
-          <p className="font-bebas text-2xl text-od-gold">{formatStat(s.n)}</p>
-          <p className="font-mono text-[9px] tracking-[0.3em] text-od-muted">{s.l}</p>
+          <p className="font-bebas text-2xl text-ic-gold">{formatStat(s.n)}</p>
+          <p className="font-mono text-[9px] tracking-[0.3em] text-ic-muted">{s.l}</p>
         </div>
       ))}
     </div>

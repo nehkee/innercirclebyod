@@ -25,7 +25,7 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
   const [selected, setSelected] = useState<TierConfig | null>(null);
 
   return (
-    <main className="bg-od-black min-h-screen">
+    <main className="bg-ic-black min-h-screen">
       <Nav />
 
       {/* Hero */}
@@ -37,20 +37,20 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
         >
           YOUR MEMBERSHIP
         </h1>
-        <p className="text-od-silver max-w-xl mx-auto mb-8">
-          Choose your status. Lock in your access. Enter the machine.
+        <p className="text-ic-silver max-w-xl mx-auto mb-8">
+          Choose your status. Lock in your access. Enter the circle.
         </p>
 
         {/* Currency Toggle */}
-        <div className="inline-flex border border-od-border">
+        <div className="inline-flex border border-ic-border">
           {(['USD', 'NGN'] as Currency[]).map(cur => (
             <button
               key={cur}
               onClick={() => setCurrency(cur)}
               className={`px-6 py-2 font-mono text-sm tracking-widest transition-all ${
                 currency === cur
-                  ? 'bg-od-gold text-black'
-                  : 'text-od-muted hover:text-white'
+                  ? 'bg-ic-gold text-black'
+                  : 'text-ic-muted hover:text-white'
               }`}
             >
               {cur === 'USD' ? '$ USD' : '₦ NGN'}
@@ -68,8 +68,8 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
               className={`
                 relative border p-8 flex flex-col transition-all duration-500
                 ${tier.featured
-                  ? 'border-od-gold bg-od-gray/50'
-                  : 'border-od-border bg-od-dark/50'}
+                  ? 'border-ic-gold bg-ic-gray/50'
+                  : 'border-ic-border bg-ic-dark/50'}
               `}
             >
               {tier.featured && (
@@ -79,7 +79,7 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
                     style={{ background: `linear-gradient(90deg, transparent, ${tier.color}, transparent)` }}
                   />
                   <div className="absolute -top-6 left-1/2 -translate-x-1/2">
-                    <span className="bg-od-gold text-black font-mono text-[10px] tracking-widest px-3 py-1">
+                    <span className="bg-ic-gold text-black font-mono text-[10px] tracking-widest px-3 py-1">
                       MOST POPULAR
                     </span>
                   </div>
@@ -101,19 +101,19 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
               >
                 {tier.name}
               </h2>
-              <p className="font-mono text-xs tracking-wider text-od-muted mb-8">{tier.tagline}</p>
+              <p className="font-mono text-xs tracking-wider text-ic-muted mb-8">{tier.tagline}</p>
 
               {/* Price */}
-              <div className="mb-8 pb-8 border-b border-od-border">
+              <div className="mb-8 pb-8 border-b border-ic-border">
                 <div className="flex items-baseline gap-1">
                   <span className="font-bebas text-5xl" style={{ color: tier.color }}>
                     {currency === 'USD'
                       ? `$${tier.priceUSD}`
                       : `₦${tier.priceNGN.toLocaleString()}`}
                   </span>
-                  <span className="font-mono text-xs text-od-muted">/mo</span>
+                  <span className="font-mono text-xs text-ic-muted">/mo</span>
                 </div>
-                <p className="font-mono text-[10px] text-od-muted mt-1">
+                <p className="font-mono text-[10px] text-ic-muted mt-1">
                   Card renews monthly · Paystack & crypto: 30 days
                 </p>
               </div>
@@ -123,7 +123,7 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
                 {tier.benefits.map((b, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <Check size={14} className="mt-0.5 flex-shrink-0" style={{ color: tier.color }} />
-                    <span className="text-od-silver text-sm">{b}</span>
+                    <span className="text-ic-silver text-sm">{b}</span>
                   </li>
                 ))}
                 {tier.exclusive.map((e, i) => (
@@ -149,14 +149,14 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
       </section>
 
       {/* Comparison Table */}
-      <section className="py-20 border-t border-od-border">
+      <section className="py-20 border-t border-ic-border">
         <div className="max-w-5xl mx-auto px-6">
           <p className="section-label mb-6 text-center">FULL COMPARISON</p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-od-border">
-                  <th className="text-left py-4 pr-8 font-mono text-xs text-od-muted tracking-widest">FEATURE</th>
+                <tr className="border-b border-ic-border">
+                  <th className="text-left py-4 pr-8 font-mono text-xs text-ic-muted tracking-widest">FEATURE</th>
                   {TIERS.map(t => (
                     <th key={t.id} className="py-4 px-4 font-bebas text-base" style={{ color: t.color }}>
                       {t.name}
@@ -175,15 +175,15 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
                   ['Signed Merch Access',    false, false, true,  true ],
                   ['Industry Networking',    false, false, false, true ],
                   ['Private Show Invite',    false, false, false, true ],
-                  ['OD Team Direct Line',    false, false, false, true ],
+                  ['Team Direct Line',       false, false, false, true ],
                 ].map(([feature, ...vals]) => (
-                  <tr key={String(feature)} className="border-b border-od-border/30">
-                    <td className="py-3 pr-8 text-od-silver">{feature}</td>
+                  <tr key={String(feature)} className="border-b border-ic-border/30">
+                    <td className="py-3 pr-8 text-ic-silver">{feature}</td>
                     {vals.map((v, i) => (
                       <td key={i} className="py-3 px-4 text-center">
                         {v
                           ? <Check size={14} className="mx-auto" style={{ color: TIERS[i].color }} />
-                          : <span className="text-od-border">—</span>
+                          : <span className="text-ic-border">—</span>
                         }
                       </td>
                     ))}
@@ -201,9 +201,9 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
           <p className="section-label mb-6 text-center">QUESTIONS</p>
           <div className="space-y-4">
             {FAQ.map((item, i) => (
-              <div key={i} className="border border-od-border p-6">
-                <p className="font-bebas text-lg text-od-gold mb-2">{item.q}</p>
-                <p className="text-od-muted text-sm leading-relaxed">{item.a}</p>
+              <div key={i} className="border border-ic-border p-6">
+                <p className="font-bebas text-lg text-ic-gold mb-2">{item.q}</p>
+                <p className="text-ic-muted text-sm leading-relaxed">{item.a}</p>
               </div>
             ))}
           </div>
@@ -216,7 +216,7 @@ export function MembershipView({ methods }: { methods: PaymentMethods }) {
         title={selected ? `${selected.name} MEMBERSHIP` : ''}
         subtitle={selected?.tagline.toUpperCase() ?? ''}
         color={selected?.color}
-        product={{ kind: 'membership', tier: selected?.id ?? 'machine' }}
+        product={{ kind: 'membership', tier: selected?.id ?? 'initiate' }}
         methods={methods}
         priceUSD={selected?.priceUSD ?? 0}
         priceNGN={selected?.priceNGN ?? 0}

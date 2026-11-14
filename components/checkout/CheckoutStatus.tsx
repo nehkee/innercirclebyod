@@ -117,13 +117,13 @@ function Panel(props: {
   icon: React.ReactNode; tone: 'gold' | 'red'; title: string; body: string;
   note?: string; cta?: { href: string; label: string };
 }) {
-  const color = props.tone === 'gold' ? 'text-od-gold border-od-gold/40' : 'text-od-red border-od-red/40';
+  const color = props.tone === 'gold' ? 'text-ic-gold border-ic-gold/40' : 'text-ic-red border-ic-red/40';
   return (
-    <div className="border border-od-border bg-od-dark p-8 md:p-12 text-center max-w-lg w-full">
+    <div className="border border-ic-border bg-ic-dark p-8 md:p-12 text-center max-w-lg w-full">
       <div className={`w-16 h-16 mx-auto mb-6 border flex items-center justify-center ${color}`}>{props.icon}</div>
       <h1 className="font-bebas text-4xl md:text-5xl text-white mb-4 leading-none">{props.title}</h1>
-      <p className="text-od-silver text-sm leading-relaxed">{props.body}</p>
-      {props.note && <p className="font-mono text-[10px] tracking-widest text-od-muted mt-4">{props.note}</p>}
+      <p className="text-ic-silver text-sm leading-relaxed">{props.body}</p>
+      {props.note && <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-4">{props.note}</p>}
       {props.cta && (
         <Link href={props.cta.href} className="btn-primary mt-8 px-10 py-3 text-sm">{props.cta.label}</Link>
       )}

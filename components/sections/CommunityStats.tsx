@@ -11,10 +11,10 @@ import type { CommunityStats as Stats, LeaderboardEntry } from '@/lib/data';
 import { formatStat, countryFlag, STAT_LABELS } from '@/lib/data-format';
 
 const TIER_COLORS: Record<string, string> = {
-  industry: '#FFFFFF',
-  warlord:  '#CC0000',
+  sovereign: '#FFFFFF',
+  vanguard:  '#CC0000',
   insider:  '#C9A84C',
-  machine:  '#9CA3AF',
+  initiate:  '#9CA3AF',
 };
 
 export function CommunityStats({ stats, leaderboard }: { stats: Stats | null; leaderboard: LeaderboardEntry[] }) {
@@ -63,7 +63,7 @@ export function CommunityStats({ stats, leaderboard }: { stats: Stats | null; le
   return (
     <section
       ref={sectionRef}
-      className="py-24 bg-od-black border-y border-od-border"
+      className="py-24 bg-ic-black border-y border-ic-border"
     >
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
@@ -73,16 +73,16 @@ export function CommunityStats({ stats, leaderboard }: { stats: Stats | null; le
           <div>
             <div className="flex items-center gap-4 mb-12">
               <p className="section-label">THE NUMBERS</p>
-              <div className="h-px flex-1 bg-od-border" />
+              <div className="h-px flex-1 bg-ic-border" />
             </div>
 
             <div className="grid grid-cols-2 gap-8">
               {statItems.map(stat => (
-                <div key={stat.label} className="border-l-2 border-od-gold pl-6">
+                <div key={stat.label} className="border-l-2 border-ic-gold pl-6">
                   <div className="font-bebas text-5xl md:text-6xl text-white leading-none mb-1">
                     <span data-gsap-counter={stat.value}>{formatStat(stat.value)}</span>
                   </div>
-                  <p className="font-mono text-[10px] tracking-[0.3em] text-od-muted">
+                  <p className="font-mono text-[10px] tracking-[0.3em] text-ic-muted">
                     {stat.label}
                   </p>
                 </div>
@@ -96,10 +96,10 @@ export function CommunityStats({ stats, leaderboard }: { stats: Stats | null; le
           <div>
             <div className="flex items-center gap-4 mb-12">
               <p className="section-label">LEADERBOARD</p>
-              <div className="h-px flex-1 bg-od-border" />
+              <div className="h-px flex-1 bg-ic-border" />
               <Link
                 href="/community"
-                className="font-mono text-[10px] tracking-widest text-od-muted hover:text-od-gold transition-colors"
+                className="font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors"
               >
                 FULL →
               </Link>
@@ -110,9 +110,9 @@ export function CommunityStats({ stats, leaderboard }: { stats: Stats | null; le
                 <div
                   key={member.rank}
                   data-gsap-row
-                  className="flex items-center gap-4 py-3 border-b border-od-border/50 group"
+                  className="flex items-center gap-4 py-3 border-b border-ic-border/50 group"
                 >
-                  <span className="font-mono text-2xl font-bold text-od-border group-hover:text-od-muted transition-colors w-8">
+                  <span className="font-mono text-2xl font-bold text-ic-border group-hover:text-ic-muted transition-colors w-8">
                     {member.rank}
                   </span>
 
@@ -129,10 +129,10 @@ export function CommunityStats({ stats, leaderboard }: { stats: Stats | null; le
                   </div>
 
                   <div className="text-right">
-                    <p className="font-bebas text-lg text-od-gold">
+                    <p className="font-bebas text-lg text-ic-gold">
                       {member.points.toLocaleString()}
                     </p>
-                    <p className="font-mono text-[9px] text-od-muted tracking-widest">PTS</p>
+                    <p className="font-mono text-[9px] text-ic-muted tracking-widest">PTS</p>
                   </div>
                 </div>
               ))}

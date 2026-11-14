@@ -3,6 +3,7 @@ import { createHmac }                from 'crypto';
 import { createAdminClient }         from '@/lib/supabase';
 import { welcomeEmail }              from '@/lib/email-templates';
 import { Resend }                    from 'resend';
+import { fromEmail } from '@/lib/brand';
 
 const getResend = () => new Resend(process.env.RESEND_API_KEY ?? 're_placeholder');
 
@@ -64,18 +65,18 @@ export async function POST(req: NextRequest) {
       clerk_id: id,
       email,
       username: handle,
-      tier:     'machine',
+      tier:     'initiate',
       points:   0,
     });
 
     if (!error && email) {
       const { subject, html } = welcomeEmail({
         memberName: name,
-        tier:       'MACHINE',
+        tier:       'INITIATE',
         tierColor:  '#9CA3AF',
       });
       await getResend().emails.send({
-        from:    'Inner Circle <welcome@innercirclebyod.com>',
+        from:    fromEmail(),
         to:      [email],
         subject,
         html,

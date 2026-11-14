@@ -16,14 +16,24 @@ export function NavAuth({ mobile = false }: { mobile?: boolean }) {
           href="/sign-in"
           className={
             mobile
-              ? 'font-mono text-xs tracking-widest text-od-muted hover:text-od-gold'
-              : 'font-mono text-[10px] tracking-widest text-od-muted hover:text-od-gold transition-colors'
+              ? 'font-mono text-xs tracking-widest text-ic-muted hover:text-ic-gold'
+              : 'font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors'
           }
         >
           SIGN IN
         </Link>
       </SignedOut>
       <SignedIn>
+        <Link
+          href="/account"
+          className={
+            mobile
+              ? 'font-mono text-xs tracking-widest text-ic-muted hover:text-ic-gold'
+              : 'font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors'
+          }
+        >
+          MY CIRCLE
+        </Link>
         <UserButton afterSignOutUrl="/" />
       </SignedIn>
     </>

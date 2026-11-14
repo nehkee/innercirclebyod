@@ -3,6 +3,7 @@ import { createAdminClient }         from '@/lib/supabase';
 import { rateLimit, clientId }       from '@/lib/fraud';
 import { Resend }                    from 'resend';
 import { z }                         from 'zod';
+import { fromEmail, siteUrl } from '@/lib/brand';
 
 const getResend = () => new Resend(process.env.RESEND_API_KEY ?? 're_placeholder');
 
@@ -57,9 +58,9 @@ export async function POST(req: NextRequest) {
   const firstName = name.split(' ')[0] ?? name;
 
   const { error: emailErr } = await getResend().emails.send({
-    from:    'OD — Inner Circle <welcome@innercirclebyod.com>',
+    from:    fromEmail('Inner Circle'),
     to:      [email],
-    subject: `${firstName}, the machine sees you.`,
+    subject: `${firstName}, the circle sees you.`,
     html:    buildWelcomeEmail(name, firstName, email),
   });
 
@@ -77,8 +78,8 @@ function buildWelcomeEmail(fullName: string, firstName: string, _email: string):
   const BG   = '#080808';
 
   /*
-   * CONTENT NOTE FOR OD's TEAM:
-   * Replace the text inside the <p> blocks below with the actual message from OD.
+   * CONTENT NOTE FOR THE TEAM:
+   * Replace the text inside the <p> blocks below with the artist's own message.
    * The variables available are:
    *   firstName — the user's first name
    *   fullName  — their full name
@@ -88,7 +89,7 @@ function buildWelcomeEmail(fullName: string, firstName: string, _email: string):
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Welcome — Inner Circle by OD</title>
+  <title>Welcome — Inner Circle</title>
 </head>
 <body style="margin:0;padding:0;background:${BG};font-family:'Courier New',monospace;color:#FFFFFF;">
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${BG};">
@@ -108,11 +109,11 @@ function buildWelcomeEmail(fullName: string, firstName: string, _email: string):
               <table>
                 <tr>
                   <td style="width:36px;height:36px;border:1px solid ${GOLD};text-align:center;vertical-align:middle;">
-                    <span style="font-family:Impact,sans-serif;font-size:16px;color:${GOLD};line-height:1;">OD</span>
+                    <span style="font-family:Impact,sans-serif;font-size:16px;color:${GOLD};line-height:1;">IC</span>
                   </td>
                   <td style="padding-left:12px;">
                     <p style="margin:0;font-size:10px;letter-spacing:0.35em;color:${GOLD};">INNER CIRCLE</p>
-                    <p style="margin:2px 0 0;font-size:8px;letter-spacing:0.2em;color:#444;">BY ODUMODUBLVCK</p>
+                    <p style="margin:2px 0 0;font-size:8px;letter-spacing:0.2em;color:#444;">EST. BY INVITATION</p>
                   </td>
                 </tr>
               </table>
@@ -138,13 +139,13 @@ function buildWelcomeEmail(fullName: string, firstName: string, _email: string):
                 YOU'RE IN.
               </p>
 
-              <!-- ── OD's message starts here ─────────────────────────── -->
+              <!-- ── Personal message starts here ───────────────────── -->
               <!--
-                REPLACE THIS SECTION WITH OD'S EXACT WORDS.
+                REPLACE THIS SECTION WITH THE ARTIST'S EXACT WORDS.
                 Keep the styling, just swap the text.
               -->
               <p style="margin:0 0 20px;font-size:14px;line-height:1.9;color:#9CA3AF;">
-                [OD's personal message to the new member goes here. This is where
+                [The artist's personal message to the new member goes here. This is where
                 the voice of the artist speaks directly — welcoming them into the circle,
                 setting the tone, making them feel chosen.]
               </p>
@@ -155,16 +156,16 @@ function buildWelcomeEmail(fullName: string, firstName: string, _email: string):
               </p>
 
               <p style="margin:0 0 36px;font-size:14px;line-height:1.9;color:#9CA3AF;">
-                [Sign-off line from OD — personal, direct, in his voice.]
+                [Sign-off line — personal, direct, in the artist's voice.]
               </p>
-              <!-- ── OD's message ends here ────────────────────────────── -->
+              <!-- ── Personal message ends here ──────────────────────── -->
 
               <!-- Signature -->
               <p style="margin:0 0 4px;font-family:Impact,sans-serif;font-size:18px;color:#FFFFFF;letter-spacing:0.1em;">
-                — OD
+                — THE CIRCLE
               </p>
               <p style="margin:0 0 40px;font-size:9px;letter-spacing:0.3em;color:#444;">
-                ODUMODUBLVCK · INDUSTRY MACHINE ⚙️
+                INNER CIRCLE · BY INVITATION ◯
               </p>
 
               <!-- Divider -->
@@ -175,7 +176,7 @@ function buildWelcomeEmail(fullName: string, firstName: string, _email: string):
               <table>
                 <tr>
                   <td style="padding-right:12px;">
-                    <a href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://innercirclebyod.com'}/membership"
+                    <a href="${siteUrl()}/membership"
                        style="display:inline-block;padding:14px 28px;border:1px solid ${GOLD};
                               color:${GOLD};font-size:10px;letter-spacing:0.35em;
                               text-decoration:none;text-transform:uppercase;">
@@ -183,7 +184,7 @@ function buildWelcomeEmail(fullName: string, firstName: string, _email: string):
                     </a>
                   </td>
                   <td>
-                    <a href="${process.env.NEXT_PUBLIC_APP_URL ?? 'https://innercirclebyod.com'}/events"
+                    <a href="${siteUrl()}/events"
                        style="display:inline-block;padding:14px 28px;border:1px solid #2A2A2A;
                               color:#666;font-size:10px;letter-spacing:0.35em;
                               text-decoration:none;text-transform:uppercase;">
@@ -199,10 +200,10 @@ function buildWelcomeEmail(fullName: string, firstName: string, _email: string):
           <tr>
             <td style="padding:24px 40px;border-top:1px solid #1A1A1A;text-align:center;">
               <p style="margin:0 0 6px;font-size:8px;letter-spacing:0.25em;color:#333;">
-                INNERCIRCLEBYOD.COM · NATIVE RECORDS · INDUSTRY MACHINE ⚙️
+                INNER CIRCLE · THE CIRCLE NEVER BREAKS ◯
               </p>
               <p style="margin:0;font-size:8px;letter-spacing:0.15em;color:#222;">
-                You received this because you signed up at innercirclebyod.com.
+                You received this because you joined the Inner Circle waitlist.
               </p>
             </td>
           </tr>

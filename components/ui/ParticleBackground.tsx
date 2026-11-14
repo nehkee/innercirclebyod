@@ -14,7 +14,7 @@ interface ParticleBackgroundProps {
 
 export function ParticleBackground({
   count   = 900,
-  color   = 0xC9A84C,   // od-gold
+  color   = 0xC9A84C,   // ic-gold
   size    = 0.018,
   opacity = 0.45,
   speed   = 1,

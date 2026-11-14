@@ -4,11 +4,11 @@ import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 const MANIFESTO_LINES = [
-  { text: 'INDUSTRY MACHINE',  size: 'clamp(60px, 12vw, 180px)', gold: true  },
-  { text: 'NOT AN ARTIST.',    size: 'clamp(40px, 8vw, 120px)',  gold: false },
-  { text: 'A REVOLUTION.',     size: 'clamp(40px, 8vw, 120px)',  gold: false },
+  { text: 'NOT A FAN CLUB.',   size: 'clamp(60px, 12vw, 180px)', gold: true  },
+  { text: 'A SOCIETY.',        size: 'clamp(40px, 8vw, 120px)',  gold: false },
+  { text: 'A SIGNAL.',         size: 'clamp(40px, 8vw, 120px)',  gold: false },
   { text: 'A MOVEMENT.',       size: 'clamp(40px, 8vw, 120px)',  gold: false },
-  { text: 'THE MACHINE.',      size: 'clamp(60px, 12vw, 180px)', gold: true  },
+  { text: 'THE CIRCLE.',       size: 'clamp(60px, 12vw, 180px)', gold: true  },
 ];
 
 export function ManifestoSection() {
@@ -26,7 +26,7 @@ export function ManifestoSection() {
           className="font-bebas text-white/[0.015] whitespace-nowrap"
           style={{ fontSize: 'clamp(100px, 25vw, 400px)' }}
         >
-          OD ⚙️ OD ⚙️ OD ⚙️
+          IC ◯ IC ◯ IC ◯
         </span>
       </div>
 
@@ -39,7 +39,7 @@ export function ManifestoSection() {
           transition={{ duration: 0.6 }}
         >
           <p className="section-label">THE MANIFESTO</p>
-          <div className="h-px flex-1 bg-od-border" />
+          <div className="h-px flex-1 bg-ic-border" />
         </motion.div>
 
         {/* Lines */}
@@ -72,30 +72,25 @@ export function ManifestoSection() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.6, duration: 0.8 }}
         >
-          <div className="border-l-2 border-od-gold pl-8">
-            <p className="font-space text-od-silver text-lg leading-relaxed mb-6">
-              &ldquo;INDUSTRY MACHINE ⚙️<br />
-              ARTIST/REVOLUTIONARY/MACHINE&rdquo;
+          <div className="border-l-2 border-ic-gold pl-8">
+            <p className="font-space text-ic-silver text-lg leading-relaxed mb-6">
+              &ldquo;WHAT HAPPENS IN THE CIRCLE<br />
+              STAYS IN THE CIRCLE.&rdquo;
             </p>
-            <p className="font-mono text-[10px] tracking-[0.3em] text-od-muted">
-              — ODUMODUBLVCK, NATIVE RECORDS
+            <p className="font-mono text-[10px] tracking-[0.3em] text-ic-muted">
+              — THE FIRST RULE
             </p>
           </div>
 
           <div>
-            <p className="text-od-muted text-sm leading-relaxed mb-4">
-              Odumodublvck is not just a musician. He is a cultural architect, a street philosopher, a machine built from Nigerian soil and internet culture.
+            <p className="text-ic-muted text-sm leading-relaxed mb-4">
+              Some music is made for everyone. Some rooms are not. Inner Circle is where the people closest to the culture get closer still: first listens, closed doors, real access.
             </p>
-            <p className="text-od-muted text-sm leading-relaxed mb-8">
-              Inner Circle is the digital society built around his movement. Not a fanpage. Not a newsletter. A living, breathing ecosystem for those who understand.
+            <p className="text-ic-muted text-sm leading-relaxed mb-8">
+              Not a fanpage. Not a newsletter. A living, breathing society for those who understand, with a seat that has to be earned and a code that is never broken.
             </p>
-            <a
-              href="https://twitter.com/Odumodublvck_"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary py-3 px-8 text-sm"
-            >
-              FOLLOW @ODUMODUBLVCK_
+            <a href="/membership" className="btn-primary py-3 px-8 text-sm">
+              CLAIM YOUR SEAT
             </a>
           </div>
         </motion.div>

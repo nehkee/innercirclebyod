@@ -22,7 +22,7 @@ export default async function Home() {
   ]);
 
   return (
-    <main className="bg-od-black min-h-screen">
+    <main className="bg-ic-black min-h-screen">
       <Nav />
 
       {/* 1 — Hero: Three.js particles, glitch headline, countdown */}

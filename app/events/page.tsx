@@ -3,8 +3,8 @@ import { getEvents } from '@/lib/data';
 
 export const revalidate = 60;
 export const metadata   = {
-  title:       'Events | Inner Circle by OD',
-  description: 'Private shows, listening parties, studio sessions and hangouts with Odumodublvck.',
+  title:       'Events | Inner Circle',
+  description: 'Private shows, listening rooms, studio sessions and closed-door hangouts. Members first.',
 };
 
 export default async function EventsPage() {

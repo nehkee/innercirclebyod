@@ -6,7 +6,7 @@ import { generateInviteCode }        from '@/lib/qr';
 import { rateLimit }                 from '@/lib/fraud';
 import { z }                         from 'zod';
 
-// ── Generate invite code (WARLORD+ only) ─────────────────────────────────────
+// ── Generate invite code (VANGUARD+ only) ─────────────────────────────────────
 export async function POST(req: NextRequest) {
   const userId = getClerkUserId();
   if (!userId) {
@@ -25,9 +25,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Member not found' }, { status: 404 });
   }
 
-  if (!(await hasTierAccess(member.id, 'warlord'))) {
+  if (!(await hasTierAccess(member.id, 'vanguard'))) {
     return NextResponse.json(
-      { error: 'Invite generation requires WARLORD tier or higher' },
+      { error: 'Invite generation requires VANGUARD tier or higher' },
       { status: 403 }
     );
   }

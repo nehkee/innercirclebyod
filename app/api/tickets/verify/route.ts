@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
     },
     member: {
       username: member?.username || 'Unknown',
-      tier:     member?.tier     || 'machine',
+      tier:     member?.tier     || 'initiate',
     },
   });
 }

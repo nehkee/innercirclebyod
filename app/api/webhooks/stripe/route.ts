@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
         .eq('stripe_sub_id', sub.id)
         .select('user_id')
         .maybeSingle();
-      if (membership) await admin.from('members').update({ tier: 'machine' }).eq('id', membership.user_id);
+      if (membership) await admin.from('members').update({ tier: 'initiate' }).eq('id', membership.user_id);
       break;
     }
 

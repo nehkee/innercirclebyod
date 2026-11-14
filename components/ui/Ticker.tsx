@@ -7,14 +7,14 @@ interface TickerProps {
   speed?: 'slow' | 'normal' | 'fast';
 }
 
-export function Ticker({ items, className, separator = '⚙️', speed = 'normal' }: TickerProps) {
+export function Ticker({ items, className, separator = '◯', speed = 'normal' }: TickerProps) {
   const duration = { slow: '60s', normal: '40s', fast: '20s' }[speed];
   const content  = [...items, ...items].join(`   ${separator}   `);
 
   return (
-    <div className={cn('ticker-wrap border-y border-od-border py-3 overflow-hidden', className)}>
+    <div className={cn('ticker-wrap border-y border-ic-border py-3 overflow-hidden', className)}>
       <div
-        className="ticker-content font-bebas tracking-widest text-sm text-od-muted whitespace-nowrap"
+        className="ticker-content font-bebas tracking-widest text-sm text-ic-muted whitespace-nowrap"
         style={{ animationDuration: duration }}
       >
         {content}&nbsp;&nbsp;&nbsp;{separator}&nbsp;&nbsp;&nbsp;{content}

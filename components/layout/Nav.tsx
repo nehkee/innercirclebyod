@@ -36,19 +36,19 @@ export function Nav() {
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
           scrolled
-            ? 'bg-od-black/90 backdrop-blur-md border-b border-od-border'
+            ? 'bg-ic-black/90 backdrop-blur-md border-b border-ic-border'
             : 'bg-transparent'
         )}
       >
         <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link href="/" className="group flex items-center gap-3">
-            <div className="w-8 h-8 border border-od-gold flex items-center justify-center group-hover:bg-od-gold transition-colors duration-300">
-              <span className="font-bebas text-od-gold group-hover:text-black text-lg leading-none transition-colors duration-300">OD</span>
+            <div className="w-8 h-8 border border-ic-gold flex items-center justify-center group-hover:bg-ic-gold transition-colors duration-300">
+              <span className="font-bebas text-ic-gold group-hover:text-black text-lg leading-none transition-colors duration-300">IC</span>
             </div>
             <div className="hidden sm:block">
-              <p className="font-bebas text-xs tracking-[0.3em] text-od-gold leading-none">INNER CIRCLE</p>
-              <p className="font-mono text-[9px] tracking-[0.2em] text-od-muted leading-none mt-0.5">BY ODUMODUBLVCK</p>
+              <p className="font-bebas text-xs tracking-[0.3em] text-ic-gold leading-none">INNER CIRCLE</p>
+              <p className="font-mono text-[9px] tracking-[0.2em] text-ic-muted leading-none mt-0.5">EST. BY INVITATION</p>
             </div>
           </Link>
 
@@ -61,8 +61,8 @@ export function Nav() {
                   className={cn(
                     'font-bebas text-sm tracking-widest transition-colors duration-200',
                     pathname === link.href
-                      ? 'text-od-gold'
-                      : 'text-od-muted hover:text-white'
+                      ? 'text-ic-gold'
+                      : 'text-ic-muted hover:text-white'
                   )}
                 >
                   {link.label}
@@ -95,7 +95,7 @@ export function Nav() {
       {/* Mobile Menu */}
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-od-black flex flex-col transition-all duration-500 md:hidden',
+          'fixed inset-0 z-40 bg-ic-black flex flex-col transition-all duration-500 md:hidden',
           menuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
       >
@@ -106,7 +106,7 @@ export function Nav() {
               href={link.href}
               className={cn(
                 'font-bebas text-5xl tracking-widest transition-colors duration-200',
-                pathname === link.href ? 'gold-text' : 'text-white hover:text-od-gold'
+                pathname === link.href ? 'gold-text' : 'text-white hover:text-ic-gold'
               )}
               style={{ animationDelay: `${i * 0.1}s` }}
             >
@@ -120,8 +120,8 @@ export function Nav() {
         </div>
 
         <div className="p-8 text-center">
-          <p className="font-mono text-[10px] tracking-widest text-od-muted">
-            INNERCIRCLEBYOD.COM
+          <p className="font-mono text-[10px] tracking-widest text-ic-muted">
+            THE CIRCLE NEVER BREAKS
           </p>
         </div>
       </div>

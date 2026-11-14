@@ -11,9 +11,10 @@ import { createInvoice } from '@/lib/payments/nowpayments';
 import { completePayment } from '@/lib/payments/fulfill';
 import { appUrl, enabledPaymentMethods } from '@/lib/payments/config';
 import type { MembershipTier } from '@/types';
+import { findUsableDiscount } from '@/lib/support/offers';
 
 const Body = z.discriminatedUnion('kind', [
-  z.object({ kind: z.literal('membership'), tier: z.enum(['machine', 'insider', 'warlord', 'industry']), method: z.enum(['card', 'paystack', 'crypto']) }),
+  z.object({ kind: z.literal('membership'), tier: z.enum(['initiate', 'insider', 'vanguard', 'sovereign']), method: z.enum(['card', 'paystack', 'crypto']) }),
   z.object({ kind: z.literal('ticket'), eventId: z.string().uuid(), method: z.enum(['card', 'paystack', 'crypto', 'free']) }),
 ]);
 
@@ -107,9 +108,14 @@ export async function POST(req: NextRequest) {
     return fail(isFree ? 'This event is free — no payment needed' : 'Choose a payment method', 400);
   }
 
-  const currency = body.method === 'paystack' ? 'NGN' : 'USD';
-  const amount   = currency === 'NGN' ? priceNGN : priceUSD;
-  if (!isFree && !(amount > 0)) return fail('This item has no price in that currency', 400);
+  const currency  = body.method === 'paystack' ? 'NGN' : 'USD';
+  const listPrice = currency === 'NGN' ? priceNGN : priceUSD;
+  if (!isFree && !(listPrice > 0)) return fail('This item has no price in that currency', 400);
+
+  // Apply a saved retention discount automatically (consumed only once paid)
+  const discount = isFree ? null
+    : await findUsableDiscount(member.id, body.kind === 'ticket' ? 'event_discount' : 'membership_discount');
+  const amount = discount ? Math.round(listPrice * (100 - discount.percent)) / 100 : listPrice;
 
   // ── Record the pending payment first, so webhooks always find it ────────────
   const { data: payment, error: insertErr } = await admin
@@ -121,7 +127,9 @@ export async function POST(req: NextRequest) {
       event_id:  eventId,
       provider:  body.method === 'free' ? null : PROVIDER[body.method],
       currency,
-      amount:    isFree ? 0 : amount,
+      amount:           isFree ? 0 : amount,
+      offer_id:         discount?.id ?? null,
+      discount_percent: discount?.percent ?? 0,
     })
     .select('id')
     .single();
@@ -139,7 +147,11 @@ export async function POST(req: NextRequest) {
       url = successUrl;
     } else if (body.method === 'card') {
       const isMembership = body.kind === 'membership';
-      const session = await getStripe().checkout.sessions.create({
+      const stripe = getStripe();
+      const coupon = isMembership && discount
+        ? await stripe.coupons.create({ percent_off: discount.percent, duration: 'once', name: `Member discount ${discount.percent}%` })
+        : null;
+      const session = await stripe.checkout.sessions.create({
         mode:                isMembership ? 'subscription' : 'payment',
         customer_email:      member.email,
         client_reference_id: payment.id,
@@ -147,12 +159,13 @@ export async function POST(req: NextRequest) {
           quantity: 1,
           price_data: {
             currency:     'usd',
-            unit_amount:  Math.round(amount * 100),
+            unit_amount:  Math.round((isMembership ? listPrice : amount) * 100),
             product_data: { name: description },
             ...(isMembership ? { recurring: { interval: 'month' as const } } : {}),
           },
         }],
         metadata: { paymentId: payment.id },
+        ...(coupon ? { discounts: [{ coupon: coupon.id }] } : {}),
         ...(isMembership ? { subscription_data: { metadata: { paymentId: payment.id, userId: member.id } } } : {}),
         success_url: successUrl,
         cancel_url:  cancelUrl,

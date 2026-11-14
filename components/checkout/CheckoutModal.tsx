@@ -41,16 +41,16 @@ export function CheckoutModal({ open, onClose, title, subtitle, color = '#C9A84C
       aria-label={title}
     >
       <div
-        className="w-full sm:max-w-md bg-od-dark border border-od-border p-6 sm:p-8 max-h-[90vh] overflow-y-auto"
+        className="w-full sm:max-w-md bg-ic-dark border border-ic-border p-6 sm:p-8 max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-start justify-between mb-6">
           <div>
             <p className="section-label mb-2">CHECKOUT</p>
             <h2 className="font-bebas text-4xl leading-none" style={{ color }}>{title}</h2>
-            <p className="font-mono text-[10px] tracking-widest text-od-muted mt-2">{subtitle}</p>
+            <p className="font-mono text-[10px] tracking-widest text-ic-muted mt-2">{subtitle}</p>
           </div>
-          <button onClick={onClose} className="text-od-muted hover:text-white p-1" aria-label="Close">
+          <button onClick={onClose} className="text-ic-muted hover:text-white p-1" aria-label="Close">
             <X size={20} />
           </button>
         </div>

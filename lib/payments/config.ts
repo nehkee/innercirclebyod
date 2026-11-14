@@ -13,7 +13,7 @@ export function enabledPaymentMethods(): PaymentMethods {
   };
 }
 
-/** Public base URL for redirects and webhooks, e.g. https://innercirclebyod.com */
+/** Public base URL for redirects and webhooks, e.g. https://innercircle.club */
 export function appUrl(fallbackOrigin?: string): string {
   const url = process.env.NEXT_PUBLIC_APP_URL || fallbackOrigin || 'http://localhost:3000';
   return url.replace(/\/+$/, '');

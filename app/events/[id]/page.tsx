@@ -8,9 +8,9 @@ export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const event = await getEvent(params.id);
-  if (!event) return { title: 'Event not found | Inner Circle by OD' };
+  if (!event) return { title: 'Event not found | Inner Circle' };
   return {
-    title:       `${event.title} | Inner Circle by OD`,
+    title:       `${event.title} | Inner Circle`,
     description: event.description,
   };
 }

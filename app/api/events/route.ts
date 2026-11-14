@@ -16,7 +16,7 @@ const eventSchema = z.object({
   capacity:    z.number().int().min(1),
   isVip:       z.boolean().optional(),
   isSecret:    z.boolean().optional(),
-  minTier:     z.enum(['machine', 'insider', 'warlord', 'industry']).optional(),
+  minTier:     z.enum(['initiate', 'insider', 'vanguard', 'sovereign']).optional(),
 });
 
 export async function GET(req: NextRequest) {

@@ -19,10 +19,10 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 const TIER_COLORS: Record<string, string> = {
-  machine:  '#9CA3AF',
+  initiate:  '#9CA3AF',
   insider:  '#C9A84C',
-  warlord:  '#CC0000',
-  industry: '#FFFFFF',
+  vanguard:  '#CC0000',
+  sovereign: '#FFFFFF',
 };
 
 export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
@@ -35,7 +35,7 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
   const types = ['all', ...new Set(ALL_EVENTS.map(e => e.type))];
 
   return (
-    <main className="bg-od-black min-h-screen">
+    <main className="bg-ic-black min-h-screen">
       <Nav />
 
       {/* Hero */}
@@ -48,24 +48,24 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
           >
             EVENTS
           </h1>
-          <p className="text-od-silver max-w-lg">
+          <p className="text-ic-silver max-w-lg">
             Private shows. Listening parties. Studio sessions. Hangouts. Underground culture at every level.
           </p>
         </div>
       </section>
 
       {/* Filters */}
-      <section className="border-y border-od-border px-6 py-4 sticky top-16 md:top-20 z-30 bg-od-black/95 backdrop-blur-sm">
+      <section className="border-y border-ic-border px-6 py-4 sticky top-16 md:top-20 z-30 bg-ic-black/95 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto flex items-center gap-3 overflow-x-auto pb-1">
-          <Filter size={14} className="text-od-muted flex-shrink-0" />
+          <Filter size={14} className="text-ic-muted flex-shrink-0" />
           {types.map(type => (
             <button
               key={type}
               onClick={() => setFilter(type)}
               className={`font-mono text-[10px] tracking-widest px-4 py-2 flex-shrink-0 border transition-all ${
                 filter === type
-                  ? 'border-od-gold text-od-gold bg-od-gold/10'
-                  : 'border-od-border text-od-muted hover:border-od-muted hover:text-white'
+                  ? 'border-ic-gold text-ic-gold bg-ic-gold/10'
+                  : 'border-ic-border text-ic-muted hover:border-ic-muted hover:text-white'
               }`}
             >
               {type === 'all' ? 'ALL' : TYPE_LABELS[type]}
@@ -78,9 +78,9 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
       <section className="py-12 px-6">
         <div className="max-w-7xl mx-auto space-y-6">
           {filtered.length === 0 && (
-            <div className="border border-od-border p-10 md:p-16 text-center">
+            <div className="border border-ic-border p-10 md:p-16 text-center">
               <p className="font-bebas text-3xl md:text-5xl text-white mb-3">NOTHING ON THE CALENDAR YET</p>
-              <p className="text-od-muted text-sm mb-8">New events drop to members first.</p>
+              <p className="text-ic-muted text-sm mb-8">New events drop to members first.</p>
               <Link href="/join" className="btn-primary px-10 py-3 text-sm">GET NOTIFIED</Link>
             </div>
           )}
@@ -96,15 +96,15 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
                 key={event.id}
                 className={`border transition-all duration-300 ${
                   isPast
-                    ? 'border-od-border/30 opacity-50'
-                    : 'border-od-border hover:border-od-gold/40 bg-od-dark/20'
+                    ? 'border-ic-border/30 opacity-50'
+                    : 'border-ic-border hover:border-ic-gold/40 bg-ic-dark/20'
                 }`}
               >
                 <div className="p-6 md:p-8">
                   <div className="flex flex-col md:flex-row md:items-start gap-6">
                     {/* Left: Number + Labels */}
                     <div className="flex items-center gap-4 md:flex-col md:items-center md:w-20 flex-shrink-0">
-                      <span className="font-mono text-3xl font-bold text-od-border">
+                      <span className="font-mono text-3xl font-bold text-ic-border">
                         {String(i + 1).padStart(2, '0')}
                       </span>
                       <div className="flex flex-wrap gap-1">
@@ -112,12 +112,12 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
                           <span className="badge-live text-[8px] px-1.5 py-0.5">VIP</span>
                         )}
                         {event.isSecret && (
-                          <span className="flex items-center gap-1 font-mono text-[8px] tracking-widest text-od-muted border border-od-border px-1.5 py-0.5">
+                          <span className="flex items-center gap-1 font-mono text-[8px] tracking-widest text-ic-muted border border-ic-border px-1.5 py-0.5">
                             <Lock size={7} /> SECRET
                           </span>
                         )}
                         {isPast && (
-                          <span className="font-mono text-[8px] tracking-widest text-od-muted border border-od-border px-1.5 py-0.5">
+                          <span className="font-mono text-[8px] tracking-widest text-ic-muted border border-ic-border px-1.5 py-0.5">
                             PAST
                           </span>
                         )}
@@ -128,7 +128,7 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
                     <div className="flex-1">
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div>
-                          <p className="font-mono text-[9px] tracking-widest text-od-muted mb-1">
+                          <p className="font-mono text-[9px] tracking-widest text-ic-muted mb-1">
                             {TYPE_LABELS[event.type]}
                           </p>
                           <h2 className="font-bebas text-2xl md:text-3xl text-white">
@@ -145,9 +145,9 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
                         )}
                       </div>
 
-                      <p className="text-od-muted text-sm mb-4">{event.description}</p>
+                      <p className="text-ic-muted text-sm mb-4">{event.description}</p>
 
-                      <div className="flex flex-wrap gap-6 text-xs font-mono text-od-muted mb-4">
+                      <div className="flex flex-wrap gap-6 text-xs font-mono text-ic-muted mb-4">
                         <span className="flex items-center gap-1.5">
                           <MapPin size={10} />
                           {event.location}{event.venue ? ` — ${event.venue}` : ''}
@@ -155,8 +155,8 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
                         <span className="flex items-center gap-1.5">
                           <Users size={10} />
                           {isSoldOut
-                            ? <span className="text-od-red">SOLD OUT</span>
-                            : <span className="text-od-gold">{spotsLeft} SPOTS LEFT</span>
+                            ? <span className="text-ic-red">SOLD OUT</span>
+                            : <span className="text-ic-gold">{spotsLeft} SPOTS LEFT</span>
                           }
                           {' '}/ {event.capacity}
                         </span>
@@ -170,9 +170,9 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
                       </div>
 
                       {/* Capacity bar */}
-                      <div className="w-full h-px bg-od-border mb-4">
+                      <div className="w-full h-px bg-ic-border mb-4">
                         <div
-                          className={`h-px transition-all ${isSoldOut ? 'bg-od-red' : 'bg-od-gold'}`}
+                          className={`h-px transition-all ${isSoldOut ? 'bg-ic-red' : 'bg-ic-gold'}`}
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -180,7 +180,7 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
 
                     {/* Right: Date + CTA */}
                     <div className="md:text-right flex-shrink-0 md:w-40">
-                      <p className="font-mono text-[9px] tracking-widest text-od-muted mb-1">
+                      <p className="font-mono text-[9px] tracking-widest text-ic-muted mb-1">
                         {formatDate(event.date)}
                       </p>
                       {!isPast && (
@@ -190,9 +190,9 @@ export function EventsList({ events: ALL_EVENTS }: { events: Event[] }) {
                       )}
 
                       {isPast ? (
-                        <span className="font-mono text-xs text-od-muted">COMPLETED</span>
+                        <span className="font-mono text-xs text-ic-muted">COMPLETED</span>
                       ) : isSoldOut ? (
-                        <span className="inline-block border border-od-red text-od-red font-mono text-xs px-4 py-2 tracking-widest">
+                        <span className="inline-block border border-ic-red text-ic-red font-mono text-xs px-4 py-2 tracking-widest">
                           SOLD OUT
                         </span>
                       ) : (

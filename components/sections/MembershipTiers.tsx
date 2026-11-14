@@ -22,7 +22,7 @@ export function MembershipTiers({ compact = false }: { compact?: boolean }) {
           transition={{ duration: 0.6 }}
         >
           <p className="section-label">MEMBERSHIP</p>
-          <div className="h-px flex-1 bg-od-border" />
+          <div className="h-px flex-1 bg-ic-border" />
         </motion.div>
 
         <div className="overflow-hidden mb-16">
@@ -45,7 +45,7 @@ export function MembershipTiers({ compact = false }: { compact?: boolean }) {
               className={`
                 relative border p-8 flex flex-col
                 card-glow transition-all duration-500
-                ${tier.featured ? 'border-od-gold bg-od-gray/50' : 'border-od-border bg-od-dark/50'}
+                ${tier.featured ? 'border-ic-gold bg-ic-gray/50' : 'border-ic-border bg-ic-dark/50'}
               `}
               initial={{ opacity: 0, y: 50 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -67,7 +67,7 @@ export function MembershipTiers({ compact = false }: { compact?: boolean }) {
                     background: `rgba(${tier.colorRgb}, 0.05)`,
                   }}
                 >
-                  ⚙️ {tier.id.toUpperCase()}
+                  ◯ {tier.name}
                 </div>
 
                 <h3
@@ -76,18 +76,18 @@ export function MembershipTiers({ compact = false }: { compact?: boolean }) {
                 >
                   {tier.name}
                 </h3>
-                <p className="font-mono text-xs tracking-wider text-od-muted">{tier.tagline}</p>
+                <p className="font-mono text-xs tracking-wider text-ic-muted">{tier.tagline}</p>
               </div>
 
               {/* Price */}
-              <div className="mb-8 pb-8 border-b border-od-border">
+              <div className="mb-8 pb-8 border-b border-ic-border">
                 <div className="flex items-baseline gap-2">
                   <span className="font-bebas text-4xl" style={{ color: tier.color }}>
                     ${tier.priceUSD}
                   </span>
-                  <span className="font-mono text-xs text-od-muted">/mo</span>
+                  <span className="font-mono text-xs text-ic-muted">/mo</span>
                 </div>
-                <p className="font-mono text-xs text-od-muted mt-1">
+                <p className="font-mono text-xs text-ic-muted mt-1">
                   {formatPrice(tier.priceNGN, 'NGN')}/mo
                 </p>
               </div>
@@ -98,7 +98,7 @@ export function MembershipTiers({ compact = false }: { compact?: boolean }) {
                   {tier.benefits.map((b, j) => (
                     <li key={j} className="flex items-start gap-3">
                       <Check size={14} className="mt-0.5 flex-shrink-0" style={{ color: tier.color }} />
-                      <span className="text-od-silver text-sm">{b}</span>
+                      <span className="text-ic-silver text-sm">{b}</span>
                     </li>
                   ))}
                   {tier.exclusive.map((e, j) => (

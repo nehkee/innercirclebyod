@@ -12,6 +12,8 @@ import { getStripe } from '@/lib/stripe';
 import { generateTicketToken } from '@/lib/qr';
 import { ticketConfirmationEmail } from '@/lib/email-templates';
 import { ONE_TIME_MEMBERSHIP_DAYS } from '@/lib/payments/config';
+import { fromEmail } from '@/lib/brand';
+import { consumeOffer } from '@/lib/support/offers';
 import type { PaymentRow, Verified } from '@/lib/payments/types';
 
 type VerifiedOk = Extract<Verified, { ok: true }>;
@@ -44,6 +46,8 @@ export async function completePayment(paymentId: string, info: VerifiedOk = { ok
       .from('payments')
       .update({ status: 'fulfilled', fulfilled_at: new Date().toISOString() })
       .eq('id', payment.id);
+    const offerId = (payment as PaymentRow & { offer_id?: string | null }).offer_id;
+    if (offerId) await consumeOffer(offerId, payment.id);
     return 'fulfilled';
   } catch (err) {
     // Money was taken but delivery failed (e.g. last seat went): flag for a human / refund.
@@ -130,7 +134,7 @@ async function fulfillTicket(payment: PaymentRow) {
       tier:       member.tier,
     });
     await new Resend(process.env.RESEND_API_KEY).emails
-      .send({ from: 'Inner Circle <tickets@innercirclebyod.com>', to: [member.email], subject, html })
+      .send({ from: fromEmail('Inner Circle Tickets'), to: [member.email], subject, html })
       .catch(err => console.error('Ticket email failed', err));
   }
 }

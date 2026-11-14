@@ -79,17 +79,17 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
 
       {/* ── Ambient glow spots ───────────────────────────────────────────── */}
       <motion.div
-        className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-od-gold blur-[160px] pointer-events-none z-[1]"
+        className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-ic-gold blur-[160px] pointer-events-none z-[1]"
         style={{ opacity: 0.05, y: parallaxY }}
       />
       <motion.div
-        className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-od-red blur-[130px] pointer-events-none z-[1]"
+        className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-ic-red blur-[130px] pointer-events-none z-[1]"
         style={{ opacity: 0.035, y: parallaxY }}
       />
 
       {/* ── Scanline sweep ───────────────────────────────────────────────── */}
       <div
-        className="absolute left-0 right-0 h-px bg-od-gold/15 pointer-events-none z-[3]"
+        className="absolute left-0 right-0 h-px bg-ic-gold/15 pointer-events-none z-[3]"
         style={{ animation: 'scanline 9s linear infinite' }}
       />
 
@@ -103,11 +103,11 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
           className="flex items-center justify-center gap-3 mb-8"
           variants={fadeUp} initial="hidden" animate="visible" custom={0}
         >
-          <div className="h-px w-12 bg-od-gold/40" />
-          <p className="font-mono text-[10px] tracking-[0.4em] text-od-gold uppercase">
+          <div className="h-px w-12 bg-ic-gold/40" />
+          <p className="font-mono text-[10px] tracking-[0.4em] text-ic-gold uppercase">
             An Elite Digital Society
           </p>
-          <div className="h-px w-12 bg-od-gold/40" />
+          <div className="h-px w-12 bg-ic-gold/40" />
         </motion.div>
 
         {/* INNER */}
@@ -138,14 +138,14 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
           </motion.h1>
         </div>
 
-        {/* BY OD */}
+        {/* Motto */}
         <motion.div
           className="flex items-center justify-center gap-4 mt-4 mb-10"
           variants={fadeUp} initial="hidden" animate="visible" custom={3}
         >
-          <div className="h-px flex-1 max-w-[80px] bg-od-border" />
-          <p className="font-bebas tracking-[0.5em] text-od-muted text-xl md:text-2xl">BY OD</p>
-          <div className="h-px flex-1 max-w-[80px] bg-od-border" />
+          <div className="h-px flex-1 max-w-[80px] bg-ic-border" />
+          <p className="font-bebas tracking-[0.5em] text-ic-muted text-xl md:text-2xl">BY INVITATION</p>
+          <div className="h-px flex-1 max-w-[80px] bg-ic-border" />
         </motion.div>
 
         {/* Countdown */}
@@ -161,13 +161,13 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
               </div>
               <Link
                 href={`/events/${nextEvent.id}`}
-                className="inline-block font-mono text-[10px] tracking-widest text-od-muted hover:text-od-gold transition-colors mt-3"
+                className="inline-block font-mono text-[10px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors mt-3"
               >
                 {nextEvent.title} — {nextEvent.location.split(',')[0].toUpperCase()}
               </Link>
             </>
           ) : (
-            <p className="font-bebas text-3xl tracking-widest text-od-gold">ANNOUNCED SOON</p>
+            <p className="font-bebas text-3xl tracking-widest text-ic-gold">ANNOUNCED SOON</p>
           )}
         </motion.div>
 
@@ -177,7 +177,7 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
           variants={fadeUp} initial="hidden" animate="visible" custom={5}
         >
           <Link href="/join" className="btn-primary text-base px-12 py-4">
-            ENTER THE MACHINE ⚙️
+            ENTER THE CIRCLE ◯
           </Link>
           <Link href="/events" className="btn-secondary text-base px-12 py-4">
             SEE EVENTS
@@ -187,7 +187,7 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
         {/* Social proof — real numbers only */}
         {stats && (
           <motion.p
-            className="font-mono text-[10px] tracking-widest text-od-muted mt-12"
+            className="font-mono text-[10px] tracking-widest text-ic-muted mt-12"
             variants={fadeUp} initial="hidden" animate="visible" custom={6}
           >
             {[
@@ -207,9 +207,9 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
         transition={{ delay: 2.2, duration: 1 }}
         style={{ opacity: fadeOut }}
       >
-        <p className="font-mono text-[9px] tracking-[0.3em] text-od-muted">SCROLL</p>
+        <p className="font-mono text-[9px] tracking-[0.3em] text-ic-muted">SCROLL</p>
         <motion.div
-          className="w-px h-8 bg-gradient-to-b from-od-muted to-transparent"
+          className="w-px h-8 bg-gradient-to-b from-ic-muted to-transparent"
           animate={{ scaleY: [1, 0.4, 1] }}
           transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
           style={{ originY: 0 }}

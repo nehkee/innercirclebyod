@@ -1,181 +1,66 @@
-# INNER CIRCLE BY OD — Deployment Guide
+# INNER CIRCLE — Deployment Guide
 
-## Prerequisites
+Inner Circle is artist-neutral. Brand name, mark and socials live in `lib/brand.ts`
+and `.env.local.example`; tiers and prices in `lib/constants.ts`; retention offers
+and the refund window in `lib/support/config.ts`.
 
-- Node.js 18+
-- npm or pnpm
-- Vercel account
-- Supabase account
-- Clerk account
-- Stripe account
-- Paystack account (for Nigerian users)
-- Resend account (email)
+## 1. Accounts you need
 
----
+| Service   | Used for                                   | Required? |
+|-----------|--------------------------------------------|-----------|
+| Vercel    | Hosting                                    | Yes       |
+| Supabase  | Database                                   | Yes       |
+| Clerk     | Sign-in                                    | Yes       |
+| Stripe    | Card payments (USD), monthly memberships   | For cards |
+| Paystack  | Naira payments (card, transfer, USSD)      | For NGN   |
+| NOWPayments | Crypto (USDT/USDC/BTC)                   | For crypto|
+| Resend    | Ticket, welcome and team emails            | Recommended |
 
-## 1. Install Dependencies
+## 2. Database
 
-```bash
-npm install
-```
+1. Create a Supabase project.
+2. SQL editor → paste `supabase/schema.sql` → Run.
+3. Copy the project URL, anon key and service-role key into your environment.
 
----
+## 3. Environment variables
 
-## 2. Environment Variables
+Copy `.env.local.example` to `.env.local` (locally) or into Vercel → Settings →
+Environment Variables. Every variable is explained in that file. Payment methods
+appear at checkout only once their keys are set.
 
-Copy `.env.local.example` to `.env.local` and fill in all values:
+## 4. Webhooks
 
-```bash
-cp .env.local.example .env.local
-```
+| Provider    | URL                                             | Notes |
+|-------------|-------------------------------------------------|-------|
+| Clerk       | `https://<domain>/api/webhooks/clerk`           | user.created / updated / deleted |
+| Stripe      | `https://<domain>/api/webhooks/stripe`          | checkout.session.completed, checkout.session.expired, customer.subscription.updated, customer.subscription.deleted, invoice.payment_failed |
+| Paystack    | `https://<domain>/api/webhooks/paystack`        | Settings → API Keys & Webhooks |
+| NOWPayments | sent automatically with each invoice            | Set the IPN secret; choose coins under "Coins settings" |
 
-### Required Keys:
+## 5. Deploy
 
-| Variable | Where to get it |
-|----------|----------------|
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | clerk.com → API Keys |
-| `CLERK_SECRET_KEY` | clerk.com → API Keys |
-| `NEXT_PUBLIC_SUPABASE_URL` | supabase.com → Project Settings |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | supabase.com → API |
-| `SUPABASE_SERVICE_ROLE_KEY` | supabase.com → API (keep secret) |
-| `STRIPE_SECRET_KEY` | dashboard.stripe.com → Developers |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | dashboard.stripe.com → Developers |
-| `PAYSTACK_SECRET_KEY` | paystack.com → Settings → API Keys |
-| `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | paystack.com → Settings → API Keys |
-| `RESEND_API_KEY` | resend.com → API Keys |
+1. vercel.com/new → import the GitHub repository → Deploy.
+2. Add your domain in Vercel → Settings → Domains and set `NEXT_PUBLIC_APP_URL` to it.
+3. Sign up on the live site, then make yourself an admin in Supabase:
+   `UPDATE members SET is_admin = TRUE WHERE email = 'you@example.com';`
+4. Open `/admin`: Overview, Inbox (support chat), Refunds, Applications, Events, Members.
 
----
+## 6. Day-to-day
 
-## 3. Database Setup (Supabase)
+- **Events**: add rows to the `events` table in Supabase (`is_active = true` to publish).
+- **Retention inbox**: members who want to cancel or can't make an event talk to the
+  concierge chat first (offers are applied automatically); anything it can't solve
+  lands in Admin → Inbox, and the team is emailed if `SUPPORT_TEAM_EMAIL` is set.
+- **Refunds**: Admin → Refunds lists open requests with their 7-day deadline. Card and
+  Paystack refunds run with one click; crypto refunds are sent from the NOWPayments
+  dashboard to the address the member gave, then marked as refunded.
 
-1. Create a new Supabase project at supabase.com
-2. Go to SQL Editor
-3. Run the contents of `supabase/schema.sql`
-4. Enable Row Level Security (already in schema)
+## 7. Pre-launch checklist
 
----
-
-## 4. Clerk Auth Setup
-
-1. Create app at clerk.com
-2. Configure sign-in methods (Email + Google recommended)
-3. Add webhook: `https://yourdomain.com/api/webhooks/clerk`
-4. Sync users to Supabase via webhook
-
----
-
-## 5. Stripe Setup
-
-1. Create products and prices for each membership tier:
-   - MACHINE: $10/month recurring
-   - INSIDER: $25/month recurring
-   - WARLORD: $75/month recurring
-   - INDUSTRY: $200/month recurring
-2. Add price IDs to `.env.local`:
-   ```
-   STRIPE_MACHINE_PRICE_ID=price_xxx
-   STRIPE_INSIDER_PRICE_ID=price_xxx
-   STRIPE_WARLORD_PRICE_ID=price_xxx
-   STRIPE_INDUSTRY_PRICE_ID=price_xxx
-   ```
-3. Set up webhook: `https://yourdomain.com/api/payments/stripe`
-   - Events: `checkout.session.completed`, `customer.subscription.*`
-
----
-
-## 6. Paystack Setup
-
-1. Create plans for each tier (NGN):
-   - MACHINE: ₦15,000/month
-   - INSIDER: ₦38,000/month
-   - WARLORD: ₦115,000/month
-   - INDUSTRY: ₦300,000/month
-2. Add plan codes to `.env.local`:
-   ```
-   PAYSTACK_MACHINE_PLAN=PLN_xxx
-   PAYSTACK_INSIDER_PLAN=PLN_xxx
-   PAYSTACK_WARLORD_PLAN=PLN_xxx
-   PAYSTACK_INDUSTRY_PLAN=PLN_xxx
-   ```
-3. Set up webhook: `https://yourdomain.com/api/payments/paystack`
-
----
-
-## 7. Local Development
-
-```bash
-npm run dev
-```
-
-Open http://localhost:3000
-
----
-
-## 8. Deploy to Vercel
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-
-# Set production env vars
-vercel env add CLERK_SECRET_KEY production
-# ... add all other env vars
-```
-
-Or connect the GitHub repo to Vercel dashboard for automatic deployments.
-
-### Vercel Settings:
-- Framework: Next.js
-- Build command: `npm run build`
-- Output directory: `.next`
-- Node.js version: 18.x
-
----
-
-## 9. Custom Domain
-
-In Vercel dashboard:
-1. Go to Settings → Domains
-2. Add `innercirclebyod.com`
-3. Update DNS records at your registrar:
-   ```
-   A     @    76.76.21.21
-   CNAME www  cname.vercel-dns.com
-   ```
-
----
-
-## 10. Admin Access
-
-Navigate to `/admin` — currently accessible without auth.
-To protect it, wrap with Clerk middleware:
-
-```typescript
-// middleware.ts
-import { authMiddleware } from "@clerk/nextjs";
-
-export default authMiddleware({
-  publicRoutes: ["/", "/membership", "/events", "/community", "/drops"],
-  ignoredRoutes: ["/api/payments/stripe", "/api/payments/paystack"],
-});
-```
-
-Add admin user IDs to an environment variable and check in the admin page.
-
----
-
-## Architecture Overview
-
-```
-innercirclebyod.com
-├── Frontend     → Next.js 14 (App Router) on Vercel
-├── Database     → Supabase (PostgreSQL + RLS)
-├── Auth         → Clerk
-├── Payments     → Stripe (USD) + Paystack (NGN)
-├── Email        → Resend
-├── Media        → Vercel Blob or Cloudinary
-└── Domain       → innercirclebyod.com → Vercel
-```
+- [ ] `supabase/schema.sql` run on the production database
+- [ ] All keys set in Vercel (including `TICKET_SECRET` and `NEXT_PUBLIC_APP_URL`)
+- [ ] Webhooks registered for Clerk, Stripe and Paystack
+- [ ] Coins enabled in NOWPayments
+- [ ] Admin account flagged (`is_admin = true`)
+- [ ] One small test purchase per payment method, then a test refund
+- [ ] Brand, socials and copy reviewed for the artist you're launching with

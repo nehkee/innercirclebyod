@@ -2,7 +2,7 @@ import { SignIn } from '@clerk/nextjs';
 import { AuthShell } from '@/components/auth/AuthShell';
 import { isClerkConfigured } from '@/lib/auth';
 
-export const metadata = { title: 'Sign in | Inner Circle by OD' };
+export const metadata = { title: 'Sign in | Inner Circle' };
 
 export default function SignInPage() {
   return (

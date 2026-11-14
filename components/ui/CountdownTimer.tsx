@@ -41,7 +41,7 @@ export function CountdownTimer({ targetDate, className, compact = false }: Count
 
   if (compact) {
     return (
-      <span className={`font-mono text-od-gold text-sm ${className}`}>
+      <span className={`font-mono text-ic-gold text-sm ${className}`}>
         {pad(time?.days)}:{pad(time?.hours)}:{pad(time?.minutes)}:{pad(time?.seconds)}
       </span>
     );
@@ -59,15 +59,15 @@ export function CountdownTimer({ targetDate, className, compact = false }: Count
       {units.map(({ label, value }, i) => (
         <div key={label} className="flex items-center gap-3">
           <div className="text-center">
-            <div className="font-mono text-3xl font-bold text-od-gold tabular-nums leading-none">
+            <div className="font-mono text-3xl font-bold text-ic-gold tabular-nums leading-none">
               {pad(value)}
             </div>
-            <div className="font-mono text-[10px] tracking-widest text-od-muted mt-1">
+            <div className="font-mono text-[10px] tracking-widest text-ic-muted mt-1">
               {label}
             </div>
           </div>
           {i < units.length - 1 && (
-            <span className="font-mono text-2xl text-od-border mb-4">:</span>
+            <span className="font-mono text-2xl text-ic-border mb-4">:</span>
           )}
         </div>
       ))}

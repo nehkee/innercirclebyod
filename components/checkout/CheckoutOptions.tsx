@@ -99,9 +99,9 @@ export function CheckoutOptions({ product, methods, priceUSD, priceNGN }: Checko
 
   if (options.length === 0) {
     return (
-      <div className="border border-od-border p-5 text-center">
-        <p className="font-bebas tracking-widest text-od-muted text-lg mb-1">PAYMENTS OPEN SOON</p>
-        <p className="font-mono text-[10px] tracking-widest text-od-muted mb-4">GET NOTIFIED WHEN CHECKOUT GOES LIVE</p>
+      <div className="border border-ic-border p-5 text-center">
+        <p className="font-bebas tracking-widest text-ic-muted text-lg mb-1">PAYMENTS OPEN SOON</p>
+        <p className="font-mono text-[10px] tracking-widest text-ic-muted mb-4">GET NOTIFIED WHEN CHECKOUT GOES LIVE</p>
         <Link href="/join" className="btn-primary py-2 px-6 text-xs">JOIN THE WAITLIST</Link>
       </div>
     );
@@ -122,8 +122,11 @@ export function CheckoutOptions({ product, methods, priceUSD, priceNGN }: Checko
           primary={i === 0}
         />
       ))}
-      <p className="font-mono text-[9px] tracking-widest text-od-muted text-center pt-1">
+      <p className="font-mono text-[9px] tracking-widest text-ic-muted text-center pt-1">
         SECURE CHECKOUT · WE NEVER SEE YOUR CARD OR WALLET KEYS
+      </p>
+      <p className="font-mono text-[9px] tracking-widest text-ic-muted text-center">
+        CAN&apos;T MAKE IT? WE&apos;LL MOVE YOUR DATE OR <Link href="/refunds" className="underline hover:text-ic-gold">REFUND YOU</Link>
       </p>
     </div>
   );
@@ -140,20 +143,20 @@ function MethodButton(props: {
       disabled={props.disabled}
       className={`group w-full text-left border p-4 transition-all duration-200 disabled:opacity-60 ${
         props.primary
-          ? 'border-od-gold bg-od-gold/10 hover:bg-od-gold/20'
-          : 'border-od-border hover:border-od-gold/60 bg-od-gray/20'
+          ? 'border-ic-gold bg-ic-gold/10 hover:bg-ic-gold/20'
+          : 'border-ic-border hover:border-ic-gold/60 bg-ic-gray/20'
       }`}
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-2 text-od-gold">
+        <span className="flex items-center gap-2 text-ic-gold">
           {props.busy ? <Loader2 size={16} className="animate-spin" /> : props.icon}
-          <span className="font-bebas tracking-widest text-lg text-white group-hover:text-od-gold transition-colors">
+          <span className="font-bebas tracking-widest text-lg text-white group-hover:text-ic-gold transition-colors">
             {props.title}
           </span>
         </span>
-        <span className="font-bebas text-xl text-od-gold whitespace-nowrap">{props.price}</span>
+        <span className="font-bebas text-xl text-ic-gold whitespace-nowrap">{props.price}</span>
       </div>
-      <p className="font-mono text-[9px] tracking-widest text-od-muted mt-1">{props.note}</p>
+      <p className="font-mono text-[9px] tracking-widest text-ic-muted mt-1">{props.note}</p>
     </button>
   );
 }

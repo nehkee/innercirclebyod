@@ -1,20 +1,24 @@
 import type { TierConfig } from '@/types';
 
+/**
+ * Membership tiers. Ids are stored in the database (membership_tier enum);
+ * names, taglines, prices and benefits can be changed freely here.
+ */
 export const TIERS: TierConfig[] = [
   {
-    id:       'machine',
-    name:     'MACHINE',
-    tagline:  'Enter the system.',
+    id:       'initiate',
+    name:     'INITIATE',
+    tagline:  'Enter the circle.',
     priceUSD: 10,
     priceNGN: 15000,
     color:    '#9CA3AF',
     colorRgb: '156,163,175',
     benefits: [
-      'Access to member feed',
+      'Access to the member feed',
       'First look at event drops',
-      'Monthly digital newsletter',
-      'Machine-tier digital badge',
-      'Community discord access',
+      'Monthly digital dispatch',
+      'Initiate digital badge',
+      'Community Discord access',
     ],
     exclusive: [
       'Digital collectible on sign-up',
@@ -30,51 +34,51 @@ export const TIERS: TierConfig[] = [
     colorRgb: '201,168,76',
     featured: true,
     benefits: [
-      'Everything in MACHINE',
+      'Everything in INITIATE',
       '48h priority ticket window',
-      'Exclusive Insider Discord',
+      'Insider-only Discord',
       'Monthly curated playlist drops',
       'Behind-the-scenes content',
       'Event photo archives',
     ],
     exclusive: [
       'Limited edition Insider merch access',
-      'Insider-only Spotify playlist',
+      'Insider-only listening sessions',
     ],
   },
   {
-    id:       'warlord',
-    name:     'WARLORD',
-    tagline:  'Season never ends.',
+    id:       'vanguard',
+    name:     'VANGUARD',
+    tagline:  'Front of every line.',
     priceUSD: 75,
     priceNGN: 115000,
     color:    '#CC0000',
     colorRgb: '204,0,0',
     benefits: [
       'Everything in INSIDER',
-      'Quarterly fan meetup invites',
+      'Quarterly member meetups',
       'Signed merch early access',
       'Monthly studio session raffle entries',
       'Private content drops',
-      'Direct community updates from OD\'s team',
+      'Direct updates from the team',
     ],
     exclusive: [
       '2x raffle entries per month',
-      'Warlord-only Discord channel',
-      'Exclusive unreleased previews',
+      'Vanguard-only Discord channel',
+      'Unreleased previews before anyone',
     ],
   },
   {
-    id:       'industry',
-    name:     'INDUSTRY',
-    tagline:  'You are the machine.',
+    id:       'sovereign',
+    name:     'SOVEREIGN',
+    tagline:  'The circle answers to you.',
     priceUSD: 200,
     priceNGN: 300000,
     color:    '#FFFFFF',
     colorRgb: '255,255,255',
     benefits: [
-      'Everything in WARLORD',
-      'Direct line to OD\'s team',
+      'Everything in VANGUARD',
+      'Direct line to the team',
       'Annual private show invitation',
       'Producer & creative network access',
       'VIP at all public shows',
@@ -82,9 +86,9 @@ export const TIERS: TierConfig[] = [
       'Industry networking meetup invite',
     ],
     exclusive: [
-      'Personal thank-you from OD\'s team',
+      'Personal thank-you from the artist',
       'Annual 1-on-1 virtual session',
-      'Industry tier physical membership card',
+      'Sovereign physical membership card',
     ],
   },
 ];

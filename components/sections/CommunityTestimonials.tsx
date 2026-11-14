@@ -8,34 +8,34 @@ interface Quote {
 }
 
 const ROW_ONE: Quote[] = [
-  { text: 'This is the only fan community that actually feels elite. Not a simulation.',          handle: '@WARLORD_ABUJA',    tier: 'INDUSTRY',  country: '🇳🇬' },
-  { text: 'Got the pre-sale 48 hours before anyone else. The system works.',                     handle: '@MACHINE_ADEOLU',   tier: 'WARLORD',   country: '🇳🇬' },
-  { text: 'Flew from London for the listening party. Worth every naira.',                         handle: '@INSIDER_LONDON',   tier: 'WARLORD',   country: '🇬🇧' },
-  { text: 'The leaderboard has me competitive in ways no other platform does.',                  handle: '@OD_STEPH',         tier: 'INSIDER',   country: '🇺🇸' },
+  { text: 'This is the only fan community that actually feels elite. Not a simulation.',          handle: '@CIRCLE_ABUJA',    tier: 'SOVEREIGN',  country: '🇳🇬' },
+  { text: 'Got the pre-sale 48 hours before anyone else. The system works.',                     handle: '@SIGNAL_ADEOLU',   tier: 'VANGUARD',   country: '🇳🇬' },
+  { text: 'Flew from London for the listening party. Worth every naira.',                         handle: '@INSIDER_LONDON',   tier: 'VANGUARD',   country: '🇬🇧' },
+  { text: 'The leaderboard has me competitive in ways no other platform does.',                  handle: '@STEPH_NYC',         tier: 'INSIDER',   country: '🇺🇸' },
   { text: 'Inner Circle is the only place where being a real fan means something.',              handle: '@CIRCUIT_KEMI',     tier: 'INSIDER',   country: '🇳🇬' },
-  { text: 'Secret event last month was a spiritual experience. True underground.',               handle: '@CULT_EMEKA',       tier: 'WARLORD',   country: '🇳🇬' },
+  { text: 'Secret event last month was a spiritual experience. True underground.',               handle: '@CULT_EMEKA',       tier: 'VANGUARD',   country: '🇳🇬' },
 ];
 
 const ROW_TWO: Quote[] = [
-  { text: 'No cap — this is the most dialed-in fan experience in African music right now.',      handle: '@MACHINE_FELIX',    tier: 'MACHINE',   country: '🇬🇭' },
-  { text: 'The unreleased previews alone are worth the WARLORD tier.',                           handle: '@INNER_TIFE',       tier: 'WARLORD',   country: '🇳🇬' },
+  { text: 'No cap — this is the most dialed-in fan experience in African music right now.',      handle: '@FIRSTLISTEN_FELIX',    tier: 'INITIATE',   country: '🇬🇭' },
+  { text: 'The unreleased previews alone are worth the VANGUARD tier.',                           handle: '@INNER_TIFE',       tier: 'VANGUARD',   country: '🇳🇬' },
   { text: 'Got raffle picked for a studio session. Life has not been the same.',                  handle: '@ABUJA_CONNECT',    tier: 'INSIDER',   country: '🇳🇬' },
-  { text: 'The industry network access opened two doors I\'ve been pushing on for two years.',   handle: '@MACHINE_OLUWATOBI', tier: 'INDUSTRY', country: '🇳🇬' },
-  { text: 'Every drop sells out to members first. The machine protects its own.',                handle: '@CIRCUIT_DAVE',     tier: 'INSIDER',   country: '🇨🇦' },
-  { text: 'Worth it for the Discord alone. The conversations here are at another level.',        handle: '@LEGEND_CHIKA',     tier: 'MACHINE',   country: '🇳🇬' },
+  { text: 'The industry network access opened two doors I\'ve been pushing on for two years.',   handle: '@VAULT_OLUWATOBI', tier: 'SOVEREIGN', country: '🇳🇬' },
+  { text: 'Every drop sells out to members first. The circle protects its own.',                handle: '@CIRCUIT_DAVE',     tier: 'INSIDER',   country: '🇨🇦' },
+  { text: 'Worth it for the Discord alone. The conversations here are at another level.',        handle: '@LEGEND_CHIKA',     tier: 'INITIATE',   country: '🇳🇬' },
 ];
 
 const TIER_COLORS: Record<string, string> = {
-  INDUSTRY: '#FFFFFF',
-  WARLORD:  '#CC0000',
+  SOVEREIGN: '#FFFFFF',
+  VANGUARD: '#CC0000',
   INSIDER:  '#C9A84C',
-  MACHINE:  '#9CA3AF',
+  INITIATE: '#9CA3AF',
 };
 
 function QuoteCard({ q }: { q: Quote }) {
   return (
-    <div className="inline-flex flex-col gap-3 border border-od-border bg-od-gray/20 p-6 mx-3 w-[340px] flex-shrink-0">
-      <p className="text-od-silver text-sm leading-relaxed">&ldquo;{q.text}&rdquo;</p>
+    <div className="inline-flex flex-col gap-3 border border-ic-border bg-ic-gray/20 p-6 mx-3 w-[340px] flex-shrink-0">
+      <p className="text-ic-silver text-sm leading-relaxed">&ldquo;{q.text}&rdquo;</p>
       <div className="flex items-center justify-between">
         <div>
           <p className="font-mono text-[11px] tracking-wider text-white">
@@ -84,7 +84,7 @@ function MarqueeRow({ quotes, reverse }: { quotes: Quote[]; reverse?: boolean })
 
 export function CommunityTestimonials() {
   return (
-    <section className="py-24 overflow-hidden bg-od-dark/20 border-y border-od-border">
+    <section className="py-24 overflow-hidden bg-ic-dark/20 border-y border-ic-border">
       <div className="max-w-7xl mx-auto px-6 mb-14">
         <div className="flex items-end justify-between">
           <div>
@@ -96,7 +96,7 @@ export function CommunityTestimonials() {
               WHAT THEY SAY
             </h2>
           </div>
-          <p className="font-mono text-[10px] tracking-widest text-od-muted hidden md:block max-w-[200px] text-right">
+          <p className="font-mono text-[10px] tracking-widest text-ic-muted hidden md:block max-w-[200px] text-right">
             REAL MEMBERS. REAL CIRCLE. NO PERFORMANCE.
           </p>
         </div>

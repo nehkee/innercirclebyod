@@ -22,7 +22,7 @@ export interface CurrentMember {
   clerk_id: string;
   email:    string;
   username: string | null;
-  tier:     'machine' | 'insider' | 'warlord' | 'industry';
+  tier:     'initiate' | 'insider' | 'vanguard' | 'sovereign';
   is_admin: boolean;
 }
 

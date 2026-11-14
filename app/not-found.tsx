@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <main className="bg-od-black min-h-screen flex flex-col items-center justify-center px-6 text-center">
+    <main className="bg-ic-black min-h-screen flex flex-col items-center justify-center px-6 text-center">
       {/* Grid background */}
       <div
         className="fixed inset-0 pointer-events-none opacity-30"
@@ -16,7 +16,7 @@ export default function NotFound() {
       />
 
       <div className="relative z-10">
-        <p className="font-mono text-[10px] tracking-[0.4em] text-od-gold mb-6">
+        <p className="font-mono text-[10px] tracking-[0.4em] text-ic-gold mb-6">
           ERROR 404
         </p>
 
@@ -28,13 +28,13 @@ export default function NotFound() {
           NOT FOUND
         </h1>
 
-        <p className="font-mono text-[10px] tracking-widest text-od-muted mb-12">
-          THIS PAGE DOESN&apos;T EXIST IN THE MACHINE
+        <p className="font-mono text-[10px] tracking-widest text-ic-muted mb-12">
+          THIS ROOM DOESN&apos;T EXIST — OR YOU&apos;RE NOT ON THE LIST
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/" className="btn-primary px-12 py-4 text-base">
-            RETURN HOME ⚙️
+            RETURN HOME ◯
           </Link>
           <Link href="/membership" className="btn-secondary px-12 py-4 text-base">
             JOIN THE CIRCLE

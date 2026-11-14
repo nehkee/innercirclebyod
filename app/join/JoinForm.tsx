@@ -67,11 +67,11 @@ export function JoinForm() {
         >
           {/* Label */}
           <div className="flex items-center gap-3 mb-8">
-            <div className="h-px w-12 bg-od-gold/40" />
-            <p className="font-mono text-[10px] tracking-[0.5em] text-od-gold">
+            <div className="h-px w-12 bg-ic-gold/40" />
+            <p className="font-mono text-[10px] tracking-[0.5em] text-ic-gold">
               {tier ? `${tier.name} TIER — STEP 1 OF 2` : 'THE INVITATION'}
             </p>
-            <div className="h-px w-12 bg-od-gold/40" />
+            <div className="h-px w-12 bg-ic-gold/40" />
           </div>
 
           {/* Tier pill */}
@@ -106,19 +106,19 @@ export function JoinForm() {
           <div className="overflow-hidden mb-8">
             <motion.h1
               className="glitch font-bebas leading-none gold-text select-none"
-              data-text="MACHINE"
+              data-text="CIRCLE"
               style={{ fontSize: 'clamp(52px, 12vw, 110px)' }}
               initial={{ y: '110%' }}
               animate={{ y: 0 }}
               transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
             >
-              MACHINE
+              CIRCLE
             </motion.h1>
           </div>
 
           {/* Subtext */}
           <motion.p
-            className="text-od-silver text-sm leading-relaxed mb-8 max-w-sm"
+            className="text-ic-silver text-sm leading-relaxed mb-8 max-w-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.6 }}
@@ -137,8 +137,8 @@ export function JoinForm() {
             transition={{ delay: 0.5, duration: 0.6 }}
           >
             {RULES.map((r, i) => (
-              <p key={i} className="font-mono text-[10px] tracking-widest text-od-muted">
-                <span className="text-od-gold mr-2">—</span>{r}
+              <p key={i} className="font-mono text-[10px] tracking-widest text-ic-muted">
+                <span className="text-ic-gold mr-2">—</span>{r}
               </p>
             ))}
           </motion.div>
@@ -153,7 +153,7 @@ export function JoinForm() {
           >
             {/* Name */}
             <div>
-              <label className="block font-mono text-[9px] tracking-[0.35em] text-od-muted mb-2">
+              <label className="block font-mono text-[9px] tracking-[0.35em] text-ic-muted mb-2">
                 YOUR NAME
               </label>
               <input
@@ -166,12 +166,12 @@ export function JoinForm() {
                 onChange={e => setName(e.target.value)}
                 disabled={state === 'loading'}
                 className="
-                  w-full bg-od-dark border border-od-border
+                  w-full bg-ic-dark border border-ic-border
                   text-white font-mono text-sm tracking-wider
                   px-5 py-4 outline-none
-                  placeholder:text-od-muted/40
+                  placeholder:text-ic-muted/40
                   transition-all duration-300
-                  focus:border-od-gold focus:bg-od-gray/30
+                  focus:border-ic-gold focus:bg-ic-gray/30
                   disabled:opacity-40
                 "
               />
@@ -179,7 +179,7 @@ export function JoinForm() {
 
             {/* Email */}
             <div>
-              <label className="block font-mono text-[9px] tracking-[0.35em] text-od-muted mb-2">
+              <label className="block font-mono text-[9px] tracking-[0.35em] text-ic-muted mb-2">
                 EMAIL ADDRESS
               </label>
               <input
@@ -191,12 +191,12 @@ export function JoinForm() {
                 onChange={e => setEmail(e.target.value)}
                 disabled={state === 'loading'}
                 className="
-                  w-full bg-od-dark border border-od-border
+                  w-full bg-ic-dark border border-ic-border
                   text-white font-mono text-sm tracking-wider
                   px-5 py-4 outline-none
-                  placeholder:text-od-muted/40
+                  placeholder:text-ic-muted/40
                   transition-all duration-300
-                  focus:border-od-gold focus:bg-od-gray/30
+                  focus:border-ic-gold focus:bg-ic-gray/30
                   disabled:opacity-40
                 "
               />
@@ -207,7 +207,7 @@ export function JoinForm() {
               <motion.p
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="font-mono text-[10px] tracking-widest text-od-red"
+                className="font-mono text-[10px] tracking-widest text-ic-red"
               >
                 ✕ {errMsg}
               </motion.p>
@@ -220,16 +220,16 @@ export function JoinForm() {
                 disabled={state === 'loading' || !name.trim() || !email.trim()}
                 className="
                   w-full relative overflow-hidden
-                  border border-od-gold
+                  border border-ic-gold
                   font-bebas tracking-widest text-lg
-                  px-10 py-4 text-od-gold
+                  px-10 py-4 text-ic-gold
                   transition-all duration-300
-                  hover:text-od-black
+                  hover:text-ic-black
                   disabled:opacity-40 disabled:cursor-not-allowed
                   group
                 "
               >
-                <span className="absolute inset-0 bg-od-gold scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 -z-0" />
+                <span className="absolute inset-0 bg-ic-gold scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 -z-0" />
                 <span className="relative z-10">
                   {state === 'loading' ? (
                     <span className="flex items-center justify-center gap-3">
@@ -237,15 +237,15 @@ export function JoinForm() {
                       SECURING YOUR SPOT
                     </span>
                   ) : (
-                    'ENTER THE MACHINE ⚙️'
+                    'ENTER THE CIRCLE ◯'
                   )}
                 </span>
               </button>
             </div>
 
-            <p className="font-mono text-[9px] tracking-widest text-od-muted text-center pt-1">
+            <p className="font-mono text-[9px] tracking-widest text-ic-muted text-center pt-1">
               ALREADY A MEMBER?{' '}
-              <Link href="/sign-in" className="text-od-gold hover:underline">
+              <Link href="/sign-in" className="text-ic-gold hover:underline">
                 SIGN IN
               </Link>
             </p>
@@ -266,16 +266,16 @@ export function JoinForm() {
           {/* Gold ring */}
           <div className="relative inline-flex items-center justify-center mb-10">
             <div
-              className="w-20 h-20 rounded-full border border-od-gold"
+              className="w-20 h-20 rounded-full border border-ic-gold"
               style={{ animation: 'glow-gold 2.5s ease-in-out infinite' }}
             />
-            <span className="absolute font-bebas text-od-gold text-3xl">⚙️</span>
+            <span className="absolute font-bebas text-ic-gold text-3xl">◯</span>
           </div>
 
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="h-px w-12 bg-od-gold/40" />
-            <p className="font-mono text-[10px] tracking-[0.5em] text-od-gold">YOU&apos;RE IN</p>
-            <div className="h-px w-12 bg-od-gold/40" />
+            <div className="h-px w-12 bg-ic-gold/40" />
+            <p className="font-mono text-[10px] tracking-[0.5em] text-ic-gold">YOU&apos;RE IN</p>
+            <div className="h-px w-12 bg-ic-gold/40" />
           </div>
 
           <div className="overflow-hidden mb-2">
@@ -302,27 +302,27 @@ export function JoinForm() {
           </div>
 
           <motion.p
-            className="text-od-silver text-sm leading-relaxed max-w-sm mx-auto mb-10"
+            className="text-ic-silver text-sm leading-relaxed max-w-sm mx-auto mb-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
             Check your inbox. A message is waiting.{' '}
-            <span className="text-od-gold">
-              {name.split(' ')[0] ? `${name.split(' ')[0]}, ` : ''}the machine sees you.
+            <span className="text-ic-gold">
+              {name.split(' ')[0] ? `${name.split(' ')[0]}, ` : ''}the circle sees you.
             </span>
           </motion.p>
 
           <motion.div
-            className="border border-od-border bg-od-gray/20 p-6 mb-8"
+            className="border border-ic-border bg-ic-gray/20 p-6 mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
-            <p className="font-mono text-[10px] tracking-widest text-od-muted mb-1">
+            <p className="font-mono text-[10px] tracking-widest text-ic-muted mb-1">
               CONFIRMATION SENT TO
             </p>
-            <p className="font-mono text-sm text-od-gold tracking-wider">{email}</p>
+            <p className="font-mono text-sm text-ic-gold tracking-wider">{email}</p>
           </motion.div>
 
           <motion.div
@@ -351,7 +351,7 @@ function LoadingDots() {
       {[0, 1, 2].map(i => (
         <span
           key={i}
-          className="w-1 h-1 bg-od-gold rounded-full inline-block"
+          className="w-1 h-1 bg-ic-gold rounded-full inline-block"
           style={{ animation: 'pulse 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}
         />
       ))}

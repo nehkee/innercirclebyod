@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { isClerkConfigured, requireAdmin } from '@/lib/auth';
 
 export const dynamic  = 'force-dynamic';
-export const metadata = { title: 'Admin | Inner Circle by OD', robots: { index: false, follow: false } };
+export const metadata = { title: 'Admin | Inner Circle', robots: { index: false, follow: false } };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   if (!isClerkConfigured()) {
@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
     return (
       <>
-        <div className="bg-od-red text-white font-mono text-[10px] tracking-widest text-center py-2">
+        <div className="bg-ic-red text-white font-mono text-[10px] tracking-widest text-center py-2">
           LOCAL PREVIEW — CLERK IS NOT CONFIGURED, SO THIS PAGE IS UNPROTECTED AND HAS NO LIVE DATA
         </div>
         {children}
