@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient }         from '@/lib/supabase';
 import { verifyTicketToken }         from '@/lib/qr';
 import { rateLimit, clientId }       from '@/lib/fraud';
+import { requireAdmin }              from '@/lib/auth';
 
 /**
  * QR scanner endpoint — called by the admin ticket scanner app.
@@ -12,8 +13,15 @@ import { rateLimit, clientId }       from '@/lib/fraud';
  *   { valid: false, reason: string }
  */
 export async function POST(req: NextRequest) {
+  // Only door staff (admins) may scan: otherwise anyone holding a photo of a
+  // QR code could mark someone else's ticket as used.
+  const check = await requireAdmin();
+  if (!check.ok) {
+    return NextResponse.json({ valid: false, reason: 'Unauthorized' }, { status: check.status });
+  }
+
   // Rate limit: 120 scans per minute per scanner IP
-  const rl = rateLimit(`scan:${clientId(req)}`, 120, 60 * 1000);
+  const rl = await rateLimit(`scan:${clientId(req)}`, 120, 60 * 1000);
   if (!rl.allowed) {
     return NextResponse.json({ valid: false, reason: 'Rate limit exceeded' }, { status: 429 });
   }
@@ -72,11 +80,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ valid: false, reason: `Ticket is ${ticket.status}` });
   }
 
-  // Mark as used
-  await admin
+  // Mark as used — conditional on still being valid, so two scanners
+  // scanning the same code at once can't both admit it.
+  const { data: marked } = await admin
     .from('tickets')
     .update({ status: 'used', used_at: new Date().toISOString() })
-    .eq('id', ticket.id);
+    .eq('id', ticket.id)
+    .eq('status', 'valid')
+    .select('id');
+
+  if (!marked || marked.length === 0) {
+    return NextResponse.json({ valid: false, reason: 'Ticket already scanned' });
+  }
 
   // Load member info for display
   const { data: member } = await admin
@@ -93,7 +108,7 @@ export async function POST(req: NextRequest) {
     },
     member: {
       username: member?.username || 'Unknown',
-      tier:     member?.tier     || 'machine',
+      tier:     member?.tier     || 'initiate',
     },
   });
 }

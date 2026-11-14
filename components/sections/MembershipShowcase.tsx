@@ -21,7 +21,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
       initial={{ opacity: 0, y: 60 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: index * 0.1 + 0.15 }}
-      className="group relative border border-od-border cursor-pointer transition-all duration-500"
+      className="group relative border border-ic-border cursor-pointer transition-all duration-500"
       style={{
         background: tier.featured
           ? `linear-gradient(135deg, rgba(${rgb},0.08) 0%, transparent 60%)`
@@ -52,7 +52,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
         <div className="flex items-start justify-between mb-6">
           <div>
             <span
-              className="font-mono text-[9px] tracking-[0.4em] mb-2 block"
+              className="font-mono text-[10px] tracking-[0.4em] mb-2 block"
               style={{ color: tier.color }}
             >
               TIER {String(index + 1).padStart(2, '0')}
@@ -63,11 +63,11 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
             >
               {tier.name}
             </h3>
-            <p className="text-od-muted text-sm mt-2 italic">{tier.tagline}</p>
+            <p className="text-ic-muted text-sm mt-2 italic">{tier.tagline}</p>
           </div>
           {tier.featured && (
             <span
-              className="font-mono text-[9px] tracking-widest border px-2 py-1"
+              className="font-mono text-[10px] tracking-widest border px-2 py-1"
               style={{ color: tier.color, borderColor: tier.color }}
             >
               POPULAR
@@ -76,12 +76,12 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
         </div>
 
         {/* Pricing */}
-        <div className="mb-6 pb-6 border-b border-od-border">
+        <div className="mb-6 pb-6 border-b border-ic-border">
           <p className="font-bebas text-3xl text-white">
             {formatPrice(tier.priceNGN, 'NGN')}
-            <span className="font-mono text-xs text-od-muted ml-2">/MONTH</span>
+            <span className="font-mono text-xs text-ic-muted ml-2">/MONTH</span>
           </p>
-          <p className="font-mono text-[10px] text-od-muted mt-1">
+          <p className="font-mono text-[11px] text-ic-muted mt-1">
             ${tier.priceUSD} USD / MONTH
           </p>
         </div>
@@ -89,7 +89,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
         {/* Top benefits (always visible) */}
         <ul className="space-y-2.5 mb-6">
           {tier.benefits.slice(0, 3).map((b, i) => (
-            <li key={i} className="flex items-start gap-2.5 text-sm text-od-silver">
+            <li key={i} className="flex items-start gap-2.5 text-sm text-ic-silver">
               <Check size={12} className="mt-0.5 flex-shrink-0" style={{ color: tier.color }} />
               {b}
             </li>
@@ -101,7 +101,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
           <button
             type="button"
             onClick={() => setExpanded(v => !v)}
-            className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest text-od-muted hover:text-od-gold transition-colors mb-4"
+            className="flex items-center gap-1.5 font-mono text-[11px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors mb-4"
           >
             <ChevronDown
               size={12}
@@ -122,7 +122,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
             className="space-y-2.5 mb-6"
           >
             {tier.benefits.slice(3).map((b, i) => (
-              <li key={i} className="flex items-start gap-2.5 text-sm text-od-silver">
+              <li key={i} className="flex items-start gap-2.5 text-sm text-ic-silver">
                 <Check size={12} className="mt-0.5 flex-shrink-0" style={{ color: tier.color }} />
                 {b}
               </li>
@@ -140,7 +140,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
             }}
           >
             {tier.exclusive.map((ex, i) => (
-              <p key={i} className="font-mono text-[10px] tracking-wider text-od-muted">
+              <p key={i} className="font-mono text-[11px] tracking-wider text-ic-muted">
                 ✦ {ex}
               </p>
             ))}
@@ -149,7 +149,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
 
         {/* CTA */}
         <Link
-          href={`/join?tier=${tier.id}`}
+          href="/membership"
           className="block w-full text-center font-mono text-xs tracking-widest py-3.5 border transition-all duration-300"
           style={{
             color:       tier.featured ? '#080808' : tier.color,
@@ -179,7 +179,7 @@ export function MembershipShowcase() {
   const headerInView = useInView(headerRef, { once: true, margin: '-80px' });
 
   return (
-    <section className="py-24 bg-od-black">
+    <section className="py-24 bg-ic-black">
       <div className="max-w-7xl mx-auto px-6">
 
         {/* Header */}
@@ -191,10 +191,10 @@ export function MembershipShowcase() {
             transition={{ duration: 0.6 }}
           >
             <p className="section-label">MEMBERSHIP</p>
-            <div className="h-px flex-1 bg-od-border" />
+            <div className="h-px flex-1 bg-ic-border" />
             <Link
               href="/membership"
-              className="font-mono text-[10px] tracking-widest text-od-muted hover:text-od-gold transition-colors"
+              className="font-mono text-[11px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors"
             >
               COMPARE TIERS →
             </Link>
@@ -222,7 +222,7 @@ export function MembershipShowcase() {
 
         {/* Footnote */}
         <div className="mt-10 text-center">
-          <p className="font-mono text-[10px] tracking-widest text-od-muted">
+          <p className="font-mono text-[11px] tracking-widest text-ic-muted">
             BILLED MONTHLY  ·  CANCEL ANYTIME  ·  NGN & USD ACCEPTED
           </p>
         </div>

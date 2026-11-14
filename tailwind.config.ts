@@ -9,17 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'od-black':    '#080808',
-        'od-dark':     '#111111',
-        'od-gray':     '#1A1A1A',
-        'od-border':   '#2A2A2A',
-        'od-muted':    '#666666',
-        'od-silver':   '#9CA3AF',
-        'od-gold':     '#C9A84C',
-        'od-gold-lt':  '#E5C169',
-        'od-gold-dk':  '#8B6914',
-        'od-red':      '#CC0000',
-        'od-red-lt':   '#FF2222',
+        'ic-black':    '#080808',
+        'ic-dark':     '#111111',
+        'ic-gray':     '#1A1A1A',
+        'ic-border':   '#2A2A2A',
+        'ic-muted':    '#8C8C8C',
+        'ic-silver':   '#9CA3AF',
+        'ic-gold':     '#C9A84C',
+        'ic-gold-lt':  '#E5C169',
+        'ic-gold-dk':  '#8B6914',
+        'ic-red':      '#CC0000',
+        'ic-red-lt':   '#FF2222',
       },
       fontFamily: {
         bebas:  ['var(--font-bebas)', 'Impact', 'Arial Narrow', 'sans-serif'],

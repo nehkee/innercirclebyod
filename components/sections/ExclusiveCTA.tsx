@@ -3,15 +3,18 @@
 import { useRef } from 'react';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
+import type { CommunityStats } from '@/lib/data';
+import { formatStat } from '@/lib/data-format';
+import { CircleField } from '@/components/art/CircleField';
 
 const RULES = [
   'No leaks. No screenshots. No excuses.',
   'What happens in the circle stays in the circle.',
-  'The machine feeds those who feed the machine.',
+  'The circle protects those who protect the circle.',
   'Loyalty is the only currency that matters here.',
 ];
 
-export function ExclusiveCTA() {
+export function ExclusiveCTA({ stats }: { stats: CommunityStats | null }) {
   const ref    = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: '-120px' });
 
@@ -21,6 +24,8 @@ export function ExclusiveCTA() {
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
       style={{ background: '#080808' }}
     >
+      <CircleField className="absolute z-0 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[160vmin] h-[160vmin] opacity-70" />
+
       {/* Gold radial glow */}
       <div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full pointer-events-none"
@@ -51,7 +56,7 @@ export function ExclusiveCTA() {
 
       {/* Scanline */}
       <div
-        className="absolute left-0 right-0 h-px bg-od-gold/10 pointer-events-none"
+        className="absolute left-0 right-0 h-px bg-ic-gold/10 pointer-events-none"
         style={{ animation: 'scanline 12s linear infinite' }}
       />
 
@@ -65,9 +70,9 @@ export function ExclusiveCTA() {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
         >
-          <div className="h-px w-16 bg-od-gold/40" />
-          <p className="font-mono text-[10px] tracking-[0.5em] text-od-gold">THE INVITATION</p>
-          <div className="h-px w-16 bg-od-gold/40" />
+          <div className="h-px w-16 bg-ic-gold/40" />
+          <p className="font-mono text-[11px] tracking-[0.5em] text-ic-gold">THE INVITATION</p>
+          <div className="h-px w-16 bg-ic-gold/40" />
         </motion.div>
 
         {/* Headline */}
@@ -106,25 +111,25 @@ export function ExclusiveCTA() {
           {RULES.map((rule, i) => (
             <motion.p
               key={i}
-              className="font-mono text-[11px] tracking-widest text-od-muted"
+              className="font-mono text-[11px] tracking-widest text-ic-muted"
               initial={{ opacity: 0, x: -20 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ delay: 0.5 + i * 0.08, duration: 0.5 }}
             >
-              <span className="text-od-gold mr-3">—</span>{rule}
+              <span className="text-ic-gold mr-3">—</span>{rule}
             </motion.p>
           ))}
         </motion.div>
 
         {/* Subtext */}
         <motion.p
-          className="text-od-silver text-base md:text-lg max-w-lg mx-auto mb-12 leading-relaxed"
+          className="text-ic-silver text-base md:text-lg max-w-lg mx-auto mb-12 leading-relaxed"
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.7, duration: 0.7 }}
         >
           Not everyone gets in. Not everyone deserves to.
-          But if you made it this far — the machine already knows who you are.
+          But if you made it this far — the circle already knows who you are.
         </motion.p>
 
         {/* CTAs */}
@@ -138,7 +143,7 @@ export function ExclusiveCTA() {
             href="/join"
             className="btn-primary text-base px-16 py-5 text-lg"
           >
-            ENTER THE MACHINE ⚙️
+            ENTER THE CIRCLE ◯
           </Link>
           <Link
             href="/access"
@@ -150,12 +155,17 @@ export function ExclusiveCTA() {
 
         {/* Member count */}
         <motion.p
-          className="font-mono text-[10px] tracking-widest text-od-muted mt-14"
+          className="font-mono text-[11px] tracking-widest text-ic-muted mt-14"
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: 1.1, duration: 0.6 }}
         >
-          12,400+ MEMBERS  ·  9 COUNTRIES  ·  48 EVENTS  ·  THE CIRCLE IS CLOSED
+          {[
+            stats && `${formatStat(stats.members)} MEMBERS`,
+            stats && stats.countries > 0 && `${stats.countries} ${stats.countries === 1 ? 'COUNTRY' : 'COUNTRIES'}`,
+            stats && stats.events > 0 && `${stats.events} ${stats.events === 1 ? 'EVENT' : 'EVENTS'}`,
+            'THE CIRCLE IS CLOSED',
+          ].filter(Boolean).join('  ·  ')}
         </motion.p>
       </div>
     </section>

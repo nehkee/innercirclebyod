@@ -1,6 +1,7 @@
 import { qrImageUrl } from '@/lib/qr';
+import { siteUrl } from '@/lib/brand';
 
-const APP_URL  = process.env.NEXT_PUBLIC_APP_URL || 'https://innercirclebyod.com';
+const APP_URL  = siteUrl();
 const BRAND_BG = '#080808';
 const GOLD     = '#C9A84C';
 
@@ -26,7 +27,7 @@ function baseLayout(title: string, body: string): string {
                 <tr>
                   <td>
                     <div style="width:40px;height:40px;border:1px solid ${GOLD};display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;">
-                      <span style="font-family:Impact,sans-serif;font-size:18px;color:${GOLD};line-height:40px;padding:0 0 0 8px;">OD</span>
+                      <span style="font-family:Impact,sans-serif;font-size:18px;color:${GOLD};line-height:40px;padding:0 0 0 8px;">IC</span>
                     </div>
                     <span style="margin-left:12px;font-size:11px;letter-spacing:0.3em;color:${GOLD};vertical-align:middle;">INNER CIRCLE</span>
                   </td>
@@ -42,10 +43,10 @@ function baseLayout(title: string, body: string): string {
           <tr>
             <td style="padding:24px 40px;border-top:1px solid #2A2A2A;text-align:center;">
               <p style="font-size:9px;letter-spacing:0.25em;color:#444444;margin:0;">
-                INNERCIRCLEBYOD.COM · NATIVE RECORDS · INDUSTRY MACHINE ⚙️
+                INNER CIRCLE · THE CIRCLE NEVER BREAKS ◯
               </p>
               <p style="font-size:9px;letter-spacing:0.15em;color:#333333;margin:8px 0 0;">
-                You received this because you are a member of Inner Circle by OD.
+                You received this because you are a member of Inner Circle.
               </p>
             </td>
           </tr>
@@ -152,7 +153,7 @@ export function welcomeEmail(params: {
           INNER CIRCLE
         </h1>
         <p style="color:#9CA3AF;font-size:14px;line-height:1.8;margin:0 0 24px;">
-          ${params.memberName}, you have been granted access to the machine.<br/>
+          ${params.memberName}, you have been granted access to the circle.<br/>
           Your tier: <span style="color:${params.tierColor};text-transform:uppercase;">${params.tier}</span>
         </p>
         <p style="color:#666666;font-size:11px;line-height:1.8;margin:0 0 32px;">
@@ -162,13 +163,13 @@ export function welcomeEmail(params: {
           href="${APP_URL}/community"
           style="display:inline-block;padding:14px 32px;border:1px solid ${GOLD};color:${GOLD};font-size:11px;letter-spacing:0.3em;text-decoration:none;text-transform:uppercase;"
         >
-          ENTER THE MACHINE →
+          ENTER THE CIRCLE →
         </a>
       </td>
     </tr>`;
 
   return {
-    subject: `Welcome to Inner Circle by OD — ${params.tier.toUpperCase()}`,
+    subject: `Welcome to Inner Circle — ${params.tier.toUpperCase()}`,
     html:    baseLayout('Welcome to Inner Circle', body),
   };
 }
@@ -230,7 +231,7 @@ export function raffleResultEmail(params: {
         </p>
         ${params.prizeDetails ? `<p style="color:#666666;font-size:12px;line-height:1.8;margin:0 0 32px;">${params.prizeDetails}</p>` : ''}
         <p style="font-size:11px;letter-spacing:0.2em;color:#444444;margin:0;">
-          OD'S TEAM WILL REACH OUT WITHIN 48 HOURS WITH NEXT STEPS.
+          THE TEAM WILL REACH OUT WITHIN 48 HOURS WITH NEXT STEPS.
         </p>
       </td>
     </tr>`
@@ -254,4 +255,52 @@ export function raffleResultEmail(params: {
       : `Raffle result: ${params.raffleName}`,
     html: baseLayout('Raffle Result', body),
   };
+}
+
+const escapeHtml = (s: string) =>
+  s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+
+/** General-purpose branded notice: label, headline, paragraphs and one button. */
+export function noticeEmail(params: {
+  subject:    string;
+  label:      string;
+  title:      string;
+  paragraphs: string[];
+  ctaLabel?:  string;
+  ctaPath?:   string;   // site-relative, e.g. "/account"
+  accent?:    string;
+}): { subject: string; html: string } {
+  const accent = params.accent ?? GOLD;
+  const body = `
+    <tr>
+      <td style="padding:48px 40px 32px;">
+        <p style="font-size:10px;letter-spacing:0.3em;color:${accent};margin:0 0 16px;">${escapeHtml(params.label)}</p>
+        <h1 style="font-family:Impact,sans-serif;font-size:36px;letter-spacing:0.05em;color:#FFFFFF;margin:0 0 24px;">
+          ${escapeHtml(params.title)}
+        </h1>
+        ${params.paragraphs.map(p => `<p style="color:#9CA3AF;font-size:14px;line-height:1.8;margin:0 0 16px;">${escapeHtml(p)}</p>`).join('')}
+        ${params.ctaLabel && params.ctaPath ? `
+        <a href="${APP_URL}${params.ctaPath}"
+           style="display:inline-block;margin-top:16px;padding:14px 28px;border:1px solid ${accent};color:${accent};
+                  font-size:11px;letter-spacing:0.3em;text-decoration:none;text-transform:uppercase;">
+          ${escapeHtml(params.ctaLabel)} →
+        </a>` : ''}
+      </td>
+    </tr>`;
+  return { subject: params.subject, html: baseLayout(params.title, body) };
+}
+
+export function paymentFailedEmail(memberName: string) {
+  return noticeEmail({
+    subject:    'Action needed: your Inner Circle payment didn’t go through',
+    label:      'PAYMENT FAILED',
+    title:      'KEEP YOUR SEAT',
+    paragraphs: [
+      `${memberName}, we couldn't take your latest membership payment — usually an expired or replaced card.`,
+      'Update your card in a few seconds and nothing changes. We’ll retry automatically over the next few days.',
+    ],
+    ctaLabel:   'Update my card',
+    ctaPath:    '/account',
+    accent:     '#CC0000',
+  });
 }

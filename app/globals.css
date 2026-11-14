@@ -1,5 +1,4 @@
-/* ─── Google Fonts — loaded at runtime in browser, not build time ──────────── */
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+/* Fonts are self-hosted via next/font (app/fonts.ts), which sets --font-* on <html>. */
 
 @tailwind base;
 @tailwind components;
@@ -7,10 +6,6 @@
 
 /* ─── Root Variables ───────────────────────────────────────────────────────── */
 :root {
-  --font-bebas:     'Bebas Neue', Impact, 'Arial Narrow', sans-serif;
-  --font-space:     'Space Grotesk', system-ui, sans-serif;
-  --font-mono:      'JetBrains Mono', 'Courier New', monospace;
-
   --color-gold:     #C9A84C;
   --color-gold-lt:  #E5C169;
   --color-red:      #CC0000;
@@ -30,7 +25,17 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
-  cursor: none;
+}
+
+/* Hide the system cursor only while the custom cursor is running
+   (set by components/ui/CustomCursor.tsx on mouse-driven devices). */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 
 body {
@@ -203,6 +208,8 @@ body {
 }
 
 /* ─── Button Styles ────────────────────────────────────────────────────────── */
+/* Inside @layer so Tailwind utilities (hidden, py-*, px-*) can override them */
+@layer components {
 .btn-primary {
   position: relative;
   display: inline-flex;
@@ -217,7 +224,6 @@ body {
   font-size: 1.1rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  cursor: none;
   transition: all 0.3s ease;
   overflow: hidden;
 }
@@ -254,7 +260,6 @@ body {
   font-size: 1.1rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  cursor: none;
   transition: all 0.3s ease;
 }
 
@@ -278,6 +283,7 @@ body {
   background: linear-gradient(90deg, transparent, #C9A84C, transparent);
 }
 
+}
 /* ─── Tier Card ────────────────────────────────────────────────────────────── */
 .tier-machine  { --tier-color: #9CA3AF; }
 .tier-insider  { --tier-color: #C9A84C; }
@@ -298,7 +304,8 @@ body {
   position: fixed;
   pointer-events: none;
   z-index: 99999;
-  transition: transform 0.1s ease;
+  opacity: 0;               /* shown after the first mouse move */
+  transition: transform 0.1s ease, opacity 0.2s ease;
   mix-blend-mode: difference;
 }
 
@@ -310,10 +317,12 @@ body {
   position: fixed;
   pointer-events: none;
   z-index: 99998;
-  transition: width 0.3s ease, height 0.3s ease, transform 0.15s ease;
+  opacity: 0;
+  transition: width 0.3s ease, height 0.3s ease, transform 0.15s ease, opacity 0.2s ease;
 }
 
 /* ─── Status Badge ─────────────────────────────────────────────────────────── */
+@layer components {
 .badge-live {
   display: inline-flex;
   align-items: center;
@@ -323,7 +332,7 @@ body {
   border: 1px solid rgba(204,0,0,0.4);
   color: #FF4444;
   font-family: var(--font-mono);
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
 }
@@ -337,6 +346,7 @@ body {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+}
 /* ─── Member Status Levels ─────────────────────────────────────────────────── */
 .status-machine  { color: #9CA3AF; }
 .status-insider  { color: #C9A84C; }

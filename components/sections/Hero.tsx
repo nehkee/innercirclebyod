@@ -4,13 +4,14 @@ import { useEffect, useRef, Suspense, lazy } from 'react';
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { CountdownTimer } from '@/components/ui/CountdownTimer';
+import type { Event } from '@/types';
+import type { CommunityStats } from '@/lib/data';
+import { formatStat } from '@/lib/data-format';
 
 // Lazy-load Three.js to avoid SSR issues and keep initial bundle small
 const ParticleBackground = lazy(() =>
   import('@/components/ui/ParticleBackground').then(m => ({ default: m.ParticleBackground }))
 );
-
-const NEXT_EVENT_DATE = '2026-06-14T20:00:00';
 
 const fadeUp = {
   hidden:  { opacity: 0, y: 40 },
@@ -21,7 +22,7 @@ const fadeUp = {
   }),
 };
 
-export function Hero() {
+export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: CommunityStats | null }) {
   const heroRef     = useRef<HTMLElement>(null);
   const { scrollY } = useScroll();
   const parallaxY   = useTransform(scrollY, [0, 700], [0, -140]);
@@ -41,7 +42,7 @@ export function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-24 pb-24"
       style={{ background: '#080808' }}
     >
       {/* ── Three.js Particle Field ───────────────────────────────────────── */}
@@ -78,17 +79,17 @@ export function Hero() {
 
       {/* ── Ambient glow spots ───────────────────────────────────────────── */}
       <motion.div
-        className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-od-gold blur-[160px] pointer-events-none z-[1]"
+        className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full bg-ic-gold blur-[160px] pointer-events-none z-[1]"
         style={{ opacity: 0.05, y: parallaxY }}
       />
       <motion.div
-        className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-od-red blur-[130px] pointer-events-none z-[1]"
+        className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-ic-red blur-[130px] pointer-events-none z-[1]"
         style={{ opacity: 0.035, y: parallaxY }}
       />
 
       {/* ── Scanline sweep ───────────────────────────────────────────────── */}
       <div
-        className="absolute left-0 right-0 h-px bg-od-gold/15 pointer-events-none z-[3]"
+        className="absolute left-0 right-0 h-px bg-ic-gold/15 pointer-events-none z-[3]"
         style={{ animation: 'scanline 9s linear infinite' }}
       />
 
@@ -102,11 +103,11 @@ export function Hero() {
           className="flex items-center justify-center gap-3 mb-8"
           variants={fadeUp} initial="hidden" animate="visible" custom={0}
         >
-          <div className="h-px w-12 bg-od-gold/40" />
-          <p className="font-mono text-[10px] tracking-[0.4em] text-od-gold uppercase">
+          <div className="h-px w-12 bg-ic-gold/40" />
+          <p className="font-mono text-[11px] tracking-[0.4em] text-ic-gold uppercase">
             An Elite Digital Society
           </p>
-          <div className="h-px w-12 bg-od-gold/40" />
+          <div className="h-px w-12 bg-ic-gold/40" />
         </motion.div>
 
         {/* INNER */}
@@ -114,7 +115,7 @@ export function Hero() {
           <motion.h1
             className="glitch font-bebas leading-none tracking-tight select-none"
             data-text="INNER"
-            style={{ fontSize: 'clamp(80px, 18vw, 260px)' }}
+            style={{ fontSize: 'clamp(72px, min(18vw, 21vh), 260px)' }}
             initial={{ y: '110%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.15, duration: 1, ease: [0.22, 1, 0.36, 1] }}
@@ -128,7 +129,7 @@ export function Hero() {
           <motion.h1
             className="glitch font-bebas leading-none tracking-tight select-none gold-text"
             data-text="CIRCLE"
-            style={{ fontSize: 'clamp(80px, 18vw, 260px)' }}
+            style={{ fontSize: 'clamp(72px, min(18vw, 21vh), 260px)' }}
             initial={{ y: '110%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.28, duration: 1, ease: [0.22, 1, 0.36, 1] }}
@@ -137,14 +138,14 @@ export function Hero() {
           </motion.h1>
         </div>
 
-        {/* BY OD */}
+        {/* Motto */}
         <motion.div
           className="flex items-center justify-center gap-4 mt-4 mb-10"
           variants={fadeUp} initial="hidden" animate="visible" custom={3}
         >
-          <div className="h-px flex-1 max-w-[80px] bg-od-border" />
-          <p className="font-bebas tracking-[0.5em] text-od-muted text-xl md:text-2xl">BY OD</p>
-          <div className="h-px flex-1 max-w-[80px] bg-od-border" />
+          <div className="h-px flex-1 max-w-[80px] bg-ic-border" />
+          <p className="font-bebas tracking-[0.5em] text-ic-muted text-xl md:text-2xl">BY INVITATION</p>
+          <div className="h-px flex-1 max-w-[80px] bg-ic-border" />
         </motion.div>
 
         {/* Countdown */}
@@ -153,10 +154,21 @@ export function Hero() {
           variants={fadeUp} initial="hidden" animate="visible" custom={4}
         >
           <p className="section-label mb-4">NEXT DROP</p>
-          <CountdownTimer targetDate={NEXT_EVENT_DATE} />
-          <p className="font-mono text-[10px] tracking-widest text-od-muted mt-3">
-            WARLORD SEASON LISTENING PARTY — LAGOS
-          </p>
+          {nextEvent ? (
+            <>
+              <div className="flex justify-center">
+                <CountdownTimer targetDate={nextEvent.date} />
+              </div>
+              <Link
+                href={`/events/${nextEvent.id}`}
+                className="inline-block font-mono text-[11px] tracking-widest text-ic-muted hover:text-ic-gold transition-colors mt-3"
+              >
+                {nextEvent.title} — {nextEvent.location.split(',')[0].toUpperCase()}
+              </Link>
+            </>
+          ) : (
+            <p className="font-bebas text-3xl tracking-widest text-ic-gold">ANNOUNCED SOON</p>
+          )}
         </motion.div>
 
         {/* CTAs */}
@@ -165,20 +177,26 @@ export function Hero() {
           variants={fadeUp} initial="hidden" animate="visible" custom={5}
         >
           <Link href="/join" className="btn-primary text-base px-12 py-4">
-            ENTER THE MACHINE ⚙️
+            ENTER THE CIRCLE ◯
           </Link>
           <Link href="/events" className="btn-secondary text-base px-12 py-4">
             SEE EVENTS
           </Link>
         </motion.div>
 
-        {/* Social proof */}
-        <motion.p
-          className="font-mono text-[10px] tracking-widest text-od-muted mt-12"
-          variants={fadeUp} initial="hidden" animate="visible" custom={6}
-        >
-          12,400+ MEMBERS &nbsp;·&nbsp; 9 COUNTRIES &nbsp;·&nbsp; 48 EVENTS
-        </motion.p>
+        {/* Social proof — real numbers only */}
+        {stats && (
+          <motion.p
+            className="font-mono text-[11px] tracking-widest text-ic-muted mt-12"
+            variants={fadeUp} initial="hidden" animate="visible" custom={6}
+          >
+            {[
+              `${formatStat(stats.members)} MEMBERS`,
+              stats.countries > 0 && `${stats.countries} ${stats.countries === 1 ? 'COUNTRY' : 'COUNTRIES'}`,
+              stats.events > 0 && `${stats.events} ${stats.events === 1 ? 'EVENT' : 'EVENTS'}`,
+            ].filter(Boolean).join('  ·  ')}
+          </motion.p>
+        )}
       </motion.div>
 
       {/* Scroll indicator */}
@@ -189,9 +207,9 @@ export function Hero() {
         transition={{ delay: 2.2, duration: 1 }}
         style={{ opacity: fadeOut }}
       >
-        <p className="font-mono text-[9px] tracking-[0.3em] text-od-muted">SCROLL</p>
+        <p className="font-mono text-[10px] tracking-[0.3em] text-ic-muted">SCROLL</p>
         <motion.div
-          className="w-px h-8 bg-gradient-to-b from-od-muted to-transparent"
+          className="w-px h-8 bg-gradient-to-b from-ic-muted to-transparent"
           animate={{ scaleY: [1, 0.4, 1] }}
           transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
           style={{ originY: 0 }}

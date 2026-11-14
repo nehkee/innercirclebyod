@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { FooterStats } from '@/components/layout/FooterStats';
+import { BRAND } from '@/lib/brand';
 
 const LINKS = {
   Platform: [
@@ -14,30 +16,32 @@ const LINKS = {
     { href: '/community#circles',  label: 'Inner Circles'   },
   ],
   Legal: [
-    { href: '/privacy', label: 'Privacy Policy' },
-    { href: '/terms',   label: 'Terms of Use'   },
-    { href: '/refunds', label: 'Refund Policy'  },
-    { href: '/faq',     label: 'FAQ'            },
+    { href: '/privacy',         label: 'Privacy Policy' },
+    { href: '/terms',           label: 'Terms of Use'   },
+    { href: '/refunds',         label: 'Refund Policy' },
+    { href: '/membership#faq',  label: 'FAQ'           },
+    { href: '/account',         label: 'My Membership' },
   ],
 };
 
+// Set NEXT_PUBLIC_SOCIAL_* to show these; empty ones are hidden.
 const SOCIALS = [
-  { href: 'https://twitter.com/Odumodublvck_', label: '𝕏',    title: 'Twitter / X'  },
-  { href: 'https://instagram.com',              label: 'IG',   title: 'Instagram'    },
-  { href: 'https://spotify.com',                label: '♫',    title: 'Spotify'      },
-  { href: 'https://tiktok.com',                 label: 'TT',   title: 'TikTok'       },
-];
+  { href: BRAND.social.x,         label: '𝕏',  title: 'X'         },
+  { href: BRAND.social.instagram, label: 'IG', title: 'Instagram' },
+  { href: BRAND.social.tiktok,    label: 'TT', title: 'TikTok'    },
+  { href: BRAND.social.youtube,   label: '▶',  title: 'YouTube'   },
+].filter(s => s.href);
 
 const TICKER_TEXT =
-  'INNER CIRCLE BY OD  ✦  INDUSTRY MACHINE ⚙️  ✦  ENTER THE MACHINE  ✦  WARLORD SEASON  ✦  NATIVE RECORDS  ✦  EXCLUSIVE ACCESS  ✦  UNDERGROUND LUXURY  ✦  NIGERIAN INTERNET CULTURE  ✦  THE CIRCLE NEVER BREAKS  ✦  ODUMODUBLVCK  ✦';
+  'INNER CIRCLE  ✦  ENTER THE CIRCLE  ✦  BY INVITATION ONLY  ✦  NO PHONES  ✦  NO LEAKS  ✦  EXCLUSIVE ACCESS  ✦  UNDERGROUND LUXURY  ✦  THE CIRCLE NEVER BREAKS  ◯';
 
 export function Footer() {
   return (
-    <footer className="border-t border-od-border">
+    <footer className="border-t border-ic-border">
       {/* Ticker */}
-      <div className="overflow-hidden border-b border-od-border py-3 bg-od-dark/50">
+      <div className="overflow-hidden border-b border-ic-border py-3 bg-ic-dark/50">
         <div
-          className="ticker-content font-bebas tracking-widest text-sm text-od-muted whitespace-nowrap"
+          className="ticker-content font-bebas tracking-widest text-sm text-ic-muted whitespace-nowrap"
         >
           {TICKER_TEXT}&nbsp;&nbsp;&nbsp;&nbsp;{TICKER_TEXT}
         </div>
@@ -49,27 +53,27 @@ export function Footer() {
           {/* Brand block */}
           <div className="md:col-span-4">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 border border-od-gold flex items-center justify-center flex-shrink-0">
-                <span className="font-bebas text-od-gold text-xl leading-none">OD</span>
+              <div className="w-10 h-10 border border-ic-gold flex items-center justify-center flex-shrink-0">
+                <span className="font-bebas text-ic-gold text-xl leading-none">IC</span>
               </div>
               <div>
-                <p className="font-bebas text-sm tracking-[0.3em] text-od-gold leading-tight">
+                <p className="font-bebas text-sm tracking-[0.3em] text-ic-gold leading-tight">
                   INNER CIRCLE
                 </p>
-                <p className="font-mono text-[9px] tracking-[0.2em] text-od-muted">
-                  BY ODUMODUBLVCK
+                <p className="font-mono text-[10px] tracking-[0.2em] text-ic-muted">
+                  EST. BY INVITATION
                 </p>
               </div>
             </div>
 
-            <p className="text-od-muted text-sm leading-relaxed max-w-xs mb-6">
+            <p className="text-ic-muted text-sm leading-relaxed max-w-xs mb-6">
               An elite digital society built for the real ones.
-              Exclusive access to private events, unreleased music,
-              and direct connection to the machine.
+              Private events, unreleased music, and a seat in
+              rooms most people never hear about.
             </p>
 
-            <p className="font-mono text-[9px] tracking-widest text-od-muted mb-6">
-              INDUSTRY MACHINE ⚙️ · ARTIST · REVOLUTIONARY · MACHINE
+            <p className="font-mono text-[10px] tracking-widest text-ic-muted mb-6">
+              ◯ EARNED · NOT GIVEN · NEVER SHARED
             </p>
 
             {/* Socials */}
@@ -81,7 +85,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   title={s.title}
-                  className="w-9 h-9 border border-od-border flex items-center justify-center text-od-muted hover:border-od-gold hover:text-od-gold transition-all duration-300 text-xs font-mono"
+                  className="w-9 h-9 border border-ic-border flex items-center justify-center text-ic-muted hover:border-ic-gold hover:text-ic-gold transition-all duration-300 text-xs font-mono"
                 >
                   {s.label}
                 </a>
@@ -99,7 +103,7 @@ export function Footer() {
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="text-od-muted text-sm hover:text-white transition-colors duration-200 font-mono text-[11px] tracking-wider"
+                        className="text-ic-muted text-sm hover:text-white transition-colors duration-200 font-mono text-[11px] tracking-wider"
                       >
                         {link.label}
                       </Link>
@@ -111,32 +115,20 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Stats bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-8 border-y border-od-border mb-8">
-          {[
-            { n: '12,400+', l: 'MEMBERS'   },
-            { n: '48',      l: 'EVENTS'    },
-            { n: '14',      l: 'CITIES'    },
-            { n: '9',       l: 'COUNTRIES' },
-          ].map(s => (
-            <div key={s.l} className="text-center">
-              <p className="font-bebas text-2xl text-od-gold">{s.n}</p>
-              <p className="font-mono text-[9px] tracking-[0.3em] text-od-muted">{s.l}</p>
-            </div>
-          ))}
-        </div>
+        {/* Stats bar — real numbers only */}
+        <FooterStats />
 
         {/* Bottom bar */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="font-mono text-[10px] tracking-widest text-od-muted">
-            © 2024 INNERCIRCLEBYOD.COM — ALL RIGHTS RESERVED
+          <p className="font-mono text-[11px] tracking-widest text-ic-muted">
+            © {new Date().getFullYear()} INNER CIRCLE — ALL RIGHTS RESERVED
           </p>
           <div className="flex items-center gap-4">
-            <div className="h-px w-8 bg-od-border" />
-            <p className="font-mono text-[10px] tracking-widest text-od-muted">
-              NATIVE RECORDS · INDUSTRY MACHINE ⚙️
+            <div className="h-px w-8 bg-ic-border" />
+            <p className="font-mono text-[11px] tracking-widest text-ic-muted">
+              THE CIRCLE NEVER BREAKS ◯
             </p>
-            <div className="h-px w-8 bg-od-border" />
+            <div className="h-px w-8 bg-ic-border" />
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { JoinForm } from './JoinForm';
 
 export default function JoinPage() {
   return (
-    <div className="min-h-screen bg-od-black flex flex-col">
+    <div className="min-h-screen bg-ic-black flex flex-col">
       <Nav />
 
       {/* Gold radial glow */}
@@ -29,7 +29,7 @@ export default function JoinPage() {
 
       {/* Scanline */}
       <div
-        className="fixed left-0 right-0 h-px bg-od-gold/10 pointer-events-none"
+        className="fixed left-0 right-0 h-px bg-ic-gold/10 pointer-events-none"
         style={{ animation: 'scanline 12s linear infinite' }}
       />
 

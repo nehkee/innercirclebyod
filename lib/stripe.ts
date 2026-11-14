@@ -1,13 +1,10 @@
 import Stripe from 'stripe';
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
-});
+let client: Stripe | null = null;
 
-// Stripe Price IDs for each membership tier (USD)
-export const STRIPE_PRICE_IDS: Record<string, string> = {
-  machine:  process.env.STRIPE_MACHINE_PRICE_ID  || '',
-  insider:  process.env.STRIPE_INSIDER_PRICE_ID  || '',
-  warlord:  process.env.STRIPE_WARLORD_PRICE_ID  || '',
-  industry: process.env.STRIPE_INDUSTRY_PRICE_ID || '',
-};
+/** Lazily created so the app still builds and runs without Stripe keys. */
+export function getStripe(): Stripe {
+  if (!process.env.STRIPE_SECRET_KEY) throw new Error('STRIPE_SECRET_KEY is not set');
+  client ??= new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' });
+  return client;
+}

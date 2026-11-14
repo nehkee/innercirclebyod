@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth }                      from '@clerk/nextjs/server';
+import { getClerkUserId }            from '@/lib/auth';
+import { hasTierAccess }             from '@/lib/membership';
 import { createAdminClient }         from '@/lib/supabase';
 import { generateInviteCode }        from '@/lib/qr';
 import { rateLimit }                 from '@/lib/fraud';
 import { z }                         from 'zod';
 
-// ── Generate invite code (WARLORD+ only) ─────────────────────────────────────
+// ── Generate invite code (VANGUARD+ only) ─────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const { userId } = auth();
+  const userId = getClerkUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -24,16 +25,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Member not found' }, { status: 404 });
   }
 
-  const TIER_ORDER = ['machine', 'insider', 'warlord', 'industry'];
-  if (TIER_ORDER.indexOf(member.tier) < TIER_ORDER.indexOf('warlord')) {
+  if (!(await hasTierAccess(member.id, 'vanguard'))) {
     return NextResponse.json(
-      { error: 'Invite generation requires WARLORD tier or higher' },
+      { error: 'Invite generation requires VANGUARD tier or higher' },
       { status: 403 }
     );
   }
 
   // Rate limit: 2 invites per month per member
-  const rl = rateLimit(`invites:${member.id}`, 2, 30 * 24 * 60 * 60 * 1000);
+  const rl = await rateLimit(`invites:${member.id}`, 2, 30 * 24 * 60 * 60 * 1000);
   if (!rl.allowed) {
     return NextResponse.json({ error: 'Monthly invite limit reached' }, { status: 429 });
   }
@@ -81,6 +81,19 @@ export async function POST(req: NextRequest) {
 
 // ── Validate invite code ──────────────────────────────────────────────────────
 export async function GET(req: NextRequest) {
+  if (req.nextUrl.searchParams.get('mine')) {
+    const userId = getClerkUserId();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const admin = createAdminClient();
+    const { data: me } = await admin.from('members').select('id').eq('clerk_id', userId).single();
+    if (!me) return NextResponse.json({ invites: [], canInvite: false });
+    const [{ data: invites }, canInvite] = await Promise.all([
+      admin.from('invite_codes').select('code, used, expires_at, created_at').eq('created_by', me.id).order('created_at', { ascending: false }).limit(20),
+      hasTierAccess(me.id, 'vanguard'),
+    ]);
+    return NextResponse.json({ invites: invites ?? [], canInvite });
+  }
+
   const code = req.nextUrl.searchParams.get('code');
   if (!code) {
     return NextResponse.json({ valid: false, reason: 'Missing code' }, { status: 400 });
@@ -106,17 +119,38 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ valid: true });
 }
 
-// ── Redeem invite code (called during sign-up) ────────────────────────────────
+// ── Redeem invite code (called by the signed-in new member after sign-up) ─────
 export async function PATCH(req: NextRequest) {
-  const body   = await req.json().catch(() => null);
-  const schema = z.object({ code: z.string(), userId: z.string() });
-  const parsed = schema.safeParse(body);
+  const userId = getClerkUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
+  const body   = await req.json().catch(() => null);
+  const parsed = z.object({ code: z.string().min(1).max(32) }).safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 
   const admin = createAdminClient();
+
+  const { data: member } = await admin
+    .from('members')
+    .select('id')
+    .eq('clerk_id', userId)
+    .single();
+  if (!member) {
+    return NextResponse.json({ error: 'Member not found' }, { status: 404 });
+  }
+
+  // One redemption per member
+  const { count: alreadyRedeemed } = await admin
+    .from('invite_codes')
+    .select('id', { count: 'exact', head: true })
+    .eq('used_by', member.id);
+  if ((alreadyRedeemed ?? 0) > 0) {
+    return NextResponse.json({ error: 'You have already redeemed an invite' }, { status: 409 });
+  }
 
   const { data: invite } = await admin
     .from('invite_codes')
@@ -127,19 +161,33 @@ export async function PATCH(req: NextRequest) {
   if (!invite || invite.used) {
     return NextResponse.json({ error: 'Invalid or used code' }, { status: 400 });
   }
+  if (invite.created_by === member.id) {
+    return NextResponse.json({ error: 'You cannot redeem your own invite' }, { status: 400 });
+  }
   if (invite.expires_at && new Date(invite.expires_at) < new Date()) {
     return NextResponse.json({ error: 'Code expired' }, { status: 400 });
   }
 
-  await admin
+  // Conditional update so two simultaneous redemptions can't both succeed
+  const { data: claimed } = await admin
     .from('invite_codes')
-    .update({ used: true, used_by: parsed.data.userId, used_at: new Date().toISOString() })
-    .eq('id', invite.id);
+    .update({ used: true, used_by: member.id, used_at: new Date().toISOString() })
+    .eq('id', invite.id)
+    .eq('used', false)
+    .select('id');
+
+  if (!claimed || claimed.length === 0) {
+    return NextResponse.json({ error: 'Invalid or used code' }, { status: 400 });
+  }
+
+  await admin.from('members').update({ access_granted: true, invited_by: invite.created_by }).eq('id', member.id);
+  await admin.from('waitlist').update({ converted: true }).eq('invite_code', parsed.data.code.toUpperCase());
 
   // Award points to the inviter
   await admin.rpc('update_member_points', {
     member_id:    invite.created_by,
     points_delta: 500,
+    reason:       'invite',
   });
 
   return NextResponse.json({ success: true });
