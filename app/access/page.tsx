@@ -72,11 +72,33 @@ export default function AccessPage() {
     e.preventDefault();
     if (!selectedExp) return;
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1500));
-    toast.success('Application submitted. You\'ll hear back within 72 hours.');
-    setLoading(false);
-    setFormData({ name: '', email: '', message: '' });
-    setSelectedExp(null);
+    try {
+      const res = await fetch('/api/applications', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          type:      selectedExp,
+          userName:  formData.name,
+          userEmail: formData.email,
+          message:   formData.message,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const msg = typeof data.error === 'string'
+          ? data.error
+          : 'Please check your details. Your message needs at least 20 characters.';
+        toast.error(msg);
+        return;
+      }
+      toast.success('Application submitted. You\'ll hear back within 72 hours.');
+      setFormData({ name: '', email: '', message: '' });
+      setSelectedExp(null);
+    } catch {
+      toast.error('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRaffle = async (id: string) => {

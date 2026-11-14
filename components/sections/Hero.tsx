@@ -4,13 +4,14 @@ import { useEffect, useRef, Suspense, lazy } from 'react';
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { CountdownTimer } from '@/components/ui/CountdownTimer';
+import type { Event } from '@/types';
+import type { CommunityStats } from '@/lib/data';
+import { formatStat } from '@/lib/data-format';
 
 // Lazy-load Three.js to avoid SSR issues and keep initial bundle small
 const ParticleBackground = lazy(() =>
   import('@/components/ui/ParticleBackground').then(m => ({ default: m.ParticleBackground }))
 );
-
-const NEXT_EVENT_DATE = '2026-06-14T20:00:00';
 
 const fadeUp = {
   hidden:  { opacity: 0, y: 40 },
@@ -21,7 +22,7 @@ const fadeUp = {
   }),
 };
 
-export function Hero() {
+export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: CommunityStats | null }) {
   const heroRef     = useRef<HTMLElement>(null);
   const { scrollY } = useScroll();
   const parallaxY   = useTransform(scrollY, [0, 700], [0, -140]);
@@ -153,10 +154,21 @@ export function Hero() {
           variants={fadeUp} initial="hidden" animate="visible" custom={4}
         >
           <p className="section-label mb-4">NEXT DROP</p>
-          <CountdownTimer targetDate={NEXT_EVENT_DATE} />
-          <p className="font-mono text-[10px] tracking-widest text-od-muted mt-3">
-            WARLORD SEASON LISTENING PARTY — LAGOS
-          </p>
+          {nextEvent ? (
+            <>
+              <div className="flex justify-center">
+                <CountdownTimer targetDate={nextEvent.date} />
+              </div>
+              <Link
+                href={`/events/${nextEvent.id}`}
+                className="inline-block font-mono text-[10px] tracking-widest text-od-muted hover:text-od-gold transition-colors mt-3"
+              >
+                {nextEvent.title} — {nextEvent.location.split(',')[0].toUpperCase()}
+              </Link>
+            </>
+          ) : (
+            <p className="font-bebas text-3xl tracking-widest text-od-gold">ANNOUNCED SOON</p>
+          )}
         </motion.div>
 
         {/* CTAs */}
@@ -172,13 +184,19 @@ export function Hero() {
           </Link>
         </motion.div>
 
-        {/* Social proof */}
-        <motion.p
-          className="font-mono text-[10px] tracking-widest text-od-muted mt-12"
-          variants={fadeUp} initial="hidden" animate="visible" custom={6}
-        >
-          12,400+ MEMBERS &nbsp;·&nbsp; 9 COUNTRIES &nbsp;·&nbsp; 48 EVENTS
-        </motion.p>
+        {/* Social proof — real numbers only */}
+        {stats && (
+          <motion.p
+            className="font-mono text-[10px] tracking-widest text-od-muted mt-12"
+            variants={fadeUp} initial="hidden" animate="visible" custom={6}
+          >
+            {[
+              `${formatStat(stats.members)} MEMBERS`,
+              stats.countries > 0 && `${stats.countries} ${stats.countries === 1 ? 'COUNTRY' : 'COUNTRIES'}`,
+              stats.events > 0 && `${stats.events} ${stats.events === 1 ? 'EVENT' : 'EVENTS'}`,
+            ].filter(Boolean).join('  ·  ')}
+          </motion.p>
+        )}
       </motion.div>
 
       {/* Scroll indicator */}

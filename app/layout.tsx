@@ -3,6 +3,8 @@ import './globals.css';
 import Providers from '@/components/providers/Providers';
 import { NoiseOverlay } from '@/components/ui/NoiseOverlay';
 import { CustomCursor } from '@/components/ui/CustomCursor';
+import { ClerkProvider } from '@clerk/nextjs';
+import { isClerkConfigured } from '@/lib/auth';
 
 export const metadata: Metadata = {
   title: 'INNER CIRCLE BY OD | The Machine',
@@ -42,15 +44,37 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
+  const page = (
     <html lang="en">
       <body className="bg-od-black text-white font-space antialiased overflow-x-hidden">
-        <Providers>
+        <Providers authEnabled={isClerkConfigured()}>
           <NoiseOverlay />
           <CustomCursor />
           {children}
         </Providers>
       </body>
     </html>
+  );
+
+  // ClerkProvider throws without keys, so only mount it once Clerk is configured.
+  if (!isClerkConfigured()) return page;
+
+  return (
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary:         '#C9A84C',
+          colorBackground:      '#111111',
+          colorText:            '#FFFFFF',
+          colorTextSecondary:   '#9CA3AF',
+          colorInputBackground: '#080808',
+          colorInputText:       '#FFFFFF',
+          borderRadius:         '0px',
+          fontFamily:           'Space Grotesk, system-ui, sans-serif',
+        },
+      }}
+    >
+      {page}
+    </ClerkProvider>
   );
 }

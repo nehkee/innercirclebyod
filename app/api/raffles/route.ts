@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth }                      from '@clerk/nextjs/server';
+import { getClerkUserId, requireAdmin } from '@/lib/auth';
 import { createAdminClient }         from '@/lib/supabase';
 import { rateLimit, clientId, hasMembershipAccess } from '@/lib/fraud';
 import { raffleResultEmail }         from '@/lib/email-templates';
@@ -10,12 +10,12 @@ const getResend = () => new Resend(process.env.RESEND_API_KEY ?? 're_placeholder
 
 // ── Enter a raffle ────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const { userId } = auth();
+  const userId = getClerkUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const rl = rateLimit(`raffle-enter:${userId}`, 10, 60 * 60 * 1000);
+  const rl = await rateLimit(`raffle-enter:${userId}`, 10, 60 * 60 * 1000);
   if (!rl.allowed) {
     return NextResponse.json({ error: 'Too many raffle entries' }, { status: 429 });
   }
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
   // Tier check
   if (raffle.min_tier) {
-    const hasAccess = await hasMembershipAccess(userId, raffle.min_tier);
+    const hasAccess = await hasMembershipAccess(member.id, raffle.min_tier);
     if (!hasAccess) {
       return NextResponse.json({ error: `Requires ${raffle.min_tier} tier` }, { status: 403 });
     }
@@ -101,22 +101,11 @@ export async function POST(req: NextRequest) {
 
 // ── Admin: draw a raffle winner ───────────────────────────────────────────────
 export async function PATCH(req: NextRequest) {
-  const { userId } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const check = await requireAdmin();
+  if (!check.ok) {
+    return NextResponse.json({ error: check.status === 401 ? 'Unauthorized' : 'Forbidden' }, { status: check.status });
   }
-
-  // Verify admin
   const admin = createAdminClient();
-  const { data: member } = await admin
-    .from('members')
-    .select('is_admin')
-    .eq('clerk_id', userId)
-    .single();
-
-  if (!member?.is_admin) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
 
   const body   = await req.json().catch(() => null);
   const schema = z.object({ raffleId: z.string().uuid() });

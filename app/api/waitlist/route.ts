@@ -13,7 +13,7 @@ const Schema = z.object({
 
 export async function POST(req: NextRequest) {
   // Rate limit: 3 signups per 10 min per IP
-  const rl = rateLimit(`waitlist:${clientId(req)}`, 3, 10 * 60 * 1000);
+  const rl = await rateLimit(`waitlist:${clientId(req)}`, 3, 10 * 60 * 1000);
   if (!rl.allowed) {
     return NextResponse.json({ error: 'Too many requests. Try again later.' }, { status: 429 });
   }

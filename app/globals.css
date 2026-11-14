@@ -203,6 +203,8 @@ body {
 }
 
 /* ─── Button Styles ────────────────────────────────────────────────────────── */
+/* Inside @layer so Tailwind utilities (hidden, py-*, px-*) can override them */
+@layer components {
 .btn-primary {
   position: relative;
   display: inline-flex;
@@ -278,6 +280,7 @@ body {
   background: linear-gradient(90deg, transparent, #C9A84C, transparent);
 }
 
+}
 /* ─── Tier Card ────────────────────────────────────────────────────────────── */
 .tier-machine  { --tier-color: #9CA3AF; }
 .tier-insider  { --tier-color: #C9A84C; }
@@ -314,6 +317,7 @@ body {
 }
 
 /* ─── Status Badge ─────────────────────────────────────────────────────────── */
+@layer components {
 .badge-live {
   display: inline-flex;
   align-items: center;
@@ -337,6 +341,7 @@ body {
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+}
 /* ─── Member Status Levels ─────────────────────────────────────────────────── */
 .status-machine  { color: #9CA3AF; }
 .status-insider  { color: #C9A84C; }

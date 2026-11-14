@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { FooterStats } from '@/components/layout/FooterStats';
 
 const LINKS = {
   Platform: [
@@ -111,25 +112,13 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Stats bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-8 border-y border-od-border mb-8">
-          {[
-            { n: '12,400+', l: 'MEMBERS'   },
-            { n: '48',      l: 'EVENTS'    },
-            { n: '14',      l: 'CITIES'    },
-            { n: '9',       l: 'COUNTRIES' },
-          ].map(s => (
-            <div key={s.l} className="text-center">
-              <p className="font-bebas text-2xl text-od-gold">{s.n}</p>
-              <p className="font-mono text-[9px] tracking-[0.3em] text-od-muted">{s.l}</p>
-            </div>
-          ))}
-        </div>
+        {/* Stats bar — real numbers only */}
+        <FooterStats />
 
         {/* Bottom bar */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="font-mono text-[10px] tracking-widest text-od-muted">
-            © 2024 INNERCIRCLEBYOD.COM — ALL RIGHTS RESERVED
+            © {new Date().getFullYear()} INNERCIRCLEBYOD.COM — ALL RIGHTS RESERVED
           </p>
           <div className="flex items-center gap-4">
             <div className="h-px w-8 bg-od-border" />

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth }                      from '@clerk/nextjs/server';
+import { getClerkUserId }            from '@/lib/auth';
 import { createAdminClient }         from '@/lib/supabase';
 import { generateInviteCode }        from '@/lib/qr';
 import { rateLimit }                 from '@/lib/fraud';
@@ -7,7 +7,7 @@ import { z }                         from 'zod';
 
 // ── Generate invite code (WARLORD+ only) ─────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const { userId } = auth();
+  const userId = getClerkUserId();
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Rate limit: 2 invites per month per member
-  const rl = rateLimit(`invites:${member.id}`, 2, 30 * 24 * 60 * 60 * 1000);
+  const rl = await rateLimit(`invites:${member.id}`, 2, 30 * 24 * 60 * 60 * 1000);
   if (!rl.allowed) {
     return NextResponse.json({ error: 'Monthly invite limit reached' }, { status: 429 });
   }
@@ -106,17 +106,38 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ valid: true });
 }
 
-// ── Redeem invite code (called during sign-up) ────────────────────────────────
+// ── Redeem invite code (called by the signed-in new member after sign-up) ─────
 export async function PATCH(req: NextRequest) {
-  const body   = await req.json().catch(() => null);
-  const schema = z.object({ code: z.string(), userId: z.string() });
-  const parsed = schema.safeParse(body);
+  const userId = getClerkUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
+  const body   = await req.json().catch(() => null);
+  const parsed = z.object({ code: z.string().min(1).max(32) }).safeParse(body);
   if (!parsed.success) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 
   const admin = createAdminClient();
+
+  const { data: member } = await admin
+    .from('members')
+    .select('id')
+    .eq('clerk_id', userId)
+    .single();
+  if (!member) {
+    return NextResponse.json({ error: 'Member not found' }, { status: 404 });
+  }
+
+  // One redemption per member
+  const { count: alreadyRedeemed } = await admin
+    .from('invite_codes')
+    .select('id', { count: 'exact', head: true })
+    .eq('used_by', member.id);
+  if ((alreadyRedeemed ?? 0) > 0) {
+    return NextResponse.json({ error: 'You have already redeemed an invite' }, { status: 409 });
+  }
 
   const { data: invite } = await admin
     .from('invite_codes')
@@ -127,14 +148,24 @@ export async function PATCH(req: NextRequest) {
   if (!invite || invite.used) {
     return NextResponse.json({ error: 'Invalid or used code' }, { status: 400 });
   }
+  if (invite.created_by === member.id) {
+    return NextResponse.json({ error: 'You cannot redeem your own invite' }, { status: 400 });
+  }
   if (invite.expires_at && new Date(invite.expires_at) < new Date()) {
     return NextResponse.json({ error: 'Code expired' }, { status: 400 });
   }
 
-  await admin
+  // Conditional update so two simultaneous redemptions can't both succeed
+  const { data: claimed } = await admin
     .from('invite_codes')
-    .update({ used: true, used_by: parsed.data.userId, used_at: new Date().toISOString() })
-    .eq('id', invite.id);
+    .update({ used: true, used_by: member.id, used_at: new Date().toISOString() })
+    .eq('id', invite.id)
+    .eq('used', false)
+    .select('id');
+
+  if (!claimed || claimed.length === 0) {
+    return NextResponse.json({ error: 'Invalid or used code' }, { status: 400 });
+  }
 
   // Award points to the inviter
   await admin.rpc('update_member_points', {

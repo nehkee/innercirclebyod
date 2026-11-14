@@ -1,12 +1,20 @@
-import { createHmac, randomBytes } from 'crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'crypto';
 
-const SECRET = process.env.TICKET_SECRET || 'innercircle-ticket-secret-change-in-prod';
+/** Signing key for ticket QR codes. Required in production: a guessable key lets anyone forge tickets. */
+function getSecret(): string {
+  const secret = process.env.TICKET_SECRET;
+  if (secret) return secret;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('TICKET_SECRET must be set in production');
+  }
+  return 'dev-only-ticket-secret';
+}
 
 /** Generate a secure signed token for a ticket */
 export function generateTicketToken(ticketId: string, eventId: string, userId: string): string {
   const payload    = `${ticketId}:${eventId}:${userId}:${Date.now()}`;
   const payloadB64 = Buffer.from(payload).toString('base64url');
-  const sig        = createHmac('sha256', SECRET).update(payloadB64).digest('base64url');
+  const sig        = createHmac('sha256', getSecret()).update(payloadB64).digest('base64url');
   return `${payloadB64}.${sig}`;
 }
 
@@ -21,8 +29,9 @@ export function verifyTicketToken(token: string): {
     const [payloadB64, sig] = token.split('.');
     if (!payloadB64 || !sig) return null;
 
-    const expected = createHmac('sha256', SECRET).update(payloadB64).digest('base64url');
-    if (expected !== sig) return null;
+    const expected = Buffer.from(createHmac('sha256', getSecret()).update(payloadB64).digest('base64url'));
+    const given    = Buffer.from(sig);
+    if (expected.length !== given.length || !timingSafeEqual(expected, given)) return null;
 
     const [ticketId, eventId, userId, issuedAtStr] = Buffer.from(payloadB64, 'base64url')
       .toString()

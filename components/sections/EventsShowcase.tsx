@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import { MapPin, Users, Lock, ArrowRight } from 'lucide-react';
-import { UPCOMING_EVENTS } from '@/lib/constants';
+import type { Event } from '@/types';
 import { CountdownTimer } from '@/components/ui/CountdownTimer';
 import { formatPrice, formatDate } from '@/lib/utils';
 
@@ -26,13 +26,14 @@ const TYPE_COLORS: Record<string, string> = {
   secret:          '#CC0000',
 };
 
-export function EventsShowcase() {
+export function EventsShowcase({ events }: { events: Event[] }) {
   const sectionRef    = useRef<HTMLElement>(null);
   const sectionInView = useInView(sectionRef, { once: true, margin: '-80px' });
 
-  const [featured, ...rest] = UPCOMING_EVENTS;
-  const spotsLeft = featured.capacity - featured.sold;
-  const pct       = (featured.sold / featured.capacity) * 100;
+  const [featured, ...others] = events;
+  const rest      = others.slice(0, 2);
+  const spotsLeft = featured ? featured.capacity - featured.sold : 0;
+  const pct       = featured ? Math.min(100, (featured.sold / featured.capacity) * 100) : 0;
 
   return (
     <section ref={sectionRef} className="py-24 bg-od-dark/30">
@@ -67,7 +68,14 @@ export function EventsShowcase() {
           </motion.h2>
         </div>
 
-        {/* Two-column grid */}
+        {!featured ? (
+          <div className="border border-od-border p-10 md:p-16 text-center">
+            <p className="font-bebas text-3xl md:text-5xl text-white mb-3">NEXT EVENTS ANNOUNCED SOON</p>
+            <p className="text-od-muted text-sm mb-8">Members hear first. Get on the list so you don&apos;t miss the drop.</p>
+            <Link href="/join" className="btn-primary px-10 py-3 text-sm">GET NOTIFIED</Link>
+          </div>
+        ) : (
+        /* Two-column grid */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
           {/* Featured event — 7/12 cols */}
@@ -254,6 +262,7 @@ export function EventsShowcase() {
             </motion.div>
           </div>
         </div>
+        )}
       </div>
     </section>
   );

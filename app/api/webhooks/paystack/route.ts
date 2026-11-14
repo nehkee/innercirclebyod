@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient }         from '@/lib/supabase';
 import { verifyPaystackWebhook }     from '@/lib/fraud';
+import { TIER_PRICES_NGN }           from '@/lib/paystack';
 
 interface PaystackEvent {
   event: string;
@@ -28,11 +29,19 @@ export async function POST(req: NextRequest) {
 
   switch (event.event) {
     case 'charge.success': {
-      const { reference, metadata, customer } = event.data;
+      const { reference, metadata, customer, amount } = event.data;
       const userId = metadata?.userId;
       const tier   = metadata?.tier;
 
       if (!userId || !tier) break;
+
+      // Metadata and amount can be set by the payer in Paystack's inline checkout,
+      // so only grant the tier if they actually paid its price (amount is in kobo).
+      const required = TIER_PRICES_NGN[tier];
+      if (!required || amount < required) {
+        console.warn('Paystack charge below tier price — not upgrading', { reference, tier, amount });
+        break;
+      }
 
       await admin
         .from('memberships')

@@ -1,25 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth }                      from '@clerk/nextjs/server';
+import { requireAdmin }              from '@/lib/auth';
 import { createAdminClient }         from '@/lib/supabase';
 
 export async function GET(req: NextRequest) {
-  const { userId } = auth();
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const check = await requireAdmin();
+  if (!check.ok) {
+    return NextResponse.json({ error: check.status === 401 ? 'Unauthorized' : 'Forbidden' }, { status: check.status });
   }
 
   const admin = createAdminClient();
-
-  // Verify admin
-  const { data: self } = await admin
-    .from('members')
-    .select('is_admin')
-    .eq('clerk_id', userId)
-    .single();
-
-  if (!self?.is_admin) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
 
   const range = req.nextUrl.searchParams.get('range') ?? '30d';
   const since = new Date();
@@ -53,7 +42,7 @@ export async function GET(req: NextRequest) {
     // Recent ticket sales
     admin
       .from('tickets')
-      .select('id, created_at, payment_status, events(title)')
+      .select('id, created_at, payment_status, events(title), members(username)')
       .gte('created_at', sinceStr)
       .eq('payment_status', 'paid')
       .order('created_at', { ascending: false })

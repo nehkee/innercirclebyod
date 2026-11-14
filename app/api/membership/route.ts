@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+import { getCurrentMember } from '@/lib/auth';
+import { createAdminClient } from '@/lib/supabase';
 
 const subscribeSchema = z.object({
   tierId:   z.enum(['machine', 'insider', 'warlord', 'industry']),
@@ -51,24 +53,17 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('userId');
-
-    if (!userId) {
-      return NextResponse.json({ error: 'userId required' }, { status: 400 });
-    }
-
-    // TODO: Supabase query
-    // const { data } = await supabase
-    //   .from('memberships')
-    //   .select('*')
-    //   .eq('user_id', userId)
-    //   .single();
-
-    return NextResponse.json({ membership: null });
-  } catch {
-    return NextResponse.json({ error: 'Failed to fetch membership' }, { status: 500 });
+export async function GET() {
+  const member = await getCurrentMember();
+  if (!member) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const { data } = await createAdminClient()
+    .from('memberships')
+    .select('tier, status, payment_provider, current_period_end')
+    .eq('user_id', member.id)
+    .maybeSingle();
+
+  return NextResponse.json({ membership: data ?? null });
 }

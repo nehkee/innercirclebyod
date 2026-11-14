@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Menu, X } from 'lucide-react';
+import { NavAuth } from '@/components/auth/NavAuth';
 
 const NAV_LINKS = [
   { href: '/membership', label: 'MEMBERSHIP' },
@@ -72,12 +73,12 @@ export function Nav() {
 
           {/* Right */}
           <div className="flex items-center gap-4">
-            <Link
-              href="/join"
-              className="hidden md:block btn-primary py-2 px-6 text-sm"
-            >
-              JOIN
-            </Link>
+            <div className="hidden md:flex items-center gap-4">
+              <NavAuth />
+              <Link href="/join" className="btn-primary py-2 px-6 text-sm">
+                JOIN
+              </Link>
+            </div>
 
             {/* Hamburger */}
             <button
@@ -115,6 +116,7 @@ export function Nav() {
           <Link href="/join" className="btn-primary mt-4">
             JOIN THE INNER CIRCLE
           </Link>
+          <NavAuth mobile />
         </div>
 
         <div className="p-8 text-center">
