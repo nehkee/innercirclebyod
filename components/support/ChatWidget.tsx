@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { SignedIn } from '@clerk/nextjs';
+import { Show } from '@clerk/nextjs';
 import { MessageCircle, X, Send, Loader2, ArrowLeft, Ticket, Crown, HelpCircle } from 'lucide-react';
 import { useAuthEnabled } from '@/components/providers/Providers';
 import { OPEN_CHAT_EVENT, type OpenChatDetail } from '@/components/support/openChat';
@@ -20,9 +20,9 @@ export function ChatWidget() {
   const pathname = usePathname();
   if (!enabled || pathname.startsWith('/admin')) return null;
   return (
-    <SignedIn>
+    <Show when="signed-in">
       <ChatInner />
-    </SignedIn>
+    </Show>
   );
 }
 
