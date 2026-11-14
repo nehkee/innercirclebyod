@@ -1,25 +1,20 @@
 'use client';
 
-import { useState } from 'react';
 import { Nav } from '@/components/layout/Nav';
 import { Footer } from '@/components/layout/Footer';
 import { CountdownTimer } from '@/components/ui/CountdownTimer';
-import { PaymentButton } from '@/components/ui/PaymentButton';
+import { CheckoutOptions } from '@/components/checkout/CheckoutOptions';
+import type { PaymentMethods } from '@/lib/payments/config';
 import { formatDate } from '@/lib/utils';
 import type { Event } from '@/types';
 import { Lock, MapPin, Users, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-type Currency = 'USD' | 'NGN';
 
-export function EventDetail({ event }: { event: Event }) {
-  const [currency, setCurrency] = useState<Currency>('NGN');
-  const [qty,      setQty]      = useState(1);
+export function EventDetail({ event, methods }: { event: Event; methods: PaymentMethods }) {
 
   const spotsLeft = Math.max(0, event.capacity - event.sold);
   const isPast    = new Date(event.date) < new Date();
-  const price     = currency === 'USD' ? event.priceUSD : event.priceNGN;
-  const total     = price * qty;
 
   return (
     <main className="bg-od-black min-h-screen">
@@ -100,48 +95,15 @@ export function EventDetail({ event }: { event: Event }) {
             <div className="border border-od-border bg-od-dark p-8 sticky top-24">
               <p className="section-label mb-6">GET YOUR TICKET</p>
 
-              {/* Currency toggle */}
-              <div className="flex border border-od-border mb-6">
-                {(['NGN', 'USD'] as Currency[]).map(cur => (
-                  <button
-                    key={cur}
-                    onClick={() => setCurrency(cur)}
-                    className={`flex-1 py-2 font-mono text-xs tracking-widest transition-all ${
-                      currency === cur ? 'bg-od-gold text-black' : 'text-od-muted hover:text-white'
-                    }`}
-                  >
-                    {cur === 'NGN' ? '₦ NGN' : '$ USD'}
-                  </button>
-                ))}
-              </div>
-
-              {/* Price + Qty */}
-              <div className="mb-6 pb-6 border-b border-od-border">
-                <div className="flex justify-between items-baseline mb-4">
-                  <span className="text-od-muted text-sm">Per ticket</span>
-                  <span className="font-bebas text-2xl text-od-gold">
-                    {event.priceNGN === 0 ? 'FREE' : (currency === 'NGN' ? `₦${price.toLocaleString()}` : `$${price}`)}
-                  </span>
-                </div>
-
-                {event.priceNGN > 0 && (
-                  <>
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-od-muted text-sm">Quantity</span>
-                      <div className="flex items-center border border-od-border">
-                        <button onClick={() => setQty(q => Math.max(1, q - 1))} className="w-9 h-9 text-od-muted hover:text-white flex items-center justify-center">−</button>
-                        <span className="w-8 text-center font-mono text-sm">{qty}</span>
-                        <button onClick={() => setQty(q => Math.min(Math.min(4, spotsLeft), q + 1))} className="w-9 h-9 text-od-muted hover:text-white flex items-center justify-center">+</button>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-baseline">
-                      <span className="font-mono text-xs text-od-muted">TOTAL</span>
-                      <span className="font-bebas text-3xl text-od-gold">
-                        {currency === 'NGN' ? `₦${total.toLocaleString()}` : `$${total}`}
-                      </span>
-                    </div>
-                  </>
-                )}
+              {/* Price */}
+              <div className="mb-6 pb-6 border-b border-od-border flex justify-between items-baseline">
+                <span className="text-od-muted text-sm">Per ticket</span>
+                <span className="font-bebas text-3xl text-od-gold text-right">
+                  {event.priceUSD === 0 && event.priceNGN === 0
+                    ? 'FREE'
+                    : [event.priceUSD > 0 && `$${event.priceUSD}`, event.priceNGN > 0 && `₦${event.priceNGN.toLocaleString('en-NG')}`]
+                        .filter(Boolean).join(' / ')}
+                </span>
               </div>
 
               {/* Capacity bar */}
@@ -165,7 +127,17 @@ export function EventDetail({ event }: { event: Event }) {
                   SOLD OUT
                 </div>
               ) : (
-                <PaymentButton label="BUY TICKET" />
+                <CheckoutOptions
+                  product={{ kind: 'ticket', eventId: event.id }}
+                  methods={methods}
+                  priceUSD={event.priceUSD}
+                  priceNGN={event.priceNGN}
+                />
+              )}
+              {event.minTier && (
+                <p className="font-mono text-[9px] tracking-widest text-od-muted mt-3 text-center">
+                  REQUIRES AN ACTIVE {event.minTier.toUpperCase()}+ MEMBERSHIP
+                </p>
               )}
             </div>
           </div>

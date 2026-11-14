@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getClerkUserId, requireAdmin } from '@/lib/auth';
+import { hasTierAccess } from '@/lib/membership';
 import { createAdminClient }         from '@/lib/supabase';
 import { rateLimit, clientId, hasMembershipAccess } from '@/lib/fraud';
 import { raffleResultEmail }         from '@/lib/email-templates';
@@ -79,8 +80,7 @@ export async function POST(req: NextRequest) {
   }
 
   // WARLORD+ gets multiple entries
-  const TIER_ORDER = ['machine', 'insider', 'warlord', 'industry'];
-  const isWarlord  = TIER_ORDER.indexOf(member.tier) >= TIER_ORDER.indexOf('warlord');
+  const isWarlord  = await hasTierAccess(member.id, 'warlord');
   const numEntries = isWarlord ? (raffle.entries_per_warlord ?? 2) : 1;
 
   const rows = Array.from({ length: numEntries }, () => ({

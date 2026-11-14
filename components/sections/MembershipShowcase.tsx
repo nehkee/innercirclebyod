@@ -149,7 +149,7 @@ function TierCard({ tier, index }: { tier: TierConfig; index: number }) {
 
         {/* CTA */}
         <Link
-          href={`/join?tier=${tier.id}`}
+          href="/membership"
           className="block w-full text-center font-mono text-xs tracking-widest py-3.5 border transition-all duration-300"
           style={{
             color:       tier.featured ? '#080808' : tier.color,

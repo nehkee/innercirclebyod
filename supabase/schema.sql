@@ -20,7 +20,7 @@ CREATE TYPE event_type       AS ENUM ('listening_party', 'show', 'hangout', 'stu
 CREATE TYPE app_status       AS ENUM ('pending', 'approved', 'rejected');
 CREATE TYPE app_type         AS ENUM ('hangout', 'studio', 'dinner', 'backstage', 'football');
 CREATE TYPE drop_type        AS ENUM ('merch', 'music', 'ticket', 'invite');
-CREATE TYPE payment_provider AS ENUM ('stripe', 'paystack');
+CREATE TYPE payment_provider AS ENUM ('stripe', 'paystack', 'crypto');
 
 -- ─── MEMBERS ────────────────────────────────────────────────────────────────────
 -- One row per Clerk user, created by the Clerk webhook (app/api/webhooks/clerk).
@@ -130,6 +130,37 @@ CREATE TABLE tickets (
 
 CREATE INDEX idx_tickets_user_id  ON tickets(user_id);
 CREATE INDEX idx_tickets_event_id ON tickets(event_id);
+
+-- ─── PAYMENTS (checkout orders) ─────────────────────────────────────────────────
+-- One row per checkout attempt. Created before redirecting to Stripe /
+-- Paystack / NOWPayments; the provider's webhook marks it paid and the
+-- server issues the ticket or membership exactly once (lib/payments/fulfill.ts).
+
+CREATE TABLE payments (
+  id                   UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  member_id            UUID NOT NULL REFERENCES members(id),
+  kind                 TEXT NOT NULL CHECK (kind IN ('membership', 'ticket')),
+  tier                 membership_tier,                 -- membership purchases
+  event_id             UUID REFERENCES events(id),      -- ticket purchases
+  provider             payment_provider,                -- null for free tickets
+  currency             TEXT NOT NULL CHECK (currency IN ('USD', 'NGN')),
+  amount               NUMERIC(12,2) NOT NULL CHECK (amount >= 0),
+  status               TEXT NOT NULL DEFAULT 'pending'
+                       CHECK (status IN ('pending', 'processing', 'fulfilled', 'failed', 'expired', 'needs_attention')),
+  provider_ref         TEXT,          -- Stripe Checkout Session id / Paystack reference / NOWPayments invoice id
+  provider_payment_id  TEXT,          -- Stripe payment intent or subscription / NOWPayments payment id
+  failure_reason       TEXT,
+  created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  paid_at              TIMESTAMPTZ,
+  fulfilled_at         TIMESTAMPTZ,
+  CONSTRAINT payments_target CHECK (
+    (kind = 'membership' AND tier IS NOT NULL) OR (kind = 'ticket' AND event_id IS NOT NULL)
+  )
+);
+
+CREATE INDEX idx_payments_member   ON payments(member_id, created_at DESC);
+CREATE INDEX idx_payments_status   ON payments(status);
+CREATE UNIQUE INDEX idx_payments_provider_ref ON payments(provider, provider_ref) WHERE provider_ref IS NOT NULL;
 
 -- ─── APPLICATIONS (experiences: hangouts, studio sessions, …) ───────────────────
 
@@ -341,6 +372,7 @@ ALTER TABLE point_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE invite_codes       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE announcements      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE waitlist           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE payments           ENABLE ROW LEVEL SECURITY;
 ALTER TABLE rate_limits        ENABLE ROW LEVEL SECURITY;
 
 -- Published events are public. Everything else is server-only (service role).

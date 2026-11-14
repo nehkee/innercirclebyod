@@ -1,5 +1,7 @@
 import { NextRequest } from 'next/server';
 import { createHmac, timingSafeEqual } from 'crypto';
+import type { MembershipTier } from '@/types';
+import { hasTierAccess } from '@/lib/membership';
 import { createAdminClient, isSupabaseConfigured } from '@/lib/supabase';
 
 interface RateLimitResult {
@@ -62,40 +64,9 @@ export function clientId(req: NextRequest): string {
   return forwarded ? forwarded.split(',')[0].trim() : 'unknown';
 }
 
-/** Check for duplicate ticket purchase in the same event */
-export async function isDuplicateTicket(
-  memberId: string,
-  eventId: string
-): Promise<boolean> {
-  const admin = createAdminClient();
-  const { data } = await admin
-    .from('tickets')
-    .select('id')
-    .eq('user_id', memberId)
-    .eq('event_id', eventId)
-    .neq('status', 'cancelled')
-    .limit(1);
-  return (data?.length ?? 0) > 0;
-}
-
-/** Check if a member (members.id UUID) has an active membership at the required tier */
-export async function hasMembershipAccess(
-  memberId: string,
-  requiredTier: string
-): Promise<boolean> {
-  const TIER_ORDER = ['machine', 'insider', 'warlord', 'industry'];
-  const admin      = createAdminClient();
-
-  const { data } = await admin
-    .from('memberships')
-    .select('tier, status')
-    .eq('user_id', memberId)
-    .eq('status', 'active')
-    .maybeSingle();
-
-  if (!data) return false;
-
-  return TIER_ORDER.indexOf(data.tier) >= TIER_ORDER.indexOf(requiredTier);
+/** Check if a member (members.id UUID) has a current paid membership at the required tier */
+export async function hasMembershipAccess(memberId: string, requiredTier: string): Promise<boolean> {
+  return hasTierAccess(memberId, requiredTier as MembershipTier);
 }
 
 /** Verify Paystack webhook signature */

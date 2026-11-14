@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getClerkUserId }            from '@/lib/auth';
+import { hasTierAccess }             from '@/lib/membership';
 import { createAdminClient }         from '@/lib/supabase';
 import { generateInviteCode }        from '@/lib/qr';
 import { rateLimit }                 from '@/lib/fraud';
@@ -24,8 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Member not found' }, { status: 404 });
   }
 
-  const TIER_ORDER = ['machine', 'insider', 'warlord', 'industry'];
-  if (TIER_ORDER.indexOf(member.tier) < TIER_ORDER.indexOf('warlord')) {
+  if (!(await hasTierAccess(member.id, 'warlord'))) {
     return NextResponse.json(
       { error: 'Invite generation requires WARLORD tier or higher' },
       { status: 403 }
