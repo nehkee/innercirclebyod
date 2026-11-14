@@ -3,6 +3,8 @@
 import { useRef } from 'react';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
+import type { CommunityStats } from '@/lib/data';
+import { formatStat } from '@/lib/data-format';
 
 const RULES = [
   'No leaks. No screenshots. No excuses.',
@@ -11,7 +13,7 @@ const RULES = [
   'Loyalty is the only currency that matters here.',
 ];
 
-export function ExclusiveCTA() {
+export function ExclusiveCTA({ stats }: { stats: CommunityStats | null }) {
   const ref    = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, margin: '-120px' });
 
@@ -155,7 +157,12 @@ export function ExclusiveCTA() {
           animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: 1.1, duration: 0.6 }}
         >
-          12,400+ MEMBERS  ·  9 COUNTRIES  ·  48 EVENTS  ·  THE CIRCLE IS CLOSED
+          {[
+            stats && `${formatStat(stats.members)} MEMBERS`,
+            stats && stats.countries > 0 && `${stats.countries} ${stats.countries === 1 ? 'COUNTRY' : 'COUNTRIES'}`,
+            stats && stats.events > 0 && `${stats.events} ${stats.events === 1 ? 'EVENT' : 'EVENTS'}`,
+            'THE CIRCLE IS CLOSED',
+          ].filter(Boolean).join('  ·  ')}
         </motion.p>
       </div>
     </section>

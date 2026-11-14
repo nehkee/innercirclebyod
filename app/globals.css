@@ -30,7 +30,17 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
-  cursor: none;
+}
+
+/* Hide the system cursor only while the custom cursor is running
+   (set by components/ui/CustomCursor.tsx on mouse-driven devices). */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 
 body {
@@ -219,7 +229,6 @@ body {
   font-size: 1.1rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  cursor: none;
   transition: all 0.3s ease;
   overflow: hidden;
 }
@@ -256,7 +265,6 @@ body {
   font-size: 1.1rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  cursor: none;
   transition: all 0.3s ease;
 }
 
@@ -301,7 +309,8 @@ body {
   position: fixed;
   pointer-events: none;
   z-index: 99999;
-  transition: transform 0.1s ease;
+  opacity: 0;               /* shown after the first mouse move */
+  transition: transform 0.1s ease, opacity 0.2s ease;
   mix-blend-mode: difference;
 }
 
@@ -313,7 +322,8 @@ body {
   position: fixed;
   pointer-events: none;
   z-index: 99998;
-  transition: width 0.3s ease, height 0.3s ease, transform 0.15s ease;
+  opacity: 0;
+  transition: width 0.3s ease, height 0.3s ease, transform 0.15s ease, opacity 0.2s ease;
 }
 
 /* ─── Status Badge ─────────────────────────────────────────────────────────── */

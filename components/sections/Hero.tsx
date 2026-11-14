@@ -42,7 +42,7 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
   return (
     <section
       ref={heroRef}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-24 pb-24"
       style={{ background: '#080808' }}
     >
       {/* ── Three.js Particle Field ───────────────────────────────────────── */}
@@ -115,7 +115,7 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
           <motion.h1
             className="glitch font-bebas leading-none tracking-tight select-none"
             data-text="INNER"
-            style={{ fontSize: 'clamp(80px, 18vw, 260px)' }}
+            style={{ fontSize: 'clamp(72px, min(18vw, 21vh), 260px)' }}
             initial={{ y: '110%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.15, duration: 1, ease: [0.22, 1, 0.36, 1] }}
@@ -129,7 +129,7 @@ export function Hero({ nextEvent, stats }: { nextEvent: Event | null; stats: Com
           <motion.h1
             className="glitch font-bebas leading-none tracking-tight select-none gold-text"
             data-text="CIRCLE"
-            style={{ fontSize: 'clamp(80px, 18vw, 260px)' }}
+            style={{ fontSize: 'clamp(72px, min(18vw, 21vh), 260px)' }}
             initial={{ y: '110%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.28, duration: 1, ease: [0.22, 1, 0.36, 1] }}

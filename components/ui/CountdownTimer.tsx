@@ -25,12 +25,13 @@ function calculate(target: string): TimeLeft {
   };
 }
 
-function pad(n: number) {
-  return String(n).padStart(2, '0');
+function pad(n: number | undefined) {
+  return n === undefined ? '--' : String(n).padStart(2, '0');
 }
 
 export function CountdownTimer({ targetDate, className, compact = false }: CountdownTimerProps) {
-  const [time, setTime] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  // null until mounted: the server can't know the visitor's clock, and "00" would read as "it's over"
+  const [time, setTime] = useState<TimeLeft | null>(null);
 
   useEffect(() => {
     setTime(calculate(targetDate));
@@ -41,16 +42,16 @@ export function CountdownTimer({ targetDate, className, compact = false }: Count
   if (compact) {
     return (
       <span className={`font-mono text-od-gold text-sm ${className}`}>
-        {pad(time.days)}:{pad(time.hours)}:{pad(time.minutes)}:{pad(time.seconds)}
+        {pad(time?.days)}:{pad(time?.hours)}:{pad(time?.minutes)}:{pad(time?.seconds)}
       </span>
     );
   }
 
   const units = [
-    { label: 'DAYS',    value: time.days },
-    { label: 'HRS',     value: time.hours },
-    { label: 'MINS',    value: time.minutes },
-    { label: 'SECS',    value: time.seconds },
+    { label: 'DAYS',    value: time?.days },
+    { label: 'HRS',     value: time?.hours },
+    { label: 'MINS',    value: time?.minutes },
+    { label: 'SECS',    value: time?.seconds },
   ];
 
   return (

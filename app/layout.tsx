@@ -15,14 +15,6 @@ export const metadata: Metadata = {
     description: 'An elite digital society built around Odumodublvck.',
     url: 'https://innercirclebyod.com',
     siteName: 'Inner Circle by OD',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Inner Circle by OD',
-      },
-    ],
     locale: 'en_US',
     type: 'website',
   },
@@ -47,6 +39,18 @@ export default function RootLayout({
   const page = (
     <html lang="en">
       <body className="bg-od-black text-white font-space antialiased overflow-x-hidden">
+        {/* Without JavaScript, scroll-reveal content would stay invisible: force it visible. */}
+        <noscript>
+          <style
+            // Raw string: JSX would HTML-escape the quotes and break the selectors
+            dangerouslySetInnerHTML={{
+              __html:
+                '[style$="opacity:0"],[style*="opacity:0;"]{opacity:1!important}' +
+                '[style*="transform:translate"]{transform:none!important}' +
+                '.cursor-dot,.cursor-ring{display:none}',
+            }}
+          />
+        </noscript>
         <Providers authEnabled={isClerkConfigured()}>
           <NoiseOverlay />
           <CustomCursor />

@@ -47,7 +47,7 @@ export default async function Home() {
       <CommunityStats stats={stats} leaderboard={leaderboard} />
 
       {/* 8 — Full-viewport "ARE YOU IN?" CTA */}
-      <ExclusiveCTA />
+      <ExclusiveCTA stats={stats} />
 
       <Footer />
     </main>
